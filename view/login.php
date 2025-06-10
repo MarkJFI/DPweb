@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin: 100px auto;
             padding: 30px;
             background: #fff;
-            border: 1px solid #ddd;
+            border: 5px solid #ddd;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(15, 255, 111, 0.1);
         }
