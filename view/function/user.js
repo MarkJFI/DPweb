@@ -15,7 +15,7 @@ function validar_form() {
         return;
     }
 
-    Swal.fire({
+    /*Swal.fire({
         title: '¡Procedemos a Registrar Tus datos!',
         text: 'Espere Por Favor.',
         icon: 'success',
@@ -27,7 +27,7 @@ function validar_form() {
         customClass: {
             popup: 'rounded-pill shadow border border-light'
         }
-    });
+    });*/
     registrarUsuario();
 }
 /*alert(nro_documento);*/
@@ -53,6 +53,17 @@ async function registrarUsuario() {
             cache: 'no-cache',
             body: datos
         });
+
+        let json = await respuesta.json();
+        // validamos que json.status de igual true
+        if (json.status) { //true
+            alert(json.msg);
+            //document.getElementById('frm_user').reset();
+        } else {
+            alert(json.msg);
+        }
+
+
     } catch (error) {
         console.log("Error al registrar Usuario:" + error);
     }

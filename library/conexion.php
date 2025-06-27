@@ -9,8 +9,6 @@ class Conexion
         date_default_timezone_set("America/Lima");
         if (mysqli_connect_errno()) {
             echo "Error de Conexion:" . mysqli_connect_errno();
-        } else {
-            echo "Conexion Exitosa";
         }
         return $mysql;
     }
