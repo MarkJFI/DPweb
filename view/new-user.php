@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JESUS</title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>view/bootstrap/css/bootstrap.min.css">
+    <script>
+        const base_url = '<?php echo BASE_URL; ?>';
+    </script>
 </head>
 
 <body>
@@ -26,11 +29,27 @@
             color: white;
             background-color: black;
         }
+
+        .styled-logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color:rgb(205, 141, 248);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .styled-logo:hover {
+            color:rgb(239, 255, 64);
+            transform: scale(1.05);
+            text-decoration: none;
+        }
+
     </style>
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Logo</a>
+            <a class="navbar-brand styled-logo" href="#">Logo</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -86,9 +105,9 @@
             <form id="frm_user" action="" method="">
                 <div class="card-body">
                     <div class="mb-3 row">
-                        <label for="nro_identidad" class="col-sm-4 col-form-label">N° identidad:</label>
+                        <label for="nro_documento" class="col-sm-4 col-form-label">N° documento:</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="nro_identidad" name="nro_identidad" required>
+                            <input type="text" class="form-control" id="nro_documento" name="nro_documento" required>
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -153,7 +172,7 @@
                         </div>
                     </div>
 
-                    <button type="submit"class="btn btn-primary">Registrar</button>
+                    <button type="submit" class="btn btn-primary">Registrar</button>
                     <button type="reset" class="btn btn-warning">Limpiar</button>
                     <button type="button" class="btn btn-danger">Cancelar</button>
 
@@ -164,5 +183,7 @@
 </body>
 <script src="<?php echo BASE_URL; ?>view/function/user.js"></script>
 <script src="<?php echo BASE_URL; ?>view/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </html>
