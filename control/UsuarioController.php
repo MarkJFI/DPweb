@@ -23,9 +23,17 @@ if ($tipo == "registrar") {
     if ($nro_identidad == "" || $razon_social == "" || $telefono == "" || $correo == "" || $departamento == "" || $provincia == "" || $distrito == "" || $cod_postal == "" || $direccion == "" || $rol == "") {
         $arrResponse = array('status' => false, 'msg' => 'Error, campos vacios');
     } else {
+        //validacion si existe persona con el mismo dni
+        $existePersona = $objPersona->existePersona($nro_identidad);
+        var_dump($existePersona);
+
         $respuesta = $objPersona->registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password);
-        
-        $arrResponse = array('status' => true, 'msg' => 'Procedemos a registrar');
+
+        if ($respuesta) {
+            $arrResponse = array('status' => true, 'msg' => 'Registrado correctamente');
+        } else {
+            $arrResponse = array('status' => true, 'msg' => 'Error, fallo en registrar');
+        }
     }
     echo json_encode($arrResponse);
 }

@@ -43,7 +43,7 @@
                         <a class="nav-link" href="#">Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Categories</a>
+                        <a class="nav-link" href="<?php echo BASE_URL; ?>categoria">Categories</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Clients</a>
@@ -152,9 +152,9 @@
 
                     </select>
                     <br>
-                    <button type="submit" class="btn btn-primary">Registrar</button>
-                    <button type="reset" class="btn btn-primary">Limpiar</button>
-                    <button type="button" class="btn btn-primary">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Registrar</button>
+                    <button type="reset" class="btn btn-secondary">Limpiar</button>
+                    <button type="button" class="btn btn-danger">Cancelar</button>
 
                 </div>
             </form>

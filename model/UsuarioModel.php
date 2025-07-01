@@ -20,4 +20,10 @@ class UsuarioModel
         }
         return $sql;
     }
+    public function existePersona($nro_identidad)
+    {
+        $consulta = "SELECT *FROM persona WHERE nro_identidad= '$nro_identidad";
+        $sql = $this->conexion->query($consulta);
+        return $sql;
+    }
 }
