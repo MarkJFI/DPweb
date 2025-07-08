@@ -9,7 +9,9 @@ if($mostrar == "login" || $mostrar == "404"){
     require_once "./view/". $mostrar.".php";
 
 }else{
+    include "./view/include/header.php"; // CARGAMOS EL HEADER
     include $mostrar;
+    include "./view/include/footer.php"; //CARGAMOS EL FOOTER
 }
 
 
