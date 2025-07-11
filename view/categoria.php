@@ -10,11 +10,11 @@
         const base_url = '<?php echo BASE_URL; ?>';
     </script>
 </head>
-
+<!--inicio de cuerpo de pagina-->
 <body>
     <style>
         .collapse {
-            background: linear-gradient(rgb(42, 46, 233), rgb(179, 236, 238));
+            background: linear-gradient(rgb(56, 184, 6), rgb(149, 160, 160));
 
         }
 
@@ -100,6 +100,7 @@
         </div>
     </div>
 </body>
+<!--fin de pie de pagina-->
 <script src="<?php echo BASE_URL; ?>view/function/categoria.js"></script>
 <script src="<?php echo BASE_URL; ?>view/bootstrap/js/bootstrap.bundle.min.js"></script>
 

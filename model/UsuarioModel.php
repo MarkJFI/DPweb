@@ -28,6 +28,11 @@ class UsuarioModel
         return $sql;
 
         return $sql->num_rows;
-
+    }
+    public function buscarPersonaPorNroIdentidad($nro_identidad)
+    {
+        $consulta = "SELECT id, razon_social, password from persona where nro_identidad = '$nro_identidad' limit 1";
+        $sql = $this->conexion->query($consulta);
+        return $sql->fetch_object();
     }
 }
