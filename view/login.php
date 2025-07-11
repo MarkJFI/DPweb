@@ -17,62 +17,127 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>LOGIN</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
     <style>
-        body {
-            background-image: url(https://img.freepik.com/vector-gratis/salvapantallas-abstracto-lluvia-pixeles_23-2148370794.jpg?semt=ais_hybrid&w=740);
-            background-color:#e59786;
-            color: black;
-            font-family: Arial, sans-serif;
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
-        .login-box {
-            color: #2980b9;
-            width: 300px;
-            margin: 100px auto;
-            padding: 30px;
-            background: #fff;
-            border: 5px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(15, 255, 111, 0.1);
+        body {
+            background-image: url(https://i.pinimg.com/originals/f8/01/a3/f801a36277fef9657a41b4c5954506e1.gif);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background: wheat;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(249, 2, 2, 0.99);
+            text-align: center;
+            width: 320px;
+        }
+        .imagen_container {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px auto;
+            
+        }
+        .imagen_container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .emoji {
+            font-size: 3rem;
+            margin-bottom: 10px;
         }
         h2 {
-            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
         }
         input[type="text"],
         input[type="password"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: border 0.3s;
         }
-        input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            background: #3498db;
-            color: white;
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border: 1px solid #8e44ad;
+        }
+        .btn {
+            margin-top: 15px;
+            background: rgb(255, 62, 65);
+            color: #fff;
             border: none;
-            border-radius: 5px;
+            padding: 12px;
+            width: 100%;
+            border-radius: 30px;
+            font-size: 1rem;
             cursor: pointer;
+            transition: background 0.3s;
         }
-        input[type="submit"]:hover {
-            background: #2980b9;
+        .btn:hover {
+            background: rgb(0, 0, 0);
+        }
+        .extra {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .extra a {
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+        }
+        .extra a:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            margin-top: 25px;
+            font-size: 0.8rem;
+            color: #aaa;
         }
     </style>
+    <script>
+        const base_url = '<?= BASE_URL; ?>';
+    </script>
 </head>
+
 <body>
-    <div class="login-box">
+    <div class="login-container">
+        <div class="imagen_container">
+            <img src="https://cdn.dribbble.com/userupload/21193457/file/original-8c00e9c322223c8930eff042dc435445.gif" alt="Logo Animado">
+        </div>
         <h2>Iniciar sesión</h2>
-        <img src="https://i.pinimg.com/originals/45/e4/79/45e479ae0f8355a254862992bac33f5b.gif" alt="">
-        <form method="post" action="login.php">
-            <input type="text" name="usuario" placeholder="Usuario" required>
-            <input type="password" name="clave" placeholder="Clave" required>
-            <input type="submit" value="Entrar">
-            <p><a href="/">Volver al inicio</a></p>
+        <form id="frm_login">
+            <input type="text" placeholder="Usuario" required id="usuario" name="usuario">
+            <input type="password" placeholder="Contraseña" required id="password" name="password">
+            <button class="btn" type="button" onclick="iniciar_sesion();">iniciar sesion</button>
         </form>
+        <div class="extra">
+            <!--
+            <p>¿Olvidaste tu contraseña? <a href="#">Recupérala</a></p>
+            <p>¿Nuevo personal? <a href="#">Regístrate</a></p>-->
+        </div>
+        <div class="footer">
+            <p>Jesus Brayan Nuñez Meza 2025</p>
+
+        </div>
     </div>
+    <script src="<?= BASE_URL; ?>view/function/user.js"></script>
 </body>
+
 </html>
