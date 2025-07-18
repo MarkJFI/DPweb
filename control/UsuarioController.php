@@ -58,10 +58,16 @@ if ($tipo == "iniciar_sesion") {
                 $_SESSION['ventas_id'] = $persona->id;
                 $_SESSION['ventas_usuario'] = $persona->razon_social;
                 $respuesta = array('status' => true, 'msg' => 'ok');
-            }else{
+            } else {
                 $respuesta = array('status' => false, 'msg' => 'Error, contraseña incorrecta');
             }
         }
     }
     echo json_encode($respuesta);
+}
+
+//*view_users */
+if ($tipo == "ver_usuarios") {
+    $usuarios = $objPersona->verUsuarios();
+    echo json_encode($usuarios);
 }

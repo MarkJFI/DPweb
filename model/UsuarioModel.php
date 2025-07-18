@@ -1,29 +1,48 @@
 <?php
 require_once("../library/conexion.php");
-class UsuarioModel {
+class UsuarioModel
+{
     private $conexion;
-    function __construct(){
+    function __construct()
+    {
         $this->conexion = new Conexion();
         $this->conexion = $this->conexion->connect();
     }
-    public function registrar($nro_identidad,$razon_social,$telefono,$correo,$departamento,$provincia,$distrito,$cod_postal,$direccion,$rol,$password){
+    //registrar
+    public function registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password)
+    {
         $consulta = "INSERT INTO persona (nro_identidad,razon_social,telefono,correo,departamento,provincia,distrito,cod_postal,direccion,rol,password) VALUES ('$nro_identidad','$razon_social','$telefono','$correo','$departamento','$provincia','$distrito','$cod_postal','$direccion','$rol','$password')";
         $sql = $this->conexion->query($consulta);
         if ($sql) {
             $sql = $this->conexion->insert_id;
-        }else{
+        } else {
             $sql = 0;
         }
         return $sql;
     }
-    public function existePersona($nro_identidad){
-        $consulta="SELECT * FROM persona WHERE nro_identidad='$nro_identidad'";
+    //existe la persona
+    public function existePersona($nro_identidad)
+    {
+        $consulta = "SELECT * FROM persona WHERE nro_identidad='$nro_identidad'"; // consulta en la base de datos
         $sql = $this->conexion->query($consulta);
         return $sql->num_rows;
     }
-    public function buscarPersonaPornNroIdentidad($nro_identidad){
-        $consulta = "SELECT id,razon_social,password FROM persona WHERE nro_identidad = '$nro_identidad' LIMIT 1";
+    //buscar persona por identidad
+    public function buscarPersonaPornNroIdentidad($nro_identidad)
+    {
+        $consulta = "SELECT id,razon_social,password FROM persona WHERE nro_identidad = '$nro_identidad' LIMIT 1"; // base de datos
         $sql = $this->conexion->query($consulta);
         return $sql->fetch_object();
+    }
+    //ver usuarios
+    public function verUsuarios()
+    {
+        $arr_usuarios = array();
+        $consulta = "SELECT * FROM persona";
+        $sql = $this->conexion->query($consulta);
+        while ($objeto = $sql->fetch_object()) {  // 
+            array_push($arr_usuarios, $objeto);
+        }
+        return $arr_usuarios;
     }
 }

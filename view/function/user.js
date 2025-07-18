@@ -73,21 +73,21 @@ async function registrarUsuario() {
 async function iniciar_sesion() {
     let usuario = document.getElementById("usuario").value;
     let password = document.getElementById("password").value;
-    if(usuario == ""|| password == ""){
+    if (usuario == "" || password == "") {
         alert("Error, campos vacios!");
         return;
 
     }
     try {
         const datos = new FormData(frm_login);
-        let respuesta = await fetch(base_url+'control/UsuarioController.php?tipo=iniciar_sesion',{
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=iniciar_sesion', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
             body: datos
         });
         let json = await respuesta.json();
-        
+
         if (json.status) {
             location.replace(base_url + 'new-user');
         } else {
@@ -96,8 +96,24 @@ async function iniciar_sesion() {
 
     } catch (error) {
         console.log(error);
-        
-        
     }
-    
 }
+async function view_users() {
+    try {
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_usuarios', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache', 
+        });
+
+    }catch (error) {
+        console.log(error)
+    }
+}
+ 
+
+if (document.getElementById('content_users')) {
+    view_users();
+}
+
+
