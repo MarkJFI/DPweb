@@ -1,5 +1,5 @@
 function validar_form() {
-    let nro_documento = document.getElementById("nro_documento").value;
+    let nro_documento = document.getElementById("nro_identidad").value;
     let razon_social = document.getElementById("razon_social").value;
     let telefono = document.getElementById("telefono").value;
     let correo = document.getElementById("correo").value;
@@ -10,7 +10,7 @@ function validar_form() {
     let direccion = document.getElementById("direccion").value;
     let rol = document.getElementById("rol").value;
 
-    if (nro_documento == "" || razon_social == "" || telefono == "" || correo == "" || departamento == "" || provincia == "" || distrito == "" || cod_postal == "" || direccion == "" || rol == "") {
+    if (nro_identidad == "" || razon_social == "" || telefono == "" || correo == "" || departamento == "" || provincia == "" || distrito == "" || cod_postal == "" || direccion == "" || rol == "") {
         alert("ERROR: Campos vacios");
         return;
     }
@@ -58,7 +58,7 @@ async function registrarUsuario() {
         // validamos que json.status de igual true
         if (json.status) { //true
             alert(json.msg);
-            //document.getElementById('frm_user').reset();
+            document.getElementById('frm_user').reset();
         } else {
             alert(json.msg);
         }
@@ -104,6 +104,22 @@ async function view_users() {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache', 
+        });
+        let json = await respuesta.json(); 
+        let content_users = document.getElementById('content_users');
+        content_users.innerHTML = ''; 
+
+        json.forEach((user, index) => {
+            let fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${user.nro_identidad}</td>
+                <td>${user.razon_social}</td>
+                <td>${user.correo}</td>
+                <td>${user.rol}</td>
+                <td>${user.estado}</td>
+            `;
+            content_users.appendChild(fila);
         });
 
     }catch (error) {

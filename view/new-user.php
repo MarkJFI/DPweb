@@ -6,9 +6,9 @@
             <form id="frm_user" action="" method="">
                 <div class="card-body">
                     <div class="mb-3 row">
-                        <label for="nro_documento" class="col-sm-4 col-form-label">N° documento:</label>
+                        <label for="nro_identidad" class="col-sm-4 col-form-label">N° documento:</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="nro_documento" name="nro_documento" required>
+                            <input type="number" class="form-control" id="nro_identidad" name="nro_identidad" required>
                         </div>
                     </div>
                     <div class="mb-3 row">

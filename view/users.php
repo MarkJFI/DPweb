@@ -1,6 +1,6 @@
 <h3 class="mt-3 mb-4 text-center text success">LISTA DE USUARIO</h3>
 <div class="container">
-    <table class="table table-dark">
+    <table class="table table-bordered">
         <tr>
             <th>N°</th>
             <th>DNI</th>

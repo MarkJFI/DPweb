@@ -63,9 +63,11 @@
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="<?= BASE_URL ?>new-user">Registrar</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>users">Users</a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" href="#">Products</a>
                     </li>
