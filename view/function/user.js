@@ -103,11 +103,11 @@ async function view_users() {
         let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_usuarios', {
             method: 'POST',
             mode: 'cors',
-            cache: 'no-cache', 
+            cache: 'no-cache',
         });
-        let json = await respuesta.json(); 
+        let json = await respuesta.json();
         let content_users = document.getElementById('content_users');
-        content_users.innerHTML = ''; 
+        content_users.innerHTML = '';
 
         json.forEach((user, index) => {
             let fila = document.createElement('tr');
@@ -118,15 +118,18 @@ async function view_users() {
                 <td>${user.correo}</td>
                 <td>${user.rol}</td>
                 <td>${user.estado}</td>
+                <td>
+                    <a href="`+ base_url+`edit_user/`+user.id+`">Editar</a>
+                </td>
             `;
             content_users.appendChild(fila);
         });
 
-    }catch (error) {
+    } catch (error) {
         console.log(error)
     }
 }
- 
+
 
 if (document.getElementById('content_users')) {
     view_users();

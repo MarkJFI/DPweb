@@ -69,19 +69,19 @@
                         <a class="nav-link" href="<?= BASE_URL ?>users">Users</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Products</a>
+                        <a class="nav-link" href="<?= BASE_URL ?>products">Products</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?php echo BASE_URL; ?>categoria">Categories</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Clients</a>
+                        <a class="nav-link" href="<?= BASE_URL ?>clients">Clients</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Shops</a>
+                        <a class="nav-link" href="<?= BASE_URL ?>shops">Shops</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Sales</a>
+                        <a class="nav-link" href="<?= BASE_URL ?>sales">Sales</a>
                     </li>
 
                 </ul>
