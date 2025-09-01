@@ -63,8 +63,25 @@ if ($tipo == "iniciar_sesion") {
     echo json_encode($respuesta);
 }
 
+
+
 //*view_users */
 if ($tipo == "ver_usuarios") {
     $usuarios = $objPersona->verUsuarios();
     echo json_encode($usuarios);
+}
+
+
+if ($tipo == "ver") {
+    //print_r($_POST);
+    $respuesta = array('status'=>false, 'msg'=>'Error');
+    $id_persona = $_POST['id_persona'];
+    $usuario = $objPersona->ver($id_persona);
+    if ($usuario){
+        $respuesta['status'] = true;
+        $respuesta['data'] = $usuario;
+    }else{
+        $respuesta['msg'] = 'Error, usuario no existe';
+    }
+    echo json_encode($respuesta); 
 }

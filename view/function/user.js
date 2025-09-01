@@ -15,7 +15,7 @@ function validar_form() {
         return;
     }
 
-    /*Swal.fire({
+    Swal.fire({
         title: '¡Procedemos a Registrar Tus datos!',
         text: 'Espere Por Favor.',
         icon: 'success',
@@ -27,7 +27,9 @@ function validar_form() {
         customClass: {
             popup: 'rounded-pill shadow border border-light'
         }
-    });*/
+    });
+
+
     registrarUsuario();
 }
 /*alert(nro_documento);*/
@@ -119,7 +121,7 @@ async function view_users() {
                 <td>${user.rol}</td>
                 <td>${user.estado}</td>
                 <td>
-                    <a href="`+ base_url+`edit_user/`+user.id+`">Editar</a>
+                    <a href="`+ base_url+`edit-user/`+user.id+`">Editar</a>
                 </td>
             `;
             content_users.appendChild(fila);
@@ -135,4 +137,39 @@ if (document.getElementById('content_users')) {
     view_users();
 }
 
+async function edit_user() {
+    try {
+        let id_persona = document.getElementById('id_persona').value;
+        const datos = new FormData();
+        datos.append('id_persona', id_persona);
 
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            body: datos
+        });
+
+        json = await respuesta.json();
+        if (!json.status){
+            alert(json.msg);
+            return;
+        }
+        document.getElementById('nro_identidad').value = json.data.nro_identidad;
+        document.getElementById('razon_social').value = json.data.razon_social;
+        document.getElementById('telefono').value = json.data.telefono;
+        document.getElementById('correo').value = json.data.correo;
+        document.getElementById('departamento').value = json.data.departamento;
+        document.getElementById('provincia').value = json.data.provincia;
+        document.getElementById('distrito').value = json.data.distrito;
+        document.getElementById('cod_postal').value = json.data.cod_postal;
+        document.getElementById('direccion').value = json.data.direccion;
+        document.getElementById('rol').value = json.data.rol;
+        
+
+
+    } catch (error) {
+        console.log('oops ocurrió un error'+ error);
+    }
+    
+}
