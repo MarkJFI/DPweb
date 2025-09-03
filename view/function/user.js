@@ -1,4 +1,4 @@
-function validar_form() {
+function validar_form(tipo) {
     let nro_documento = document.getElementById("nro_identidad").value;
     let razon_social = document.getElementById("razon_social").value;
     let telefono = document.getElementById("telefono").value;
@@ -29,9 +29,17 @@ function validar_form() {
         }
     });
 
-
-    registrarUsuario();
+    if (tipo=="nuevo") {
+       registrarUsuario(); 
+    }
+    if (tipo=="actualizar") {
+       actualizarUsuario(); 
+    }
+     
 }
+
+
+
 /*alert(nro_documento);*/
 /*alert(".js successfull conexion");*/
 
@@ -40,9 +48,14 @@ if (document.querySelector('#frm_user')) {
     let frm_user = document.querySelector('#frm_user');
     frm_user.onsubmit = function (e) {
         e.preventDefault();
-        validar_form();
+        validar_form("nuevo");
     }
 }
+
+
+
+
+
 /*----------------------------------------------------------------------*/
 async function registrarUsuario() {
     try {
@@ -172,4 +185,16 @@ async function edit_user() {
         console.log('oops ocurrió un error'+ error);
     }
     
+}
+
+if (document.querySelector('#frm_edit_user')){
+    let frm_user = document.querySelector('#frm_edit_user');
+    frm_user.onsubmit = function (e) {
+        e.preventDefault();
+        validar_form("actualizar");
+    }
+}
+
+async function actualizarUsuario() {
+    alert('actualizar'); 
 }
