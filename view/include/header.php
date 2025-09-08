@@ -15,7 +15,7 @@
 <!--ESTILO DE PAGINA -->
     <style>
         body {
-            background-color: #ADBAC0;
+            background-color: #568499ff;
         }
 
         .nav-link {
@@ -27,7 +27,7 @@
         }
 
         .card-header {
-            color: white;
+            color: orange;
             background-color: black;
         }
 

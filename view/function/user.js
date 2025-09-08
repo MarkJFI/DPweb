@@ -29,13 +29,14 @@ function validar_form(tipo) {
         }
     });
 
-    if (tipo=="nuevo") {
-       registrarUsuario(); 
+    if (tipo == "nuevo") {
+        registrarUsuario();
     }
-    if (tipo=="actualizar") {
-       actualizarUsuario(); 
+    if (tipo == "actualizar") {
+        actualizarUsuario();
     }
-     
+  
+
 }
 
 
@@ -134,11 +135,35 @@ async function view_users() {
                 <td>${user.rol}</td>
                 <td>${user.estado}</td>
                 <td>
-                    <a href="`+ base_url+`edit-user/`+user.id+`">Editar</a>
+                    <a href="${base_url}edit-user/${user.id}" class="btn btn-secondary">Editar</a>
+            <button data-id="${user.id}" class="btn btn-eliminar btn-warning">Eliminar</button>
                 </td>
             `;
             content_users.appendChild(fila);
         });
+
+        // ELIMINAR
+        document.querySelectorAll('.btn-eliminar').forEach(btn => {
+            btn.addEventListener('click', async function () {
+                if (confirm('¿Está seguro de eliminar este usuario?')) {
+                    const datos = new FormData();
+                    datos.append('id', this.getAttribute('data-id'));
+                    let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=eliminar', {
+                        method: 'POST',
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        body: datos
+                    });
+                    let json = await respuesta.json();
+                    alert(json.msg);
+                    if (json.status) {
+                        view_users();
+                    }
+                }
+            });
+        });
+
+
 
     } catch (error) {
         console.log(error)
@@ -164,7 +189,7 @@ async function edit_user() {
         });
 
         json = await respuesta.json();
-        if (!json.status){
+        if (!json.status) {
             alert(json.msg);
             return;
         }
@@ -178,23 +203,40 @@ async function edit_user() {
         document.getElementById('cod_postal').value = json.data.cod_postal;
         document.getElementById('direccion').value = json.data.direccion;
         document.getElementById('rol').value = json.data.rol;
-        
+
 
 
     } catch (error) {
-        console.log('oops ocurrió un error'+ error);
+        console.log('oops ocurrió un error' + error);
     }
-    
-}
 
-if (document.querySelector('#frm_edit_user')){
+}
+// actualizar////////////////////////////////////
+if (document.querySelector('#frm_edit_user')) {
+    //evita que se envie el formulario
     let frm_user = document.querySelector('#frm_edit_user');
     frm_user.onsubmit = function (e) {
         e.preventDefault();
         validar_form("actualizar");
     }
 }
-
 async function actualizarUsuario() {
-    alert('actualizar'); 
+    const datos = new FormData(frm_edit_user);
+    let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=actualizar', {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        body: datos
+    });
+    json = await respuesta.json();
+    if (!json.status) {
+        alert("Ops, ocurrio un error al actualizar, contacte con el administrador");
+        console.log(json.msg);
+        return;
+    } else {
+        alert(json.msg);
+    }
 }
+
+
+
