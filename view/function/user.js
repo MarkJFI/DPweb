@@ -35,7 +35,7 @@ function validar_form(tipo) {
     if (tipo == "actualizar") {
         actualizarUsuario();
     }
-  
+
 
 }
 
@@ -121,24 +121,36 @@ async function view_users() {
             mode: 'cors',
             cache: 'no-cache',
         });
+
         let json = await respuesta.json();
         let content_users = document.getElementById('content_users');
         content_users.innerHTML = '';
 
+
+        //LISTA DE USUARIOS
         json.forEach((user, index) => {
+            let estadoHtml = user.estado == 1
+                ? '<span style="display:inline-block;width:16px;height:16px;background:#198754;border-radius:50%;"></span>'
+                : '<span style="display:inline-block;width:16px;height:16px;background:#dc3545;border-radius:50%;"></span>';
             let fila = document.createElement('tr');
             fila.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${user.nro_identidad}</td>
-                <td>${user.razon_social}</td>
-                <td>${user.correo}</td>
-                <td>${user.rol}</td>
-                <td>${user.estado}</td>
-                <td>
-                    <a href="${base_url}edit-user/${user.id}" class="btn btn-secondary">Editar</a>
-            <button data-id="${user.id}" class="btn btn-eliminar btn-warning">Eliminar</button>
-                </td>
-            `;
+        <td>${index + 1}</td>
+        <td>${user.nro_identidad}</td>
+        <td>${user.razon_social}</td>
+        <td>${user.correo}</td>
+        <td>${user.rol}</td>
+        <td class="text-center">
+            ${estadoHtml}
+        </td>
+        <td>
+            <a href="${base_url}edit-user/${user.id}" class="btn btn-primary btn-sm rounded-pill">
+                <i class="bi bi-pencil-square"></i> Editar
+            </a>
+            <button data-id="${user.id}" class="btn btn-eliminar btn-danger btn-sm rounded-pill" style="background:#dc3545;">
+    Eliminar
+</button>
+        </td>
+    `;
             content_users.appendChild(fila);
         });
 

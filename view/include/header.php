@@ -9,51 +9,110 @@
     <script>
         const base_url = '<?php echo BASE_URL; ?>';
     </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 </head>
 
 <body>
-<!--ESTILO DE PAGINA -->
+    <!--ESTILO DE PAGINA -->
     <style>
+        
         body {
-            background-color: #568499ff;
+            background: linear-gradient(135deg, #1295f3ff 0%, #000000ff 100%);
+            min-height: 100vh;
         }
 
-        .nav-link {
-            color: black;
+        .navbar {
+            background: linear-gradient(90deg, #1976d2 0%, #0b0d0eff 100%) !important;
+            box-shadow: 0 2px 12px rgba(25, 118, 210, 0.12);
         }
 
-        .collapse {
-            background: cadetblue;
-        }
-
-        .card-header {
-            color: orange;
-            background-color: black;
-        }
-
-        .styled-logo {
+        .navbar-brand.styled-logo {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: bold;
-            color:rgb(205, 141, 248);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            transition: color 0.3s ease, transform 0.3s ease;
+            color: #fff !important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            transition: color 0.3s, transform 0.3s;
         }
 
-        .styled-logo:hover {
-            color:rgb(239, 255, 64);
-            transform: scale(1.05);
+        .navbar-brand.styled-logo:hover {
+            color: #004faaff !important;
+            transform: scale(1.07);
             text-decoration: none;
         }
 
+        .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #bbdefb !important;
+            text-decoration: underline;
+        }
+
+        .collapse {
+            background: transparent;
+        }
+
+        .card-header {
+            color: #fff;
+            background-color: #1976d2;
+            font-weight: bold;
+        }
+
+        .dropdown-menu {
+            background: #e3f2fd;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
+        }
+
+        .dropdown-item {
+            color: #1976d2;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: #057ddfff;
+            color: #0d47a1;
+        }
+
+        .titulo-usuarios {
+            background: linear-gradient(90deg, #d8eefdff 0%, #5f87a8ff 100%);
+            border: 2px solid #1976d2;
+            box-shadow: 0 4px 16px rgba(25, 118, 210, 0.15);
+            color: #1976d2 !important;
+            font-size: 2rem;
+            letter-spacing: 1px;
+            padding: 0.75em 2em;
+            margin-bottom: 1em;
+            display: inline-block;
+        }
+
+        .table {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+            background: #fff;
+        }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
     </style>
-<!--ESTILO DE PAGINA -->
+    <!--ESTILO DE PAGINA -->
 
 
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand styled-logo" href="#">Logo</a>
+            <a class="navbar-brand styled-logo" href="#">JB</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -105,3 +164,4 @@
             </div>
         </div>
     </nav>
+    
