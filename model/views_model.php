@@ -3,18 +3,24 @@ class viewModel
 {
     protected static function get_view($view)
     {
-        $white_list = ["login","home","products","users", "new-user","edit-user","categoria","clients","shops","sales"];
-        if (in_array($view, $white_list)){
-            if(is_file("./view/".$view.".php")){
-                $content = "./view/".$view.".php";
-            }else{
-                $content = "404";
+        // Lista blanca de vistas permitidas
+        $white_list = [
+            "login", "home", "producto", "users","edit-producto", "new-producto", "new-user", "edit-categoria","new-categoria", "edit-user", "categoria", "clients", "shops", "sales"
+        ];
+
+        if (in_array($view, $white_list)) {
+            // Si existe el archivo de la vista
+            if (is_file("./view/" . $view . ".php")) {
+                $content = "./view/" . $view . ".php";
+            } else {
+                $content = "404"; // Vista no encontrada
             }
-        }elseif($view=="login"){
+        } elseif ($view == "login") {
             $content = "login";
-        }else{
+        } else {
             $content = "404";
         }
+
         return $content;
     }
 }
