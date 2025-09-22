@@ -4,14 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jean Marco</title>
+    <title>Document</title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>view/bootstrap/css/bootstrap.min.css">
     <script>
         const base_url = '<?php echo BASE_URL; ?>';
     </script>
 </head>
+<!--inicio de cuerpo de pagina-->
 
 <body>
+    <style>
+        .collapse {
+            background: linear-gradient(rgb(56, 184, 6), rgb(149, 160, 160));
+
+        }
+
+        .nav-link {
+            color: aliceblue;
+        }
+    </style>
+
     <nav class="navbar nav bar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand styled-logo" href="#">LOGO</a>
@@ -41,6 +53,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">Sales</a>
                     </li>
+
                 </ul>
                 <form class="d-flex" role="search">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -73,21 +86,23 @@
                             <input type="text" class="form-control" id="nombre" name="nombre" required>
                         </div>
                     </div>
-                     <div class="mb-3 row">
+                    <div class="mb-3 row">
                         <label for="detalle" class="col-sm-4 col-form-label">Detalle:</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" id="detalle" name="detalle" required>
                         </div>
-                    </div><center>
-                    <button type="submit" class="btn btn-primary">Registrar</button>
-                    <button type="reset" class="btn btn-primary">Limpiar</button>
-                    <button type="button" class="btn btn-primary">Cancelar</button>
-                    </center>
+                    </div>
+                    <button type="submit" class="btn btn-success">Registrar</button>
+                    <button type="reset" class="btn btn-secondary">Limpiar</button>
+                    <button type="button" class="btn btn-danger">Cancelar</button>
+                    <a href="<?php echo BASE_URL; ?>categoria-lista" class="btn btn-primary">Ver</a>
+
                 </div>
             </form>
         </div>
     </div>
 </body>
+<!--fin de pie de pagina-->
 <script src="<?php echo BASE_URL; ?>view/function/categoria.js"></script>
 <script src="<?php echo BASE_URL; ?>view/bootstrap/js/bootstrap.bundle.min.js"></script>
 

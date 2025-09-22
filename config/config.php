@@ -6,5 +6,5 @@ const BD_PASSWORD = '';
 const BD_CHARSET = 'utf8';
 
 //Ingresar link de proyecto
-const BASE_URL = 'http://localhost/dpweb/';
+const BASE_URL = 'http://localhost/DPweb/';
 ?>

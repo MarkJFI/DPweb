@@ -1,8 +1,15 @@
 <!--inicio de cuerpo de pagina-->
 <div class="container-fluid">
     <div class="card">
-        <h5 class="card-header">Registro De Usuario</h5>
-        <form id="frm_user" action="">
+        <h5 class="card-header">Editar Usuario</h5>
+        <?php
+        if (isset($_GET["views"])) {
+            $ruta = explode("/", $_GET["views"]);
+            //echo $ruta[1];
+        }
+        ?>
+        <form id="frm_edit_user" action="">
+            <input type="hidden" id="id_persona" name="id_persona" value="<?= $ruta[1]; ?>">
             <div class="card-body">
                 <div class="mb-3 row">
                     <label for="nro_identidad" class="col-sm-4 col-form-label">Nro de Documento :</label>
@@ -71,10 +78,8 @@
 
                 </select>
                 <br>
-                <button type="submit" class="btn btn-success">Registrar</button>
-                <button type="reset" class="btn btn-secondary">Limpiar</button>
-                <button type="button" class="btn btn-danger">Cancelar</button>
-
+                <button type="submit" class="btn btn-success">Actualizar</button>
+                <a href="<?= BASE_URL ?>users" class="btn btn-danger">Cancelar</a>
             </div>
         </form>
     </div>
@@ -82,3 +87,6 @@
 <!--fin de pie de pagina-->
 
 <script src="<?php echo BASE_URL; ?>view/function/user.js"></script>
+<script>
+    edit_user();
+</script>

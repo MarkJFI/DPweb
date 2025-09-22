@@ -21,4 +21,32 @@ class CategoriaModel{
         $sql = $this->conexion->query($consulta);
         return $sql->num_rows;
     }
+
+    public function verCategorias(){
+        $arr_categorias = array();
+        $consulta = "SELECT id, nombre, detalle FROM categoria ORDER BY id DESC";
+        $sql = $this->conexion->query($consulta);
+        while ($obj = $sql->fetch_object()) {
+            $arr_categorias[] = $obj;
+        }
+        return $arr_categorias;
+    }
+
+    public function ver($id){
+        $consulta = "SELECT id, nombre, detalle FROM categoria WHERE id='$id'";
+        $sql = $this->conexion->query($consulta);
+        return $sql->fetch_object();
+    }
+
+    public function actualizar($id, $nombre, $detalle){
+        $consulta = "UPDATE categoria SET nombre='$nombre', detalle='$detalle' WHERE id='$id'";
+        $sql = $this->conexion->query($consulta);
+        return $sql;
+    }
+
+    public function eliminar($id){
+        $consulta = "DELETE FROM categoria WHERE id='$id'";
+        $sql = $this->conexion->query($consulta);
+        return $sql;
+    }
 }

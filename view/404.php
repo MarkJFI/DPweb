@@ -7,10 +7,11 @@
  </head>
  <body>
    <center>
-    <h1><strong>EL PROBLEMA NO ERES TU,SOY YO...</strong></h1>
-    <img src="../view/img/error.jpg" alt="" width="30%">
-    <H3>No se pudo ingresar a este sitio</H3>
-    <button type="submit">Regresar</button>
-   </center>
+    <img src="https://cdn.svgator.com/images/2024/04/detective-animation-404-error-page.gif" alt="" height="400" width="400" >
+    <h1><strong> ERROR-
+      PAGINA NO ENCONTRADA</strong></h1>
+      <button type="submit">Regresar</button></center>
+    
  </body>
+ 
  </html>
