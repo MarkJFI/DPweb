@@ -9,10 +9,15 @@
         <table class="table table-bordered table-hover">
             <thead class="table-success">
                 <tr>
-                    <th>N°</th>
+                    <th>codigo</th>
                     <th>Nombre</th>
                     <th>Detalle</th>
+                    <th>Precio</th>
                     <th>Stock</th>
+                    <th>id_categoria</th>
+                    <th>fecha_vencimiento</th>
+                    <th>imagen</th>
+                    <th>id_proveedor</th>
                     <th>Acciones</th>
                 </tr>
             </thead>

@@ -10,6 +10,7 @@
         }
         ?>
         <form id="frm_edit_category" action="" method="post">
+
             <input type="hidden" id="id_categoria" name="id_categoria" value="<?= $ruta[1]; ?>">
 
             <div class="card-body">

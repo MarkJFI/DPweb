@@ -2,7 +2,9 @@
 <div class="container-fluid">
     <div class="card">
         <h5 class="card-header">Registro de Categoría</h5>
+
         <form id="frm_category" action="<?= BASE_URL ?>controller/CategoriaController.php?tipo=registrar" method="POST">
+
             <div class="card-body">
 
                 <div class="mb-3 row">
