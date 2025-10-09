@@ -127,9 +127,14 @@
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>users">Users</a>
                     </li>
+    <!------------------------------------------------------------------------------------------->
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= BASE_URL ?>products">Products</a>
+                        <a class="nav-link" href="<?= BASE_URL ?>new-producto">new-producto</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= BASE_URL ?>producto">producto</a>
+                    </li>
+    <!------------------------------------------------------------------------------------------->
                     <li class="nav-item">
                         <a class="nav-link" href="<?php echo BASE_URL; ?>categoria">Categories</a>
                     </li>

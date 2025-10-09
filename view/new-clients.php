@@ -2,7 +2,7 @@
     <!------------------INICIO DE CUERPO DE PÁGINA------------------>
     <div class="container-fluid">
         <div class="card">
-            <h5 class="card-header">Registro de Usuarios</h5>
+            <h5 class="card-header">Registro de Clientes</h5>
             <form id="frm_user" action="" method="">
                 <div class="card-body">
                     <div class="mb-3 row">
@@ -84,4 +84,4 @@
     </div>
     <!--------------------FIN DE CUERPO DE PÁGINA------------------->
 
-    <script src="<?php echo BASE_URL; ?>view/function/user.js"></script>
+    <script src="<?php echo BASE_URL; ?>view/function/clients.js"></script>
