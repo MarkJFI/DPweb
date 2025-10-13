@@ -15,18 +15,19 @@ if ($tipo == "registrar") {
     $distrito = $_POST['distrito'];
     $cod_postal = $_POST['cod_postal'];
     $direccion = $_POST['direccion'];
+    $password = $_POST['password'];
     $rol = $_POST['rol']; // "Cliente" o "Proveedor"
 
-    $password = password_hash($nro_identidad, PASSWORD_DEFAULT);
+    $password_hashed = password_hash($password, PASSWORD_DEFAULT);
 
-    if ($nro_identidad == "" || $razon_social == "" || $telefono == "" || $correo == "" || $departamento == "" || $provincia == "" || $distrito == "" || $cod_postal == "" || $direccion == "" || $rol == "") {
+    if ($nro_identidad == "" || $razon_social == "" || $telefono == "" || $correo == "" || $departamento == "" || $provincia == "" || $distrito == "" || $cod_postal == "" || $direccion == "" || $password == "" || $rol == "") {
         $arrResponse = array('status' => false, 'msg' => 'Error, campos vacios');
     } else {
         $existePersona = $obj->existePersona($nro_identidad);
         if ($existePersona > 0) {
             $arrResponse = array('status' => false, 'msg' => 'Error, numero de documento ya existe');
         } else {
-            $respuesta = $obj->registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password);
+            $respuesta = $obj->registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password_hashed);
             if ($respuesta) {
                 $arrResponse = array('status' => true, 'msg' => 'Registrado correctamente');
             } else {
@@ -76,6 +77,7 @@ if ($tipo == "actualizar") {
     $distrito = $_POST['distrito'];
     $cod_postal = $_POST['cod_postal'];
     $direccion = $_POST['direccion'];
+    $password = $_POST['password'];
     $rol = $_POST['rol'];
     if ($id_persona == "" || $nro_identidad == "" || $razon_social == "" || $telefono == "" || $correo == "" || $departamento == "" || $provincia == "" || $distrito == "" || $cod_postal == "" || $direccion == "" || $rol == "") {
         $arrResponse = array('status' => false, 'msg' => 'Error, campos vacios');
@@ -84,7 +86,8 @@ if ($tipo == "actualizar") {
         if (!$existeID) {
             $arrResponse = array('status' => false, 'msg' => 'Error, no existe en BD');
         } else {
-            $actualizar = $obj->actualizar($id_persona, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol);
+            $password_hashed = !empty($password) ? password_hash($password, PASSWORD_DEFAULT) : null;
+            $actualizar = $obj->actualizar($id_persona, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password_hashed);
             if ($actualizar) {
                 $arrResponse = array('status' => true, 'msg' => 'Actualizado correctamente');
             } else {

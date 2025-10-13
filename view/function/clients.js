@@ -8,6 +8,7 @@ function validar_form_client(tipo) {
   let distrito = document.getElementById("distrito").value;
   let cod_postal = document.getElementById("cod_postal").value;
   let direccion = document.getElementById("direccion").value;
+  let password = document.getElementById("password").value;
   let rol = document.getElementById("rol").value;
   if (
     nro_documento == "" ||
@@ -22,6 +23,10 @@ function validar_form_client(tipo) {
     rol == ""
   ) {
     alert("Error, campos vacios");
+    return;
+  }
+  if (tipo == "nuevo" && password == "") {
+    alert("Error, contraseña requerida para registro");
     return;
   }
   if (tipo == "nuevo") {

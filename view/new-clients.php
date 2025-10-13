@@ -62,6 +62,13 @@
                     </div>
                 </div>
 
+                <div class="mb-3 row">
+                    <label for="password" class="col-sm-4 col-form-label">Contraseña:</label>
+                    <div class="col-sm-8">
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                </div>
+
                 <select class="form-control" name="rol" id="rol" required>
                     <option value="" disabled selected>Seleccione un rol</option>
                     <option value="Cliente">Cliente</option>

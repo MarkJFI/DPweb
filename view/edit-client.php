@@ -69,6 +69,13 @@
                 </div>
 
                 <div class="mb-3 row">
+                    <label for="password" class="col-sm-4 col-form-label">Contraseña:</label>
+                    <div class="col-sm-8">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Dejar vacío para no cambiar">
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
                     <label for="rol" class="col-sm-4 col-form-label">Rol:</label>
                     <div class="col-sm-8">
                         <select class="form-control" name="rol" id="rol" required>

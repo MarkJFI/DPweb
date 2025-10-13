@@ -59,9 +59,13 @@ class ClientsModel
         return $sql->fetch_object();
     }
 
-    public function actualizar($id_persona, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol)
+    public function actualizar($id_persona, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password = null)
     {
-        $consulta = "UPDATE persona SET nro_identidad ='$nro_identidad', razon_social= '$razon_social', telefono='$telefono', correo='$correo', departamento='$departamento', provincia='$provincia', distrito='$distrito', cod_postal='$cod_postal', direccion='$direccion', rol='$rol' WHERE id= '$id_persona'";
+        $consulta = "UPDATE persona SET nro_identidad ='$nro_identidad', razon_social= '$razon_social', telefono='$telefono', correo='$correo', departamento='$departamento', provincia='$provincia', distrito='$distrito', cod_postal='$cod_postal', direccion='$direccion', rol='$rol'";
+        if ($password !== null) {
+            $consulta .= ", password='$password'";
+        }
+        $consulta .= " WHERE id= '$id_persona'";
         $sql = $this->conexion->query(($consulta));
         return $sql;
     }
