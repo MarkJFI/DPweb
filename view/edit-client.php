@@ -74,8 +74,14 @@
                     <div class="mb-3 row">
                         <label for="rol" class="col-sm-4 col-form-label">Rol:</label>
                         <div class="col-sm-8">
+<<<<<<< HEAD:view/edit-client.php
                             <select class="form-control" name="rol" id="rol" required readonly>
                                 <option value="Cliente" selected>Cliente</option>
+=======
+                            <select class="form-select" name="rol" id="rol" required>
+                                <option value="" disabled selected>Seleccionar</option>
+                                <option value="Cliente">Cliente</option>
+>>>>>>> c3748858bd5ae4169b7dea2a5a5343ac4e2287b1:view/edit-clientes.php
                             </select>
                         </div>
                     </div>
