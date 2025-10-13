@@ -156,8 +156,10 @@ if ($tipo == "eliminar") {
     exit;
 }
 
-   $tipo = $_GET['tipo'] ?? '';
-ini_set('display_errors',1); ini_set('display_startup_errors',1); error_reporting(E_ALL);
+$tipo = $_GET['tipo'] ?? '';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 $objUsuario = new UsuarioModel();
 if ($tipo == "ver_proveedores") {
     $proveedores = $objUsuario->verProveedores();
@@ -167,3 +169,13 @@ if ($tipo == "ver_proveedores") {
     echo json_encode($respuesta);
     exit;
 }
+
+if ($tipo == "ver_clients") {
+    $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
+    $usuarios = $objPersona->verClientes();
+    if (count($usuarios)) {
+        $respuesta = array('status' => true, 'msg' => '', 'data' => $usuarios);
+    }
+    echo json_encode($respuesta);
+}
+

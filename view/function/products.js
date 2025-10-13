@@ -33,22 +33,31 @@ async function cargarCategorias() {
 }
 
 // ===================== CARGAR PROVEEDORES =====================
+// Proveedores: se usa el select `id_persona` en el formulario de producto (proveedores vienen del controlador de Usuario)
 async function cargarProveedores() {
     try {
-        const sel = document.getElementById('id_proveedor');
+        const sel = document.getElementById('id_persona');
         if (!sel) return;
 
-        let resp = await fetch(base_url + 'control/ProveedorController.php?tipo=ver_proveedores', {
+        let resp = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_proveedores', {
             method: 'POST'
         });
         let proveedores = await resp.json();
 
         sel.innerHTML = '<option value="" disabled selected>Seleccione un proveedor</option>';
-        if (Array.isArray(proveedores)) {
+        if (proveedores && proveedores.status && Array.isArray(proveedores.data)) {
+            proveedores.data.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = p.razon_social || p.nombre || p.email || ('Proveedor ' + p.id);
+                sel.appendChild(opt);
+            });
+        } else if (Array.isArray(proveedores)) {
+            // fallback si controlador devuelve array directamente
             proveedores.forEach(p => {
                 const opt = document.createElement('option');
                 opt.value = p.id;
-                opt.textContent = p.nombre;
+                opt.textContent = p.razon_social || p.nombre || ('Proveedor ' + p.id);
                 sel.appendChild(opt);
             });
         }
@@ -65,9 +74,10 @@ function validar_producto(tipo) {
     const precio   = getVal('precio');
     const stock    = getVal('stock');
     const categoria= getVal('id_categoria');
-    const proveedor= hasEl('id_proveedor') ? getVal('id_proveedor') : '';
+    // El formulario usa `id_persona` para el proveedor
+    const proveedor= hasEl('id_persona') ? getVal('id_persona') : '';
 
-    if (!codigo || !nombre || !detalle || !precio || !stock || !categoria || !proveedor) {
+    if (!codigo || !nombre || !detalle || !precio || !stock || !categoria) {
         alert('ERROR: Complete todos los campos obligatorios');
         return;
     }
@@ -92,7 +102,15 @@ async function registrarProducto() {
             method: 'POST',
             body: datos
         });
-        let json = await resp.json();
+        let text = await resp.text();
+        let json;
+        try {
+            json = JSON.parse(text);
+        } catch (e) {
+            alert('Respuesta inválida del servidor al registrar producto. Revisa la consola y el log de PHP.');
+            console.error('Respuesta cruda registrarProducto:', text);
+            return;
+        }
         alert(json.msg);
         if (json.status) {
             frm_producto.reset();
@@ -106,9 +124,9 @@ async function registrarProducto() {
 // ===================== LISTAR PRODUCTOS =====================
 async function verProductos() {
     try {
-        let resp = await fetch(base_url + 'control/ProductoController.php?tipo=listar', { method: 'POST' });
+        let resp = await fetch(base_url + 'control/ProductoController.php?tipo=ver_products', { method: 'POST' });
         let productos = await resp.json();
-        let content = document.getElementById('content_productos');
+        const content = document.getElementById('content_productos');
         if (!content) return;
 
         content.innerHTML = '';
@@ -119,10 +137,9 @@ async function verProductos() {
                 <td>${prod.codigo ?? ''}</td>
                 <td>${prod.nombre ?? ''}</td>
                 <td>${prod.detalle ?? ''}</td>
-                <td>${prod.stock ?? ''}</td>
                 <td>${prod.precio ?? ''}</td>
+                <td>${prod.stock ?? ''}</td>
                 <td>${prod.categoria ?? ''}</td>
-                <td>${prod.proveedor ?? ''}</td>
                 <td>${prod.fecha_vencimiento ?? ''}</td>
                 <td>
                     <a href="${base_url}edit-producto/${prod.id}" class="btn btn-primary btn-sm rounded-pill">
@@ -137,9 +154,13 @@ async function verProductos() {
         // Botones de eliminar
         document.querySelectorAll('.btn-eliminar').forEach(btn => {
             btn.addEventListener('click', async function () {
-                if (confirm('¿Seguro de eliminar este producto?')) {
+                if (confirm('\u00bfSeguro de eliminar este producto?')) {
                     let id = this.getAttribute('data-id');
-                    let resp = await fetch(base_url + 'control/ProductoController.php?tipo=eliminar&id=' + id);
+                    let resp = await fetch(base_url + 'control/ProductoController.php?tipo=eliminar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'id=' + encodeURIComponent(id)
+                    });
                     let json = await resp.json();
                     alert(json.msg);
                     if (json.status) verProductos();
@@ -155,13 +176,17 @@ async function verProductos() {
 // ===================== OBTENER PRODUCTO POR ID =====================
 async function obtenerProductoPorId(id) {
     try {
-        let resp = await fetch(base_url + 'control/ProductoController.php?tipo=obtener&id=' + id);
+        let resp = await fetch(base_url + 'control/ProductoController.php?tipo=ver', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'id_producto=' + encodeURIComponent(id)
+        });
         let json = await resp.json();
-        if (!json || !json.id) {
+        if (!json || !json.data) {
             alert('Producto no encontrado');
             return;
         }
-        let p = json;
+        let p = json.data;
         if (hasEl('id_producto')) document.getElementById('id_producto').value = p.id;
         if (hasEl('codigo')) document.getElementById('codigo').value = p.codigo || '';
         if (hasEl('nombre')) document.getElementById('nombre').value = p.nombre || '';
@@ -175,6 +200,12 @@ async function obtenerProductoPorId(id) {
     } catch (error) {
         console.log('Error al obtener producto:', error);
     }
+}
+
+// Alias para compatibilidad con la vista de editar
+function edit_product(id) {
+    if (!id) return;
+    obtenerProductoPorId(id);
 }
 
 // ===================== ACTUALIZAR PRODUCTO =====================
@@ -193,7 +224,15 @@ async function actualizarProducto() {
             method: 'POST',
             body: datos
         });
-        let json = await resp.json();
+        let text = await resp.text();
+        let json;
+        try {
+            json = JSON.parse(text);
+        } catch (e) {
+            alert('Respuesta inválida del servidor al actualizar producto. Revisa la consola y el log de PHP.');
+            console.error('Respuesta cruda actualizarProducto:', text);
+            return;
+        }
         alert(json.msg);
         if (json.status) {
             window.location.href = base_url + "producto"; // redirige a la lista

@@ -2,8 +2,18 @@
     <!------------------INICIO DE CUERPO DE PÁGINA------------------>
     <div class="container-fluid">
         <div class="card">
-            <h5 class="card-header">Registro de Clientes</h5>
-            <form id="frm_user" action="" method="">
+            <h5 class="card-header">Editar Registro del Cliente</h5>
+
+            <?php
+            if (isset($_GET["views"])) {
+                $ruta = explode("/", $_GET["views"]);
+                //echo $ruta[1];
+            }
+            ?>
+            <form id="frm_edit_client" action="" method="">
+                <input type="hidden" id="id_persona" name="id_persona" value="<?= $ruta[1]; ?>">
+
+
                 <div class="card-body">
                     <div class="mb-3 row">
                         <label for="nro_identidad" class="col-sm-4 col-form-label">N° documento:</label>
@@ -64,19 +74,14 @@
                     <div class="mb-3 row">
                         <label for="rol" class="col-sm-4 col-form-label">Rol:</label>
                         <div class="col-sm-8">
-                            <select class="form-select" name="rol" id="rol" required>
-                                <option value=""></option>
-                                <option value="" disabled selected>Seleccionar</option>
-                                <option value="Empleado">Administrador</option>
-                                <option value="Almacen">Vendedor</option>
-                                <option value="3">Proveedor</option>
+                            <select class="form-control" name="rol" id="rol" required readonly>
+                                <option value="Cliente" selected>Cliente</option>
                             </select>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Registrar</button>
-                    <button type="reset" class="btn btn-warning">Limpiar</button>
-                    <button type="button" class="btn btn-danger">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Actualizar</button>
+                    <a href="<?= BASE_URL ?>clients" class="btn btn-primary">Cancelar</a>
 
                 </div>
             </form>
@@ -85,3 +90,6 @@
     <!--------------------FIN DE CUERPO DE PÁGINA------------------->
 
     <script src="<?php echo BASE_URL; ?>view/function/clients.js"></script>
+    <script>
+        edit_client();
+    </script>

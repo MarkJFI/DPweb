@@ -5,7 +5,8 @@ class viewModel
     {
         // Lista blanca de vistas permitidas
         $white_list = [
-            "login", "home", "producto", "users","edit-producto","clientes", "new-producto", "new-user", "edit-categoria","new-categoria", "edit-user", "categoria", "clients", "shops", "sales"
+            "login", "home", "producto", "users","edit-producto","clientes", "new-producto", "new-user", "edit-categoria","new-categoria", "edit-user", "categoria", "clients", "shops", "sales",
+            "new-client", "edit-clientes"
         ];
 
         if (in_array($view, $white_list)) {

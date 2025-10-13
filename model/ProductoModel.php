@@ -37,10 +37,16 @@ class ProductoModel
     public function verProductos()
     {
         $arr_productos = array();
-        $consulta = "SELECT * FROM producto";
+        // Traer productos junto con el nombre de la categoria y el proveedor (si existen)
+        $consulta = "SELECT p.*, c.nombre AS categoria, u.razon_social AS proveedor
+                     FROM producto p
+                     LEFT JOIN categoria c ON p.id_categoria = c.id
+                     LEFT JOIN usuario u ON p.id_proveedor = u.id";
         $sql = $this->conexion->query($consulta);
-        while ($objeto = $sql->fetch_object()) {
-            array_push($arr_productos, $objeto);
+        if ($sql) {
+            while ($objeto = $sql->fetch_object()) {
+                array_push($arr_productos, $objeto);
+            }
         }
         return $arr_productos;
     }

@@ -141,6 +141,10 @@
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>clients">Clients</a>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= BASE_URL ?>new-client">Registrar clientes</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>shops">Shops</a>
                     </li>

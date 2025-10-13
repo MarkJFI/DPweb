@@ -5,10 +5,10 @@
         LISTA DE CLIENTES
     </h3>
     <div class="container">
-        <table class="table table-bordered table-hover">
-            <thead class="table-primary">
+        <table class="table table-bordered table-striped">
+            <thead>
                 <tr>
-                    <th>N°</th>
+                    <th>Nro</th>
                     <th>DNI</th>
                     <th>Nombres y Apellidos</th>
                     <th>Correo</th>
@@ -23,7 +23,7 @@
         </table>
         <!-- Botón para agregar usuario -->
         <div class="text-end mt-3">
-            <a href="<?= BASE_URL ?>new-user" class="btn btn-success btn-lg rounded-pill">
+            <a href="<?= BASE_URL ?>new-client" class="btn btn-success btn-lg rounded-pill">
                 <i class="bi bi-person-plus"></i> Agregar clientes
             </a>
         </div>
