@@ -23,7 +23,11 @@
         </table>
         <!-- Botón para agregar usuario -->
         <div class="text-end mt-3">
+<<<<<<< HEAD
             <a href="<?= BASE_URL ?>new-client" class="btn btn-success btn-lg rounded-pill">
+=======
+            <a href="<?= BASE_URL ?>new-clients" class="btn btn-success btn-lg rounded-pill">
+>>>>>>> c3748858bd5ae4169b7dea2a5a5343ac4e2287b1
                 <i class="bi bi-person-plus"></i> Agregar clientes
             </a>
         </div>

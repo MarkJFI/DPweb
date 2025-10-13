@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 function validar_form(tipo) {
     let nro_documento = document.getElementById("nro_identidad").value;
     let razon_social = document.getElementById("razon_social").value;
@@ -70,10 +71,126 @@ async function registrarCliente() {
         }
     } catch (e) {
         console.log("Error al registrar Cliente:" + e);
+=======
+function validar_form_client(tipo) {
+  let nro_documento = document.getElementById("nro_identidad").value;
+  let razon_social = document.getElementById("razon_social").value;
+  let telefono = document.getElementById("telefono").value;
+  let correo = document.getElementById("correo").value;
+  let departamento = document.getElementById("departamento").value;
+  let provincia = document.getElementById("provincia").value;
+  let distrito = document.getElementById("distrito").value;
+  let cod_postal = document.getElementById("cod_postal").value;
+  let direccion = document.getElementById("direccion").value;
+  let rol = document.getElementById("rol").value;
+  if (
+    nro_documento == "" ||
+    razon_social == "" ||
+    telefono == "" ||
+    correo == "" ||
+    departamento == "" ||
+    provincia == "" ||
+    distrito == "" ||
+    cod_postal == "" ||
+    direccion == "" ||
+    rol == ""
+  ) {
+    alert("Error, campos vacios");
+    return;
+  }
+  if (tipo == "nuevo") {
+    registrarClienteProveedor();
+  }
+  if (tipo == "actualizar") {
+    actualizarClienteProveedor();
+  }
+}
+
+if (document.querySelector("#frm_user")) {
+  let frm = document.querySelector("#frm_user");
+  frm.onsubmit = function (e) {
+    e.preventDefault();
+    validar_form_client("nuevo");
+  };
+}
+
+async function registrarClienteProveedor() {
+  try {
+    const datos = new FormData(document.querySelector("#frm_user"));
+    // Forzar rol Cliente desde el cliente también (defensa en profundidad)
+    if (datos.has('rol')) {
+      datos.set('rol', 'Cliente');
+    } else {
+      datos.append('rol', 'Cliente');
+    }
+    let respuesta = await fetch(
+      base_url + "control/ClientsController.php?tipo=registrar",
+      {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        body: datos,
+      }
+    );
+    // Intentar parsear JSON, si falla mostrar texto crudo para depuración
+    let text = await respuesta.text();
+    let json;
+    try {
+      json = JSON.parse(text);
+    } catch (e) {
+      alert('Respuesta inválida del servidor al registrar (no JSON). Revisa la consola y el log de PHP.');
+      console.error('Respuesta cruda registrarClienteProveedor:', text);
+      return;
+    }
+    if (json.status) {
+      alert(json.msg);
+      // Si estamos en el formulario de creación (new-clients) redirigimos a la lista de clients para ver el nuevo registro
+      if (window.location.pathname.indexOf('new-clients') !== -1 || window.location.pathname.indexOf('new-user') !== -1) {
+        window.location.href = base_url + 'clients';
+        return;
+      }
+      // resetear formulario
+      const frm = document.getElementById("frm_user");
+      if (frm) frm.reset();
+
+      // Si la lista de clients está visible, insertar la nueva fila usando los datos devueltos por el servidor
+      const contenedor = document.getElementById("content_clients");
+      if (contenedor) {
+        if (json.data) {
+          // calcular número de fila (conteo actual + 1)
+          const currentCount = contenedor.querySelectorAll('tr').length;
+          const cont = currentCount + 1;
+          const item = json.data;
+          const estado = item.estado == 1 ? 'activo' : 'inactivo';
+          const nueva_fila = document.createElement('tr');
+          nueva_fila.id = 'fila' + item.id;
+          nueva_fila.className = 'filas_tabla';
+          nueva_fila.innerHTML = `
+              <td>${cont}</td>
+              <td>${item.nro_identidad}</td>
+              <td>${item.razon_social}</td>
+              <td>${item.correo}</td>
+              <td>${item.rol}</td>
+              <td>${estado}</td>
+              <td>
+                <a href="${base_url}edit-clientes/${item.id}" class="btn btn-primary btn-sm">Editar</a>
+                <a href="#" onclick="if(confirm('¿Desea eliminar este registro?')) eliminar_cp(${item.id}); return false;" class="btn btn-danger btn-sm ms-1">Eliminar</a>
+              </td>
+          `;
+          contenedor.appendChild(nueva_fila);
+        } else {
+          // fallback: refrescar la lista completa
+          view_clients();
+        }
+      }
+    } else {
+      alert(json.msg);
+>>>>>>> c3748858bd5ae4169b7dea2a5a5343ac4e2287b1
     }
 }
 
 async function view_clients() {
+<<<<<<< HEAD
     try {
         let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_clients', {
             method: 'POST',
@@ -111,6 +228,43 @@ async function view_clients() {
         }
     } catch (error) {
         console.log('error en mostrar usuario ' + e);
+=======
+  try {
+    let respuesta = await fetch(
+      base_url + "control/ClientsController.php?tipo=ver_clientes",
+      {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+      }
+    );
+    json = await respuesta.json();
+    const contenedor = document.getElementById("content_clients");
+    // Limpiar contenido previo
+    contenedor.innerHTML = "";
+    if (json.status) {
+      let cont = 1;
+      json.data.forEach((item) => {
+        let estado = item.estado == 1 ? "activo" : "inactivo";
+  let nueva_fila = document.createElement("tr");
+        nueva_fila.id = "fila" + item.id;
+        nueva_fila.className = "filas_tabla";
+        nueva_fila.innerHTML = `
+              <td>${cont}</td>
+              <td>${item.nro_identidad}</td>
+              <td>${item.razon_social}</td>
+              <td>${item.correo}</td>
+              <td>${item.rol}</td>
+              <td>${estado}</td>
+              <td>
+                <a href="${base_url}edit-clientes/${item.id}" class="btn btn-primary btn-sm">Editar</a>
+                <a href="#" onclick="if(confirm('¿Desea eliminar este registro?')) eliminar_cp(${item.id}); return false;" class="btn btn-danger btn-sm ms-1">Eliminar</a>
+              </td>
+        `;
+        cont++;
+        contenedor.appendChild(nueva_fila);
+      });
+>>>>>>> c3748858bd5ae4169b7dea2a5a5343ac4e2287b1
     }
 }
 if (document.getElementById('content_clients')) {
@@ -181,6 +335,20 @@ async function actualizarCliente() {
     } catch (e) {
         console.log('Error al actualizar cliente: ' + e);
     }
+<<<<<<< HEAD
+=======
+  );
+  let json = await respuesta.json();
+  if (!json.status) {
+    alert("Ooops, ocurrio un error al actualizar, intentelo nuevamente");
+    console.log(json.msg);
+    return;
+  } else {
+    alert(json.msg);
+    // despues de actualizar volver a la lista
+    window.location.href = base_url + 'clients';
+  }
+>>>>>>> c3748858bd5ae4169b7dea2a5a5343ac4e2287b1
 }
 async function fn_eliminar(id) {
     if (window.confirm("Confirmar eliminar?")) {
@@ -218,4 +386,22 @@ async function eliminar(id) {
     } catch (e) {
         console.log('Error al eliminar: ' + e);
     }
+<<<<<<< HEAD
+=======
+  );
+  json = await respuesta.json();
+  if (!json.status) {
+    alert("Ooooops, ocurrio un error al eliminar, intentelo mas tarde");
+    console.log(json.msg);
+    return;
+  } else {
+    alert(json.msg);
+    // refrescar la lista en vez de recargar toda la pagina
+    if (document.getElementById("content_clients")) {
+      view_clients();
+    } else {
+      location.reload();
+    }
+  }
+>>>>>>> c3748858bd5ae4169b7dea2a5a5343ac4e2287b1
 }
