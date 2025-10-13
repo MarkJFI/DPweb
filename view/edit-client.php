@@ -1,8 +1,14 @@
 <!--inicio de cuerpo de pagina-->
 <div class="container-fluid">
     <div class="card">
-        <h5 class="card-header">Registro De Usuario</h5>
-        <form id="frm_user" action="">
+        <h5 class="card-header">Editar Cliente/Proveedor</h5>
+        <?php
+        if (isset($_GET["views"])) {
+            $ruta = explode("/", $_GET["views"]);
+        }
+        ?>
+        <form id="frm_edit_client" action="">
+            <input type="hidden" id="id_persona" name="id_persona" value="<?= isset($ruta[1]) ? $ruta[1] : '';?>">
             <div class="card-body">
                 <div class="mb-3 row">
                     <label for="nro_identidad" class="col-sm-4 col-form-label">Nro de Documento :</label>
@@ -12,7 +18,7 @@
                 </div>
 
                 <div class="mb-3 row">
-                    <label for="razon_social" class="col-sm-4 col-form-label">Razón Social :</label>
+                    <label for="razon_social" class="col-sm-4 col-form-label">Apellidos y Nombres :</label>
                     <div class="col-sm-8">
                         <input type="text" class="form-control" id="razon_social" name="razon_social" required>
                     </div>
@@ -62,25 +68,31 @@
                     </div>
                 </div>
 
-                <select class="form-control" name="rol" id="rol" required>
-                    <option value="" disabled selected>Seleccione un rol</option>
-                    <option value="Administrador">Administrador</option>
-                    <option value="Vendedor">Vendedor</option>
-                    <option value="Cajero">Cajero</option>
-                    <option value="Proveedor">Proveedor</option>
-                    <option value="Supervisor">Supervisor</option>
-                    
+                <div class="mb-3 row">
+                    <label for="rol" class="col-sm-4 col-form-label">Rol:</label>
+                    <div class="col-sm-8">
+                        <select class="form-control" name="rol" id="rol" required>
+                            <option value="" disabled>Seleccione un rol</option>
+                            <option value="Cliente">Cliente</option>
+                            <option value="Proveedor">Proveedor</option>
+                        </select>
+                    </div>
+                </div>
 
-                </select>
-                <br>
-                <button type="submit" class="btn btn-success">Registrar</button>
-                <button type="reset" class="btn btn-secondary">Limpiar</button>
-                <button type="button" class="btn btn-danger">Cancelar</button>
+                <button type="submit" class="btn btn-success">Actualizar</button>
+                <a href="<?php echo BASE_URL; ?>client-lista" class="btn btn-secondary">Volver</a>
 
             </div>
         </form>
     </div>
 </div>
+<script src="<?php echo BASE_URL; ?>view/function/clients.js"></script>
+<script>
+    // cuando cargue, solicitar los datos (edit_client se define en clients.js)
+    document.addEventListener('DOMContentLoaded', function(){
+        if (typeof edit_client === 'function') {
+            edit_client();
+        }
+    });
+</script>
 <!--fin de pie de pagina-->
-
-<script src="<?php echo BASE_URL; ?>view/function/user.js"></script>

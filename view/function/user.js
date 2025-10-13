@@ -118,19 +118,18 @@ async function view_users() {
         let nueva_fila = document.createElement("tr");
         nueva_fila.id = "fila" + usuario.id;
         nueva_fila.className = "filas_tabla";
-        nueva_fila.innerHTML = `
-                            <td>${cont}</td>
-                            <td>${usuario.nro_identidad}</td>
-                            <td>${usuario.razon_social}</td>
-                            <td>${usuario.correo}</td>
-                            <td>${usuario.rol}</td>
-                            <td>${estado}</td>
-                            <td>
-                                <a href="`+ base_url + `edit-user/` + usuario.id + `">Editar</a>
-                                &nbsp;|&nbsp;
-                                <a href="#" onclick="if(confirm('¿Desea eliminar este usuario?')) eliminar(${usuario.id}); return false;">Eliminar</a>
-                            </td>
-                `;
+    nueva_fila.innerHTML = `
+              <td>${cont}</td>
+              <td>${usuario.nro_identidad}</td>
+              <td>${usuario.razon_social}</td>
+              <td>${usuario.correo}</td>
+              <td>${usuario.rol}</td>
+              <td>${estado}</td>
+              <td>
+                <a href="`+ base_url + `edit-user/` + usuario.id + `" class="btn btn-primary btn-sm">Editar</a>
+                <a href="#" onclick="if(confirm('¿Desea eliminar este usuario?')) eliminar(${usuario.id}); return false;" class="btn btn-danger btn-sm ms-1">Eliminar</a>
+              </td>
+        `;
         cont++;
         contenidot.appendChild(nueva_fila);
       });

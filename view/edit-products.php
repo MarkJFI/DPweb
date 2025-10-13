@@ -59,7 +59,7 @@
 
                     <div style="display: flex; justify-content:center; gap:20px">
                         <button type="submit" class="btn btn-primary">Actualizar</button>
-                        <a href="<?php echo BASE_URL; ?>products" class="btn btn-secondary">Cancelar</a>
+                        <a href="<?php echo BASE_URL; ?>products-list" class="btn btn-secondary">Cancelar</a>
                         
                     </div>
                 </div>
@@ -69,5 +69,5 @@
     <!-- fin de cuerpo de pagina -->
     <script src="<?php echo BASE_URL; ?>view/function/producto.js"></script>
     <script>
-        edit_producto();
+        edit_product();
     </script>

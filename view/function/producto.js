@@ -1,16 +1,16 @@
 function validar_form(tipo) {
-    let codigo  = document.getElementById("codigo").value;
+    let codigo = document.getElementById("codigo").value;
     let nombre = document.getElementById("nombre").value;
     let detalle = document.getElementById("detalle").value;
     let precio = document.getElementById("precio").value;
     let stock = document.getElementById("stock").value;
-    let id_categoria  = document.getElementById("id_categoria").value;
+    let id_categoria = document.getElementById("id_categoria").value;
     let fecha_vencimiento = document.getElementById("fecha_vencimiento").value;
-    
 
-    if (codigo=="" || nombre=="" || detalle=="" || precio=="" || stock=="" || id_categoria=="" || fecha_vencimiento=="") {
-       
-         Swal.fire({
+
+    if (codigo == "" || nombre == "" || detalle == "" || precio == "" || stock == "" || id_categoria == "" || fecha_vencimiento == "") {
+
+        Swal.fire({
             icon: 'warning',
             title: 'Campos vacíos',
             text: 'Por favor, complete todos los campos requeridos',
@@ -26,24 +26,28 @@ function validar_form(tipo) {
     }
 }
 
-if(document.querySelector('#frm_product')){
+if (document.querySelector('#frm_product')) {
     //evita que se envie el formulario
     let frm_product = document.querySelector('#frm_product');
-    frm_product.onsubmit = function(e){
+    frm_product.onsubmit = function (e) {
         e.preventDefault();
         validar_form("nuevo");
     }
 }
 
+//Registra el producto
 async function registrarProducto() {
     try {
         const frm_product = document.querySelector("#frm_product");
         const datos = new FormData(frm_product);
-        // Map id_categoria -> categoria and add missing defaults
+        // Map id_categoria -> categoria
         if (datos.has('id_categoria') && !datos.has('categoria')) {
             datos.append('categoria', datos.get('id_categoria'));
         }
-        if (!datos.has('proveedor')) datos.append('proveedor', '');
+        // Map id_proveedor -> proveedor (opcional)
+        if (datos.has('id_proveedor') && !datos.has('proveedor')) {
+            datos.append('proveedor', datos.get('id_proveedor'));
+        }
         if (!datos.has('imagen')) datos.append('imagen', '');
         if (!datos.has('estado')) datos.append('estado', '1');
         let respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=registrar', {
@@ -88,6 +92,7 @@ function cancelar() {
     });
 }
 
+//Ver producto
 async function view_producto() {
     try {
         let respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=ver_productos', {
@@ -104,6 +109,8 @@ async function view_producto() {
                     <td>${producto.codigo || ''}</td>
                     <td>${producto.nombre || ''}</td>
                     <td>${producto.precio || ''}</td>
+                    <td>${producto.stock || ''}</td>
+                    <td>${producto.id_categoria || ''}</td>
                     <td>${producto.fecha_vencimiento || ''}</td>
                     <td>
                         <a href="${base_url}edit-products/${producto.id}" class="btn btn-primary">Editar</a>
@@ -125,7 +132,8 @@ if (document.getElementById('content_productos')) {
     view_producto();
 }
 
-async function edit_producto() {
+//Edita productos
+async function edit_product() {
     try {
         let id_producto = document.getElementById('id_producto').value;
         const datos = new FormData();
@@ -151,30 +159,35 @@ async function edit_producto() {
         document.getElementById('detalle').value = json.data.detalle;
         document.getElementById('precio').value = json.data.precio;
         document.getElementById('stock').value = json.data.stock;
-        document.getElementById('id_categoria').value = json.data.categoria;
+        if ('categoria' in json.data && json.data.categoria !== null) {
+            document.getElementById('id_categoria').value = json.data.categoria;
+        }
         document.getElementById('fecha_vencimiento').value = json.data.fecha_vencimiento;
 
     } catch (error) {
-        console.log('oops, ocurrio un error' + error);  
-    } 
+        console.log('oops, ocurrio un error' + error);
+    }
 }
 
 if (document.querySelector("#frm_edit_producto")) {
     let frm_edit_producto = document.querySelector("#frm_edit_producto");
-    frm_edit_producto.onsubmit = function (e){
+    frm_edit_producto.onsubmit = function (e) {
         e.preventDefault();
         validar_form("actualizar");
     }
 }
-
+//actualiza el producto
 async function actualizarProducto() {
     const frm_edit_producto = document.querySelector("#frm_edit_producto")
     const datos = new FormData(frm_edit_producto);
-    // Map id_categoria -> categoria and add missing defaults
+    // Map id_categoria -> categoria
     if (datos.has('id_categoria') && !datos.has('categoria')) {
         datos.append('categoria', datos.get('id_categoria'));
     }
-    if (!datos.has('proveedor')) datos.append('proveedor', '');
+    // Map id_proveedor -> proveedor (opcional)
+    if (datos.has('id_proveedor') && !datos.has('proveedor')) {
+        datos.append('proveedor', datos.get('id_proveedor'));
+    }
     if (!datos.has('imagen')) datos.append('imagen', '');
     if (!datos.has('estado')) datos.append('estado', '1');
     let respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=actualizar', {
@@ -200,7 +213,7 @@ async function actualizarProducto() {
         });
     }
 }
-
+//Elimina el producto
 async function eliminar(id) {
     Swal.fire({
         icon: "warning",
@@ -228,7 +241,7 @@ async function eliminar(id) {
                         icon: "success",
                         title: "Eliminado",
                         text: json.msg
-                    }).then (() =>{ 
+                    }).then(() => {
                         view_producto();
                     });
 
@@ -247,6 +260,50 @@ async function eliminar(id) {
     });
 }
 function nuevoProducto() {
-  // Redirige al formulario de registro de productos
-  window.location.href = base_url + "new-products"; 
+    // Redirige al formulario de registro de productos
+    window.location.href = base_url + "new-products";
+}
+//carga las categorias con opciones
+async function cargar_categorias() {
+    try {
+        const sel = document.getElementById('id_categoria');
+        if (!sel) return;
+        const respuesta = await fetch(base_url + 'control/CategoriaController.php?tipo=ver_categorias', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+        const json = await respuesta.json();
+        let opciones = '<option value="" selected disabled>Seleccionar</option>';
+        if (json && json.status && Array.isArray(json.data)) {
+            json.data.forEach(categoria => {
+                opciones += `<option value="${categoria.id}">${categoria.nombre}</option>`;
+            });
+        }
+        sel.innerHTML = opciones;
+    } catch (e) {
+        console.log('Error cargando categorías', e);
+    }
+}
+
+async function cargar_proveedores() {
+    try {
+        const sel = document.getElementById('id_proveedor');
+        if (!sel) return;
+        const respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=obtener_proveedores', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+        const json = await respuesta.json();
+        let opciones = '<option value="" selected disabled>Seleccionar</option>';
+        if (json && json.status && Array.isArray(json.data)) {
+            json.data.forEach(proveedor => {
+                opciones += `<option value="${proveedor.id}">${proveedor.nombre}</option>`;
+            });
+        }
+        sel.innerHTML = opciones;
+    } catch (e) {
+        console.log('Error cargando proveedores', e);
+    }
 }

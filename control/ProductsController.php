@@ -1,10 +1,14 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once "../model/ProductsModel.php";
 
 $tipo = $_REQUEST['tipo'];
 
 // Instanciar el modelo
-$objProduct = new ProductModel();
+$objProduct = new ProductsModel();
 
 if ($tipo == "registrar") {
     // Registrar nuevo producto
@@ -27,9 +31,9 @@ if ($tipo == "registrar") {
             echo json_encode(['status' => false, 'msg' => 'Datos inválidos o incompletos']);
             exit;
         }
-        
+
         $arr_respuesta = $objProduct->registrarProducto($codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor, $estado);
-        
+
         if (empty($arr_respuesta['id'])) {
             $msg = !empty($arr_respuesta['error'] ?? '') ? $arr_respuesta['error'] : "Error al registrar producto";
             $arr_response = array('status' => false, 'msg' => $msg);

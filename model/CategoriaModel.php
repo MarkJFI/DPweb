@@ -1,28 +1,33 @@
 <?php
 require_once("../library/conexion.php");
-class CategoriaModel{
+class CategoriaModel
+{
     private $conexion;
-    function __construct(){
+    function __construct()
+    {
         $this->conexion = new Conexion();
         $this->conexion = $this->conexion->connect();
     }
-    public function registrar($nombre,$detalle){
+    public function registrar($nombre, $detalle)
+    {
         $consulta = "INSERT INTO categoria (nombre,detalle) VALUES ('$nombre','$detalle')";
         $sql = $this->conexion->query($consulta);
         if ($sql) {
             $sql = $this->conexion->insert_id;
-        }else{
+        } else {
             $sql = 0;
         }
         return $sql;
     }
-    public function existeCategoria($nombre){
-        $consulta="SELECT * FROM categoria WHERE nombre='$nombre'";
+    public function existeCategoria($nombre)
+    {
+        $consulta = "SELECT * FROM categoria WHERE nombre='$nombre'";
         $sql = $this->conexion->query($consulta);
         return $sql->num_rows;
     }
 
-    public function verCategorias(){
+    public function verCategorias()
+    {
         $arr_categorias = array();
         $consulta = "SELECT id, nombre, detalle FROM categoria ORDER BY id DESC";
         $sql = $this->conexion->query($consulta);
@@ -32,19 +37,22 @@ class CategoriaModel{
         return $arr_categorias;
     }
 
-    public function ver($id){
+    public function ver($id)
+    {
         $consulta = "SELECT id, nombre, detalle FROM categoria WHERE id='$id'";
         $sql = $this->conexion->query($consulta);
         return $sql->fetch_object();
     }
 
-    public function actualizar($id, $nombre, $detalle){
+    public function actualizar($id, $nombre, $detalle)
+    {
         $consulta = "UPDATE categoria SET nombre='$nombre', detalle='$detalle' WHERE id='$id'";
         $sql = $this->conexion->query($consulta);
         return $sql;
     }
 
-    public function eliminar($id){
+    public function eliminar($id)
+    {
         $consulta = "DELETE FROM categoria WHERE id='$id'";
         $sql = $this->conexion->query($consulta);
         return $sql;

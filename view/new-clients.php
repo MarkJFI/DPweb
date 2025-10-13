@@ -1,7 +1,7 @@
 <!--inicio de cuerpo de pagina-->
 <div class="container-fluid">
     <div class="card">
-        <h5 class="card-header">Registro De Usuario</h5>
+        <h5 class="card-header">Registro de Cliente</h5>
         <form id="frm_user" action="">
             <div class="card-body">
                 <div class="mb-3 row">
@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="mb-3 row">
-                    <label for="razon_social" class="col-sm-4 col-form-label">Razón Social :</label>
+                    <label for="razon_social" class="col-sm-4 col-form-label">Nombres y Apellidos :</label>
                     <div class="col-sm-8">
                         <input type="text" class="form-control" id="razon_social" name="razon_social" required>
                     </div>
@@ -64,13 +64,7 @@
 
                 <select class="form-control" name="rol" id="rol" required>
                     <option value="" disabled selected>Seleccione un rol</option>
-                    <option value="Administrador">Administrador</option>
-                    <option value="Vendedor">Vendedor</option>
-                    <option value="Cajero">Cajero</option>
-                    <option value="Proveedor">Proveedor</option>
-                    <option value="Supervisor">Supervisor</option>
-                    
-
+                    <option value="Cliente">Cliente</option>
                 </select>
                 <br>
                 <button type="submit" class="btn btn-success">Registrar</button>
@@ -83,4 +77,4 @@
 </div>
 <!--fin de pie de pagina-->
 
-<script src="<?php echo BASE_URL; ?>view/function/user.js"></script>
+<script src="<?php echo BASE_URL; ?>view/function/clients.js"></script>

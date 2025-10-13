@@ -1,250 +1,478 @@
 <?php
 require_once("../library/conexion.php");
 
-class ProductModel
+class ProductsModel
 {
     private $conexion;
 
     function __construct()
     {
-        $this->conexion = new Conexion();
-        $this->conexion = $this->conexion->connect();
+        // Usar el método estático de conexión
+        $this->conexion = Conexion::connect();
     }
 
     public function registrarProducto($codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor, $estado)
     {
-        // Normalizar proveedor: si viene vacío o no numérico, insertar NULL
+        $arr_respuesta = ['status' => false, 'id' => ""];
+
+        // Normalización de tipos/valores
+        $precio = floatval($precio);
+        $stock = intval($stock);
+        $categoria = intval($categoria);
+        $estado = intval($estado);
         $proveedor_val = (is_numeric($proveedor) && intval($proveedor) > 0) ? intval($proveedor) : null;
-        $proveedor_sql = is_null($proveedor_val) ? "NULL" : intval($proveedor_val);
+        $fecha_venc_val = (!empty($fecha_vencimiento)) ? $fecha_vencimiento : null; // Permitir NULL
+        $imagen_val = ($imagen !== null && $imagen !== '') ? $imagen : null; // Permitir NULL
 
-        // Escapar strings básicos para evitar errores (nota: ideal usar prepared statements)
-        $codigo = $this->conexion->real_escape_string($codigo);
-        $nombre = $this->conexion->real_escape_string($nombre);
-        $detalle = $this->conexion->real_escape_string($detalle);
-        $fecha_vencimiento = $this->conexion->real_escape_string($fecha_vencimiento);
-        $imagen = $this->conexion->real_escape_string($imagen);
+        $sql = "INSERT INTO producto(codigo, nombre, detalle, precio, stock, id_categoria, fecha_vencimiento, imagen, estado, fecha_creacion)
+                VALUES (?,?,?,?,?,?,?,?,?,NOW())";
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) {
+            $arr_respuesta['error'] = $this->conexion->error;
+            return $arr_respuesta;
+        }
 
-        $consulta = "INSERT INTO productos(codigo, nombre, detalle, precio, stock, categoria, fecha_vencimiento, imagen, proveedor, estado, fecha_creacion) VALUES ('{$codigo}', '{$nombre}', '{$detalle}', {$precio}, {$stock}, {$categoria}, '{$fecha_vencimiento}', '{$imagen}', {$proveedor_sql}, {$estado}, NOW())";
-        $sql = $this->conexion->query($consulta);
-        $arr_respuesta = array('status' => false, 'id' => "");
+        // sss d i i s s i -> 9 params
+        $stmt->bind_param(
+            "sssdiissi",
+            $codigo,
+            $nombre,
+            $detalle,
+            $precio,
+            $stock,
+            $categoria,
+            $fecha_venc_val,
+            $imagen_val,
+            $estado
+        );
 
-        if ($sql) {
+        if ($stmt->execute()) {
             $arr_respuesta['status'] = true;
             $arr_respuesta['id'] = $this->conexion->insert_id;
-
             // Registrar movimiento inicial de stock
             $this->registrarMovimiento($arr_respuesta['id'], 'entrada', $stock, $precio, 'Stock inicial del producto');
         } else {
-            $arr_respuesta['status'] = false;
-            $arr_respuesta['error'] = $this->conexion->error;
+            $arr_respuesta['error'] = $stmt->error;
         }
+        $stmt->close();
         return $arr_respuesta;
     }
 
     public function obtenerProductos()
     {
-        $sql = $this->conexion->query("SELECT p.*, c.nombre as categoria_nombre
-                                      FROM productos p 
-                                      LEFT JOIN categoria c ON p.categoria = c.id 
-                                      ORDER BY p.id DESC");
-        $sql = $sql->fetch_all(MYSQLI_ASSOC);
-        return $sql;
+        $res = $this->conexion->query("
+        SELECT p.*, c.nombre AS categoria_nombre
+        FROM producto p 
+        LEFT JOIN categoria c ON p.id_categoria = c.id 
+        ORDER BY p.nombre ASC
+    ");
+
+        if (!$res) return [];
+        return $res->fetch_all(MYSQLI_ASSOC);
     }
+
 
     public function verProducto($id)
     {
-        $sql = $this->conexion->query("SELECT p.*, c.nombre as categoria_nombre
-                                      FROM productos p 
-                                      LEFT JOIN categoria c ON p.categoria = c.id 
-                                      WHERE p.id='{$id}'");
-        $sql = $sql->fetch_assoc();
-        return $sql;
+        $sql = "SELECT p.*, c.nombre as categoria_nombre
+                FROM producto p
+                LEFT JOIN categoria c ON p.id_categoria = c.id
+                WHERE p.id = ?";
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) return [];
+        $id = intval($id);
+        $stmt->bind_param("i", $id);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+        $result = $stmt->get_result();
+        $row = $result ? $result->fetch_assoc() : [];
+        $stmt->close();
+        return $row ?: [];
     }
 
     public function obtenerRegistrosProducto($id_producto)
     {
-        $sql = $this->conexion->query("SELECT m.*, u.nombres as usuario_nombre 
-                                      FROM movimientos_producto m 
-                                      LEFT JOIN usuarios u ON m.usuario_id = u.id 
-                                      WHERE m.id_producto = '{$id_producto}' 
-                                      ORDER BY m.fecha_creacion DESC");
-        $sql = $sql->fetch_all(MYSQLI_ASSOC);
-        return $sql;
+        $sql = "SELECT m.*, u.nombres as usuario_nombre 
+                FROM movimientos_producto m 
+                LEFT JOIN usuarios u ON m.usuario_id = u.id 
+                WHERE m.id_producto = ? 
+                ORDER BY m.fecha_creacion DESC";
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) return [];
+        $id_producto = intval($id_producto);
+        $stmt->bind_param("i", $id_producto);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+        $result = $stmt->get_result();
+        $rows = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $stmt->close();
+        return $rows;
     }
 
     public function actualizarProducto($id, $codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor, $estado)
     {
-        // Obtener stock actual para comparar
-        $producto_actual = $this->verProducto($id);
-        $stock_anterior = $producto_actual['stock'];
+        $id = intval($id);
+        $precio = floatval($precio);
+        $stock = intval($stock);
+        $categoria = intval($categoria);
+        $estado = intval($estado);
+        $proveedor_val = (is_numeric($proveedor) && intval($proveedor) > 0) ? intval($proveedor) : null;
+        $fecha_venc_val = (!empty($fecha_vencimiento)) ? $fecha_vencimiento : null;
+        $imagen_val = ($imagen !== null && $imagen !== '') ? $imagen : null;
 
-        $sql = $this->conexion->query("UPDATE productos SET codigo='{$codigo}', nombre='{$nombre}', detalle='{$detalle}', precio='{$precio}', stock='{$stock}', categoria='{$categoria}', fecha_vencimiento='{$fecha_vencimiento}', imagen='{$imagen}', proveedor='{$proveedor}', estado='{$estado}', fecha_actualizacion=NOW() WHERE id='{$id}'");
+        // Obtener stock anterior
+        $stock_anterior = 0;
+        $stmtPrev = $this->conexion->prepare("SELECT stock FROM producto WHERE id = ?");
+        if ($stmtPrev) {
+            $stmtPrev->bind_param("i", $id);
+            if ($stmtPrev->execute()) {
+                $resPrev = $stmtPrev->get_result();
+                if ($resPrev && $row = $resPrev->fetch_assoc()) {
+                    $stock_anterior = intval($row['stock']);
+                }
+            }
+            $stmtPrev->close();
+        }
 
-        // Si cambió el stock, registrar el movimiento
-        if ($sql && $stock != $stock_anterior) {
+        $sql = "UPDATE producto 
+                SET codigo = ?, nombre = ?, detalle = ?, precio = ?, stock = ?, id_categoria = ?, 
+                    fecha_vencimiento = ?, imagen = ?, estado = ?, fecha_actualizacion = NOW() 
+                WHERE id = ?";
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) return false;
+
+        $stmt->bind_param(
+            "sssdiissii",
+            $codigo,
+            $nombre,
+            $detalle,
+            $precio,
+            $stock,
+            $categoria,
+            $fecha_venc_val,
+            $imagen_val,
+            $estado,
+            $id
+        );
+
+        $ok = $stmt->execute();
+        $stmt->close();
+
+        if ($ok && $stock != $stock_anterior) {
             $diferencia = $stock - $stock_anterior;
             $tipo_movimiento = $diferencia > 0 ? 'entrada' : 'salida';
             $cantidad = abs($diferencia);
             $this->registrarMovimiento($id, $tipo_movimiento, $cantidad, $precio, 'Ajuste por actualización de producto');
         }
 
-        return $sql;
+        return $ok;
     }
 
     public function eliminarProducto($id)
     {
-        // Primero eliminar los movimientos asociados
-        $this->conexion->query("DELETE FROM movimientos_producto WHERE id_producto='{$id}'");
-        // Luego eliminar el producto
-        $sql = $this->conexion->query("DELETE FROM productos WHERE id='{$id}'");
-        return $sql;
+        $id = intval($id);
+        // Eliminar movimientos
+        $stmtMov = $this->conexion->prepare("DELETE FROM movimientos_producto WHERE id_producto = ?");
+        if ($stmtMov) {
+            $stmtMov->bind_param("i", $id);
+            $stmtMov->execute();
+            $stmtMov->close();
+        }
+        // Eliminar producto
+        $stmt = $this->conexion->prepare("DELETE FROM producto WHERE id = ?");
+        if (!$stmt) return false;
+        $stmt->bind_param("i", $id);
+        $ok = $stmt->execute();
+        $stmt->close();
+        return $ok;
     }
 
     public function obtenerRegistro($id_registro)
     {
-        $sql = $this->conexion->query("SELECT * FROM movimientos_producto WHERE id='{$id_registro}'");
-        $sql = $sql->fetch_assoc();
-        return $sql;
+        $id_registro = intval($id_registro);
+        $stmt = $this->conexion->prepare("SELECT * FROM movimientos_producto WHERE id = ?");
+        if (!$stmt) return [];
+        $stmt->bind_param("i", $id_registro);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+        $result = $stmt->get_result();
+        $row = $result ? $result->fetch_assoc() : [];
+        $stmt->close();
+        return $row ?: [];
     }
 
     public function editarRegistro($id_registro, $tipo_movimiento, $cantidad, $precio_unitario, $descripcion, $estado)
     {
-        $sql = $this->conexion->query("UPDATE movimientos_producto SET tipo_movimiento='{$tipo_movimiento}', cantidad='{$cantidad}', precio_unitario='{$precio_unitario}', descripcion='{$descripcion}', estado='{$estado}', fecha_actualizacion=NOW() WHERE id='{$id_registro}'");
-        return $sql;
+        $id_registro = intval($id_registro);
+        $cantidad = intval($cantidad);
+        $precio_unitario = floatval($precio_unitario);
+        $estado = intval($estado);
+
+        $sql = "UPDATE movimientos_producto 
+                SET tipo_movimiento = ?, cantidad = ?, precio_unitario = ?, descripcion = ?, estado = ?, fecha_actualizacion = NOW() 
+                WHERE id = ?";
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) return false;
+        $stmt->bind_param("sidsii", $tipo_movimiento, $cantidad, $precio_unitario, $descripcion, $estado, $id_registro);
+        $ok = $stmt->execute();
+        $stmt->close();
+        return $ok;
     }
 
     public function eliminarRegistro($id_registro)
     {
-        $sql = $this->conexion->query("DELETE FROM movimientos_producto WHERE id='{$id_registro}'");
-        return $sql;
+        $id_registro = intval($id_registro);
+        $stmt = $this->conexion->prepare("DELETE FROM movimientos_producto WHERE id = ?");
+        if (!$stmt) return false;
+        $stmt->bind_param("i", $id_registro);
+        $ok = $stmt->execute();
+        $stmt->close();
+        return $ok;
     }
 
     public function registrarRegistro($id_producto, $tipo_movimiento, $cantidad, $precio_unitario, $descripcion, $estado)
     {
-        $sql = $this->conexion->query("INSERT INTO movimientos_producto(id_producto, tipo_movimiento, cantidad, precio_unitario, descripcion, estado, fecha_creacion) VALUES('{$id_producto}', '{$tipo_movimiento}', '{$cantidad}', '{$precio_unitario}', '{$descripcion}', '{$estado}', NOW())");
+        $id_producto = intval($id_producto);
+        $cantidad = intval($cantidad);
+        $precio_unitario = floatval($precio_unitario);
+        $estado = intval($estado);
 
-        // Actualizar stock del producto
-        if ($sql) {
+        $sql = "INSERT INTO movimientos_producto(id_producto, tipo_movimiento, cantidad, precio_unitario, descripcion, estado, fecha_creacion) 
+                VALUES(?, ?, ?, ?, ?, ?, NOW())";
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) return false;
+        $stmt->bind_param("isidsi", $id_producto, $tipo_movimiento, $cantidad, $precio_unitario, $descripcion, $estado);
+        $ok = $stmt->execute();
+        $stmt->close();
+
+        // Actualizar stock del producto si insertó correctamente
+        if ($ok) {
             $this->actualizarStockProducto($id_producto, $tipo_movimiento, $cantidad);
         }
 
-        return $sql;
+        return $ok;
     }
 
     private function registrarMovimiento($id_producto, $tipo_movimiento, $cantidad, $precio_unitario, $descripcion)
     {
-        $sql = $this->conexion->query("INSERT INTO movimientos_producto(id_producto, tipo_movimiento, cantidad, precio_unitario, descripcion, estado, fecha_creacion) VALUES('{$id_producto}', '{$tipo_movimiento}', '{$cantidad}', '{$precio_unitario}', '{$descripcion}', '1', NOW())");
-        return $sql;
+        $id_producto = intval($id_producto);
+        $cantidad = intval($cantidad);
+        $precio_unitario = floatval($precio_unitario);
+        $sql = "INSERT INTO movimientos_producto(id_producto, tipo_movimiento, cantidad, precio_unitario, descripcion, estado, fecha_creacion) 
+                VALUES(?, ?, ?, ?, ?, 1, NOW())";
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) return false;
+        $stmt->bind_param("isids", $id_producto, $tipo_movimiento, $cantidad, $precio_unitario, $descripcion);
+        $ok = $stmt->execute();
+        $stmt->close();
+        return $ok;
     }
 
     private function actualizarStockProducto($id_producto, $tipo_movimiento, $cantidad)
     {
-        if ($tipo_movimiento == 'entrada') {
-            $sql = $this->conexion->query("UPDATE productos SET stock = stock + {$cantidad} WHERE id = '{$id_producto}'");
-        } else if ($tipo_movimiento == 'salida') {
-            $sql = $this->conexion->query("UPDATE productos SET stock = stock - {$cantidad} WHERE id = '{$id_producto}'");
+        $id_producto = intval($id_producto);
+        $cantidad = intval($cantidad);
+
+        // Obtener stock actual
+        $stock_actual = 0;
+        $stmtPrev = $this->conexion->prepare("SELECT stock FROM producto WHERE id = ?");
+        if ($stmtPrev) {
+            $stmtPrev->bind_param("i", $id_producto);
+            if ($stmtPrev->execute()) {
+                $resPrev = $stmtPrev->get_result();
+                if ($resPrev && $row = $resPrev->fetch_assoc()) {
+                    $stock_actual = intval($row['stock']);
+                }
+            }
+            $stmtPrev->close();
         }
-        return $sql ?? false;
+
+        $nuevo_stock = ($tipo_movimiento === 'entrada') ? ($stock_actual + $cantidad) : max(0, $stock_actual - $cantidad);
+
+        $stmt = $this->conexion->prepare("UPDATE producto SET stock = ?, fecha_actualizacion = NOW() WHERE id = ?");
+        if (!$stmt) return false;
+        $stmt->bind_param("ii", $nuevo_stock, $id_producto);
+        $ok = $stmt->execute();
+        $stmt->close();
+        return $ok;
     }
 
     public function buscarProducto($termino)
     {
-        $sql = $this->conexion->query("SELECT p.*, c.nombre as categoria_nombre
-                                      FROM productos p 
-                                      LEFT JOIN categoria c ON p.categoria = c.id 
-                                      WHERE p.codigo LIKE '%{$termino}%' OR p.nombre LIKE '%{$termino}%' 
-                                      ORDER BY p.nombre ASC");
-        $sql = $sql->fetch_all(MYSQLI_ASSOC);
-        return $sql;
+        $pattern = "%" . $termino . "%";
+        $sql = "SELECT p.*, c.nombre as categoria_nombre
+                FROM producto p
+                LEFT JOIN categoria c ON p.id_categoria = c.id
+                WHERE p.codigo LIKE ? OR p.nombre LIKE ?
+                ORDER BY p.nombre ASC";
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) return [];
+        $stmt->bind_param("ss", $pattern, $pattern);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+        $result = $stmt->get_result();
+        $rows = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $stmt->close();
+        return $rows;
     }
 
     public function obtenerProductosPorCategoria($id_categoria)
     {
-        $sql = $this->conexion->query("SELECT p.*, c.nombre as categoria_nombre
-                                      FROM productos p 
-                                      LEFT JOIN categoria c ON p.categoria = c.id 
-                                      WHERE p.categoria = '{$id_categoria}' 
-                                      ORDER BY p.nombre ASC");
-        $sql = $sql->fetch_all(MYSQLI_ASSOC);
-        return $sql;
+        $id_categoria = intval($id_categoria);
+        $sql = "SELECT p.*, c.nombre as categoria_nombre
+                FROM producto p
+                LEFT JOIN categoria c ON p.id_categoria = c.id
+                WHERE p.id_categoria = ?
+                ORDER BY p.nombre ASC";
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) return [];
+        $stmt->bind_param("i", $id_categoria);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+        $result = $stmt->get_result();
+        $rows = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $stmt->close();
+        return $rows;
     }
 
     public function obtenerProductosBajoStock($limite_stock = 10)
     {
-        $sql = $this->conexion->query("SELECT p.*, c.nombre as categoria_nombre
-                                      FROM productos p 
-                                      LEFT JOIN categoria c ON p.categoria = c.id 
-                                      WHERE p.stock <= {$limite_stock} AND p.estado = 1 
-                                      ORDER BY p.stock ASC");
-        $sql = $sql->fetch_all(MYSQLI_ASSOC);
-        return $sql;
+        $limite_stock = intval($limite_stock);
+        $sql = "SELECT p.*, c.nombre as categoria_nombre
+                FROM producto p
+                LEFT JOIN categoria c ON p.id_categoria = c.id
+                WHERE p.stock <= ? AND p.estado = 1
+                ORDER BY p.stock ASC";
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) return [];
+        $stmt->bind_param("i", $limite_stock);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+        $result = $stmt->get_result();
+        $rows = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $stmt->close();
+        return $rows;
     }
 
     public function obtenerProductosVencidos($dias_limite = 30)
     {
-        $sql = $this->conexion->query("SELECT p.*, c.nombre as categoria_nombre,
-                                      DATEDIFF(p.fecha_vencimiento, CURDATE()) as dias_restantes
-                                      FROM productos p 
-                                      LEFT JOIN categoria c ON p.categoria = c.id 
-                                      WHERE p.fecha_vencimiento IS NOT NULL 
-                                      AND DATEDIFF(p.fecha_vencimiento, CURDATE()) <= {$dias_limite}
-                                      AND p.estado = 1 
-                                      ORDER BY p.fecha_vencimiento ASC");
-        $sql = $sql->fetch_all(MYSQLI_ASSOC);
-        return $sql;
+        $dias_limite = intval($dias_limite);
+        $sql = "SELECT p.*, c.nombre as categoria_nombre,
+                       DATEDIFF(p.fecha_vencimiento, CURDATE()) as dias_restantes
+                FROM producto p
+                LEFT JOIN categoria c ON p.id_categoria = c.id
+                WHERE p.fecha_vencimiento IS NOT NULL
+                  AND DATEDIFF(p.fecha_vencimiento, CURDATE()) <= ?
+                  AND p.estado = 1
+                ORDER BY p.fecha_vencimiento ASC";
+        $stmt = $this->conexion->prepare($sql);
+        if (!$stmt) return [];
+        $stmt->bind_param("i", $dias_limite);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+        $result = $stmt->get_result();
+        $rows = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $stmt->close();
+        return $rows;
     }
 
     public function actualizarStock($id_producto, $nuevo_stock, $tipo_movimiento, $descripcion)
     {
-        // Obtener stock actual
+        $id_producto = intval($id_producto);
+        $nuevo_stock = intval($nuevo_stock);
+
+        // Obtener producto actual
         $producto = $this->verProducto($id_producto);
-        $stock_actual = $producto['stock'];
-        $diferencia = abs($nuevo_stock - $stock_actual);
+        if (empty($producto)) return false;
+        $stock_actual = intval($producto['stock']);
+        $precio_actual = isset($producto['precio']) ? floatval($producto['precio']) : 0.0;
 
         // Actualizar stock
-        $sql = $this->conexion->query("UPDATE productos SET stock = '{$nuevo_stock}', fecha_actualizacion = NOW() WHERE id = '{$id_producto}'");
+        $stmt = $this->conexion->prepare("UPDATE producto SET stock = ?, fecha_actualizacion = NOW() WHERE id = ?");
+        if (!$stmt) return false;
+        $stmt->bind_param("ii", $nuevo_stock, $id_producto);
+        $ok = $stmt->execute();
+        $stmt->close();
 
         // Registrar movimiento
-        if ($sql && $diferencia > 0) {
-            $this->registrarMovimiento($id_producto, $tipo_movimiento, $diferencia, $producto['precio'], $descripcion);
+        $diferencia = abs($nuevo_stock - $stock_actual);
+        if ($ok && $diferencia > 0) {
+            $this->registrarMovimiento($id_producto, $tipo_movimiento, $diferencia, $precio_actual, $descripcion);
         }
 
-        return $sql;
+        return $ok;
     }
 
     public function obtenerCategorias()
     {
-        $sql = $this->conexion->query("SELECT id, nombre FROM categoria WHERE estado = 1 ORDER BY nombre ASC");
-        $sql = $sql->fetch_all(MYSQLI_ASSOC);
-        return $sql;
+        $res = $this->conexion->query("SELECT id, nombre FROM categoria WHERE estado = 1 ORDER BY nombre ASC");
+        if (!$res) return [];
+        return $res->fetch_all(MYSQLI_ASSOC);
     }
 
     public function obtenerProveedores()
     {
-        $sql = $this->conexion->query("SELECT id, nombre, telefono, email FROM proveedores WHERE estado = 1 ORDER BY nombre ASC");
-        $sql = $sql->fetch_all(MYSQLI_ASSOC);
-        return $sql;
+        // No existe tabla de proveedores en este proyecto, devolvemos opción por defecto
+        return [
+            [
+                'id' => null,
+                'nombre' => 'Sin proveedor'
+            ]
+        ];
     }
 
     public function contarProductos()
     {
-        $sql = $this->conexion->query("SELECT COUNT(*) as total FROM productos WHERE estado = 1");
-        $result = $sql->fetch_assoc();
-        return $result['total'];
+        $res = $this->conexion->query("SELECT COUNT(*) as total FROM producto WHERE estado = 1");
+        if (!$res) return 0;
+        $row = $res->fetch_assoc();
+        return intval($row['total'] ?? 0);
     }
 
     public function contarProductosBajoStock($limite = 10)
     {
-        $sql = $this->conexion->query("SELECT COUNT(*) as total FROM productos WHERE stock <= {$limite} AND estado = 1");
-        $result = $sql->fetch_assoc();
-        return $result['total'];
+        $limite = intval($limite);
+        $stmt = $this->conexion->prepare("SELECT COUNT(*) as total FROM producto WHERE stock <= ? AND estado = 1");
+        if (!$stmt) return 0;
+        $stmt->bind_param("i", $limite);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return 0;
+        }
+        $res = $stmt->get_result();
+        $row = $res ? $res->fetch_assoc() : ['total' => 0];
+        $stmt->close();
+        return intval($row['total'] ?? 0);
     }
 
     public function contarProductosVencidos($dias = 30)
     {
-        $sql = $this->conexion->query("SELECT COUNT(*) as total FROM productos WHERE fecha_vencimiento IS NOT NULL AND DATEDIFF(fecha_vencimiento, CURDATE()) <= {$dias} AND estado = 1");
-        $result = $sql->fetch_assoc();
-        return $result['total'];
+        $dias = intval($dias);
+        $stmt = $this->conexion->prepare("SELECT COUNT(*) as total FROM producto WHERE fecha_vencimiento IS NOT NULL AND DATEDIFF(fecha_vencimiento, CURDATE()) <= ? AND estado = 1");
+        if (!$stmt) return 0;
+        $stmt->bind_param("i", $dias);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return 0;
+        }
+        $res = $stmt->get_result();
+        $row = $res ? $res->fetch_assoc() : ['total' => 0];
+        $stmt->close();
+        return intval($row['total'] ?? 0);
     }
 
     public function obtenerEstadisticasProductos()
@@ -255,34 +483,41 @@ class ProductModel
         $estadisticas['productos_vencidos'] = $this->contarProductosVencidos();
 
         // Valor total del inventario
-        $sql = $this->conexion->query("SELECT SUM(precio * stock) as valor_total FROM productos WHERE estado = 1");
-        $result = $sql->fetch_assoc();
-        $estadisticas['valor_inventario'] = $result['valor_total'] ?? 0;
+        $res = $this->conexion->query("SELECT SUM(precio * stock) as valor_total FROM producto WHERE estado = 1");
+        $row = $res ? $res->fetch_assoc() : ['valor_total' => 0];
+        $estadisticas['valor_inventario'] = floatval($row['valor_total'] ?? 0);
 
         return $estadisticas;
     }
 
     public function verificarCodigoExiste($codigo, $id_excluir = null)
     {
-        $where_clause = "codigo = '{$codigo}'";
         if ($id_excluir) {
-            $where_clause .= " AND id != '{$id_excluir}'";
+            $sql = "SELECT COUNT(*) as total FROM producto WHERE codigo = ? AND id != ?";
+            $stmt = $this->conexion->prepare($sql);
+            if (!$stmt) return false;
+            $id_excluir = intval($id_excluir);
+            $stmt->bind_param("si", $codigo, $id_excluir);
+        } else {
+            $sql = "SELECT COUNT(*) as total FROM producto WHERE codigo = ?";
+            $stmt = $this->conexion->prepare($sql);
+            if (!$stmt) return false;
+            $stmt->bind_param("s", $codigo);
         }
 
-        $sql = $this->conexion->query("SELECT COUNT(*) as total FROM productos WHERE {$where_clause}");
-        $result = $sql->fetch_assoc();
-        return $result['total'] > 0;
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return false;
+        }
+        $res = $stmt->get_result();
+        $row = $res ? $res->fetch_assoc() : ['total' => 0];
+        $stmt->close();
+        return intval($row['total'] ?? 0) > 0;
     }
 
     public function obtenerProductosPorProveedor($id_proveedor)
     {
-        $id_proveedor = intval($id_proveedor);
-        $sql = $this->conexion->query("SELECT p.*, c.nombre as categoria_nombre 
-                                      FROM productos p 
-                                      LEFT JOIN categoria c ON p.categoria = c.id 
-                                      WHERE p.proveedor = {$id_proveedor} 
-                                      ORDER BY p.nombre ASC");
-        $sql = $sql->fetch_all(MYSQLI_ASSOC);
-        return $sql;
+        // No existe columna 'proveedor' en la tabla producto. Funcionalidad no soportada.
+        return [];
     }
 }
