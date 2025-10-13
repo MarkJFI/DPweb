@@ -2,7 +2,7 @@
     <!------------------INICIO DE CUERPO DE PÁGINA------------------>
     <div class="container-fluid">
         <div class="card">
-            <h5 class="card-header">Registro de Clientes</h5>
+            <h5 class="card-header">Registrar Clientes</h5>
             <form id="frm_user" action="" method="">
                 <div class="card-body">
                     <div class="mb-3 row">
@@ -65,18 +65,15 @@
                         <label for="rol" class="col-sm-4 col-form-label">Rol:</label>
                         <div class="col-sm-8">
                             <select class="form-select" name="rol" id="rol" required>
-                                <option value=""></option>
                                 <option value="" disabled selected>Seleccionar</option>
-                                <option value="Empleado">Administrador</option>
-                                <option value="Almacen">Vendedor</option>
-                                <option value="3">Proveedor</option>
+                                <option value="Cliente">Cliente</option>
                             </select>
                         </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Registrar</button>
                     <button type="reset" class="btn btn-warning">Limpiar</button>
-                    <button type="button" class="btn btn-danger">Cancelar</button>
+                    <a href="<?= BASE_URL ?>clients" class="btn btn-danger">Cancelar</a>
 
                 </div>
             </form>

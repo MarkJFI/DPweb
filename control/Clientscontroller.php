@@ -26,9 +26,29 @@ if ($tipo == "registrar") {
         if ($existePersona > 0) {
             $arrResponse = array('status' => false, 'msg' => 'Error, numero de documento ya existe');
         } else {
-            $respuesta = $obj->registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password);
-            if ($respuesta) {
-                $arrResponse = array('status' => true, 'msg' => 'Registrado correctamente');
+            // Forzar rol a 'Cliente' para que este endpoint solo cree clientes
+            $rol_to_insert = 'Cliente';
+            $insertId = $obj->registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol_to_insert, $password);
+            if ($insertId) {
+                // devolver los datos creados para que el frontend pueda insertarlos en la tabla sin recargar
+                $arrResponse = array(
+                    'status' => true,
+                    'msg' => 'Registrado correctamente',
+                    'data' => array(
+                        'id' => $insertId,
+                        'nro_identidad' => $nro_identidad,
+                        'razon_social' => $razon_social,
+                        'telefono' => $telefono,
+                        'correo' => $correo,
+                        'departamento' => $departamento,
+                        'provincia' => $provincia,
+                        'distrito' => $distrito,
+                        'cod_postal' => $cod_postal,
+                        'direccion' => $direccion,
+                        'rol' => $rol,
+                        'estado' => 1
+                    )
+                );
             } else {
                 $arrResponse = array('status' => false, 'msg' => 'Error, fallo en registro');
             }

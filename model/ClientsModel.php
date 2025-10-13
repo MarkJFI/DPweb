@@ -12,15 +12,23 @@ class ClientsModel
     // Registrar cliente o proveedor (reutiliza estructura de UsuarioModel)
     public function registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password)
     {
-        $consulta = "INSERT INTO persona (nro_identidad,razon_social,telefono,correo, departamento, provincia, distrito, cod_postal, direccion, rol, password ) VALUES('$nro_identidad', '$razon_social',
-         '$telefono', '$correo', '$departamento', '$provincia', '$distrito', '$cod_postal', '$direccion', '$rol', '$password')";
-        $sql = $this->conexion->query($consulta);
-        if ($sql) {
-            $sql = $this->conexion->insert_id;
-        } else {
-            $sql = 0;
+        // Usar prepared statement para evitar inyecciones y manejar errores
+        $stmt = $this->conexion->prepare("INSERT INTO persona (nro_identidad, razon_social, telefono, correo, departamento, provincia, distrito, cod_postal, direccion, rol, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        if (!$stmt) {
+            // error en la preparación
+            error_log('ClientsModel::registrar prepare error: ' . $this->conexion->error);
+            return 0;
         }
-        return $sql;
+        $stmt->bind_param('sssssssssss', $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password);
+        $ok = $stmt->execute();
+        if ($ok) {
+            $insert_id = $this->conexion->insert_id;
+        } else {
+            error_log('ClientsModel::registrar execute error: ' . $stmt->error);
+            $insert_id = 0;
+        }
+        $stmt->close();
+        return $insert_id;
     }
 
     public function existePersona($nro_identidad)

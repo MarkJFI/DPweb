@@ -10,7 +10,7 @@
                 //echo $ruta[1];
             }
             ?>
-            <form id="frm_edit_clients" action="" method="">
+            <form id="frm_edit_client" action="" method="">
                 <input type="hidden" id="id_persona" name="id_persona" value="<?= $ruta[1]; ?>">
 
 
@@ -75,11 +75,8 @@
                         <label for="rol" class="col-sm-4 col-form-label">Rol:</label>
                         <div class="col-sm-8">
                             <select class="form-select" name="rol" id="rol" required>
-                                <option value=""></option>
                                 <option value="" disabled selected>Seleccionar</option>
-                                <option value="Empleado">Administrador</option>
-                                <option value="Almacen">Vendedor</option>
-                                <option value="proveedor">proveedor</option>
+                                <option value="Cliente">Cliente</option>
                             </select>
                         </div>
                     </div>
@@ -95,5 +92,5 @@
 
     <script src="<?php echo BASE_URL; ?>view/function/clients.js"></script>
     <script>
-        edit_clients();
+        edit_client();
     </script>
