@@ -18,26 +18,26 @@ function validar_form(tipo) {
         return;
     }
     if (tipo == "nuevo") {
-        registrarCliente();
+        registrarProveedor();
     }
     if (tipo == "actualizar") {
-        actualizarCliente();
+        actualizarProveedor();
     }
 
 }
 
-if (document.querySelector('#frm_client')) {
+if (document.querySelector('#frm_proveedor')) {
     // evita que se envie el formulario
-    let frm_client = document.querySelector('#frm_client');
-    frm_client.onsubmit = function (e) {
+    let frm_proveedor = document.querySelector('#frm_proveedor');
+    frm_proveedor.onsubmit = function (e) {
         e.preventDefault();
         validar_form("nuevo");
     }
 }
-async function registrarCliente() {
+async function registrarProveedor() {
     try {
         //capturar campos de formulario (HTML)
-        const formElem = document.getElementById('frm_client');
+        const formElem = document.getElementById('frm_proveedor');
         const datos = new FormData(formElem);
         //enviar datos a controlador
         let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=registrar', {
@@ -56,32 +56,32 @@ async function registrarCliente() {
                     icon: 'success',
                     allowOutsideClick: false
                 }).then(() => {
-                    // redirigir a new-client después de confirmar
-                    location.href = base_url + 'new-client';
+                    // redirigir a new-proveedor después de confirmar
+                    location.href = base_url + 'new-proveedor';
                 });
             } else {
                 alert(json.msg);
-                // redirigir a new-client
-                location.href = base_url + 'new-client';
+                // redirigir a new-proveedor
+                location.href = base_url + 'new-proveedor';
             }
             formElem.reset();
         } else {
             alert(json.msg);
         }
     } catch (e) {
-        console.log("Error al registrar Cliente:" + e);
+        console.log("Error al registrar Proveedor:" + e);
     }
 }
 
-async function view_clients() {
+async function view_proveedores() {
     try {
-        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_clients', {
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_proveedores', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache'
         });
-        json = await respuesta.json();
-        contenidot = document.getElementById('content_clients');
+    json = await respuesta.json();
+    contenidot = document.getElementById('content_proveedor');
         if (json.status) {
             let cont = 1;
             json.data.forEach(usuario => {
@@ -101,7 +101,7 @@ async function view_clients() {
                             <td>${usuario.rol}</td>
                             <td>${estado}</td>
                             <td>
-                                <a href="`+ base_url + `edit-client/` + usuario.id + `">Editar</a>
+                                <a href="`+ base_url + `edit-proveedor/` + usuario.id + `">Editar</a>
                                 <button class="btn btn-danger" onclick="fn_eliminar(` + usuario.id + `);">Eliminar</button>
                             </td>
                 `;
@@ -113,11 +113,11 @@ async function view_clients() {
         console.log('error en mostrar usuario ' + e);
     }
 }
-if (document.getElementById('content_clients')) {
-    view_clients();
+if (document.getElementById('content_proveedor')) {
+    view_proveedores();
 }
 
-async function edit_client() {
+async function edit_proveedor() {
     try {
         let id_persona = document.getElementById('id_persona').value;
         const datos = new FormData();
@@ -149,19 +149,19 @@ async function edit_client() {
         console.log('oops, ocurrió un error ' + error);
     }
 }
-// si existe el formulario de edición de cliente, prevenir envio y usar validar_form
-if (document.querySelector('#frm_edit_client')) {
-    let frm_edit_client = document.querySelector('#frm_edit_client');
-    frm_edit_client.onsubmit = function (e) {
+// si existe el formulario de edición de proveedor/cliente, prevenir envío
+if (document.querySelector('#frm_edit_proveedor')) {
+    let frm_edit_proveedor = document.querySelector('#frm_edit_proveedor');
+    frm_edit_proveedor.onsubmit = function (e) {
         e.preventDefault();
         validar_form("actualizar");
     }
 }
 
-async function actualizarCliente() {
+async function actualizarProveedor() {
     try {
-        const form = document.getElementById('frm_edit_client');
-        const datos = new FormData(form);
+    const form = document.getElementById('frm_edit_proveedor');
+    const datos = new FormData(form);
         let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=actualizar', {
             method: 'POST',
             mode: 'cors',
@@ -175,11 +175,11 @@ async function actualizarCliente() {
             return;
         } else {
             alert(json.msg);
-            // después de actualizar, volver a la lista de clientes
-            location.href = base_url + 'clients';
+            // volver a la lista de proveedores
+            location.href = base_url + 'proveedor';
         }
     } catch (e) {
-        console.log('Error al actualizar cliente: ' + e);
+        console.log('Error al actualizar proveedor: ' + e);
     }
 }
 async function fn_eliminar(id) {
@@ -190,7 +190,6 @@ async function fn_eliminar(id) {
 async function eliminar(id) {
     try {
         const datos = new FormData();
-        // el controlador espera el campo 'id'
         datos.append('id', id);
         let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=eliminar', {
             method: 'POST',
@@ -205,14 +204,11 @@ async function eliminar(id) {
             return;
         } else {
             alert(json.msg);
-            // si estamos en la lista de clients, recargar la lista
-            if (document.getElementById('content_clients')) {
-                // limpiar tabla
-                document.getElementById('content_clients').innerHTML = '';
-                view_clients();
+            if (document.getElementById('content_proveedor')) {
+                document.getElementById('content_proveedor').innerHTML = '';
+                view_proveedores();
             } else {
-                // redirigir a la lista en caso contrario
-                location.href = base_url + 'clients';
+                location.href = base_url + 'proveedor';
             }
         }
     } catch (e) {

@@ -6,7 +6,7 @@ $tipo = $_GET['tipo'];
 
 if ($tipo == 'registrar') {
 
-    //print_r($_POST);
+//print_r($_POST);
     $nro_identidad = $_POST['nro_identidad'];
     $razon_social = $_POST['razon_social'];
     $telefono = $_POST['telefono'];
@@ -66,15 +66,14 @@ if ($tipo == "iniciar_sesion") {
 }
 
 
-
-//*view_users */
+//ver usuarios
 if ($tipo == "ver_usuarios") {
     $usuarios = $objPersona->verUsuarios();
     echo json_encode($usuarios);
 }
 
-// Ver
 
+// Ver usuario
 if ($tipo == "ver") {
     //print_r($_POST);
     $respuesta = array('status' => false, 'msg' => 'Error');
@@ -91,7 +90,6 @@ if ($tipo == "ver") {
 
 
 // Actualizar
-
 if ($tipo == "actualizar") {
     //print_r($_POST);
     $id_persona = $_POST['id_persona'];
@@ -131,8 +129,6 @@ if ($tipo == "actualizar") {
 
 
 // ELIMINAR
-
-
 if ($tipo == "eliminar") {
 
     $id_persona = isset($_POST['id']) ? $_POST['id'] : '';
@@ -156,20 +152,7 @@ if ($tipo == "eliminar") {
     exit;
 }
 
-$tipo = $_GET['tipo'] ?? '';
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-$objUsuario = new UsuarioModel();
-if ($tipo == "ver_proveedores") {
-    $proveedores = $objUsuario->verProveedores();
-    $respuesta = ['status' => false, 'data' => []];
-    if (count($proveedores) > 0) $respuesta = ['status' => true, 'data' => $proveedores];
-    header('Content-Type: application/json');
-    echo json_encode($respuesta);
-    exit;
-}
-
+// Ver clientes
 if ($tipo == "ver_clients") {
     $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
     $usuarios = $objPersona->verClientes();
@@ -179,3 +162,12 @@ if ($tipo == "ver_clients") {
     echo json_encode($respuesta);
 }
 
+// Ver proveedores
+if ($tipo == "ver_proveedores") {
+    $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
+    $usuarios = $objPersona->verProveedores();
+    if (count($usuarios)) {
+        $respuesta = array('status' => true, 'msg' => '', 'data' => $usuarios);
+    }
+    echo json_encode($respuesta);
+}
