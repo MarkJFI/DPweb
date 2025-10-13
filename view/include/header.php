@@ -121,20 +121,21 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
-                    <li class="nav-item">
+                    <!--<li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>new-user">Registrar</a>
-                    </li>
+                    </li>-->
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>users">Users</a>
                     </li>
-    <!------------------------------------------------------------------------------------------->
-                    <li class="nav-item">
+   
+                    <!--<li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>new-producto">new-producto</a>
-                    </li>
+                    </li>-->
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>producto">producto</a>
                     </li>
-    <!------------------------------------------------------------------------------------------->
+
+
                     <li class="nav-item">
                         <a class="nav-link" href="<?php echo BASE_URL; ?>categoria">Categories</a>
                     </li>
@@ -142,9 +143,21 @@
                         <a class="nav-link" href="<?= BASE_URL ?>clients">Clients</a>
                     </li>
 
-                    <li class="nav-item">
+                    <!--<li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>new-client">Registrar clientes</a>
+                    </li>-->
+
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= BASE_URL ?>proveedor">Proveedores</a>
                     </li>
+
+                    <!--<li class="nav-item">
+                        <a class="nav-link" href="<?= BASE_URL ?>new-proveedor">Registrar proveedores</a>
+                    </li>-->
+
+
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>shops">Shops</a>
                     </li>
