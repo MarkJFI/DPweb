@@ -10,8 +10,8 @@
                 //echo $ruta[1];
             }
             ?>
-            <form id="frm_edit_client" action="" method="">
-                <input type="hidden" id="id_persona" name="id_persona" value="<?= $ruta[1]; ?>">
+            <form id="frm_edit_client" action="<?= BASE_URL ?>control/UsuarioController.php?tipo=actualizar" method="POST">
+                <input type="hidden" id="id_persona" name="id_persona" value="<?= isset($ruta[1]) ? htmlspecialchars($ruta[1], ENT_QUOTES, 'UTF-8') : ''; ?>">
 
 
                 <div class="card-body">
@@ -74,14 +74,11 @@
                     <div class="mb-3 row">
                         <label for="rol" class="col-sm-4 col-form-label">Rol:</label>
                         <div class="col-sm-8">
-<<<<<<< HEAD:view/edit-client.php
+
                             <select class="form-control" name="rol" id="rol" required readonly>
                                 <option value="Cliente" selected>Cliente</option>
-=======
-                            <select class="form-select" name="rol" id="rol" required>
-                                <option value="" disabled selected>Seleccionar</option>
-                                <option value="Cliente">Cliente</option>
->>>>>>> c3748858bd5ae4169b7dea2a5a5343ac4e2287b1:view/edit-clientes.php
+
+                
                             </select>
                         </div>
                     </div>

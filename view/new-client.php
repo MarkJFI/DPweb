@@ -3,11 +3,8 @@
     <div class="container-fluid">
         <div class="card">
             <h5 class="card-header">Registrar Clientes</h5>
-<<<<<<< HEAD:view/new-client.php
             <form id="frm_client" action="" method="">
-=======
-            <form id="frm_user" action="" method="">
->>>>>>> c3748858bd5ae4169b7dea2a5a5343ac4e2287b1:view/new-clients.php
+
                 <div class="card-body">
                     <div class="mb-3 row">
                         <label for="nro_identidad" class="col-sm-4 col-form-label">N° documento:</label>
@@ -68,14 +65,9 @@
                     <div class="mb-3 row">
                         <label for="rol" class="col-sm-4 col-form-label">Rol:</label>
                         <div class="col-sm-8">
-<<<<<<< HEAD:view/new-client.php
                             <select class="form-control" name="rol" id="rol" required readonly>
                                 <option value="Cliente" selected>Cliente</option>
-=======
-                            <select class="form-select" name="rol" id="rol" required>
-                                <option value="" disabled selected>Seleccionar</option>
-                                <option value="Cliente">Cliente</option>
->>>>>>> c3748858bd5ae4169b7dea2a5a5343ac4e2287b1:view/new-clients.php
+
                             </select>
                         </div>
                     </div>
