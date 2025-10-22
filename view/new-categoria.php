@@ -28,4 +28,4 @@
 </div>
 <!--------------------FIN DE CUERPO DE PÁGINA------------------->
 
-<script src="<?= BASE_URL ?>view/function/categorias.js"></script>
+<script src="<?= BASE_URL ?>view/function/categoria.js"></script>

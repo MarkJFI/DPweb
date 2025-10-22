@@ -41,7 +41,7 @@ class UsuarioModel
     public function verUsuarios()
     {
         $arr_usuarios = array();
-        $consulta = "SELECT * FROM persona";
+        $consulta = "SELECT * FROM persona WHERE rol<>'Cliente' AND rol<>'Proveedor'";
         $sql = $this->conexion->query($consulta);
         while ($objeto = $sql->fetch_object()) {  
             array_push($arr_usuarios, $objeto);

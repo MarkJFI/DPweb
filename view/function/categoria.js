@@ -68,26 +68,32 @@ async function view_categories() {
         });
 
         let json = await respuesta.json();
+        console.log('Datos recibidos:', json);
         let content_categories = document.getElementById('content_categories');
         content_categories.innerHTML = '';
 
-        json.forEach((category, index) => {
-            let fila = document.createElement('tr');
-            fila.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${category.nombre}</td>
-                <td>${category.detalle}</td>
-                <td>
-                    <a href="${base_url}edit-categoria/${category.id}" class="btn btn-primary btn-sm rounded-pill">
-                        <i class="bi bi-pencil-square"></i> Editar
-                    </a>
-                    <button data-id="${category.id}" class="btn btn-eliminar btn-danger btn-sm rounded-pill" style="background:#dc3545;">
-                        Eliminar
-                    </button>
-                </td>
-            `;
-            content_categories.appendChild(fila);
-        });
+        if (json.status && json.data) {
+            json.data.forEach((category, index) => {
+                let fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${category.nombre}</td>
+                    <td>${category.detalle}</td>
+                    <td>
+                        <a href="${base_url}edit-categoria/${category.id}" class="btn btn-primary btn-sm rounded-pill">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </a>
+                        <button data-id="${category.id}" class="btn btn-eliminar btn-danger btn-sm rounded-pill" style="background:#dc3545;">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </td>
+                `;
+                content_categories.appendChild(fila);
+            });
+        } else {
+            console.error('Error: No se recibieron datos de categorías correctamente');
+            content_categories.innerHTML = '<tr><td colspan="4" class="text-center">No hay categorías disponibles</td></tr>';
+        }
 
         document.querySelectorAll('.btn-eliminar').forEach(btn => {
             btn.addEventListener('click', async function () {

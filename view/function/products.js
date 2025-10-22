@@ -1,287 +1,291 @@
-// ===================== UTILIDADES =====================
-function getVal(id) {
-    const el = document.getElementById(id);
-    return el ? el.value.trim() : '';
-}
-function hasEl(id) {
-    return !!document.getElementById(id);
-}
 
-// ===================== CARGAR CATEGORÍAS =====================
-async function cargarCategorias() {
-    try {
-        const sel = document.getElementById('id_categoria');
-        if (!sel) return;
 
-        let resp = await fetch(base_url + 'control/CategoriaController.php?tipo=ver_categorias', {
-            method: 'POST'
+//VALIDAR FORMULARIO
+function validar_form(tipo) {
+    let codigo = document.getElementById("codigo").value;
+    let nombre = document.getElementById("nombre").value;
+    let detalle = document.getElementById("detalle").value;
+    let precio = document.getElementById("precio").value;
+    let stock = document.getElementById("stock").value;
+    let id_categoria = document.getElementById("id_categoria").value;
+    let fecha_vencimiento = document.getElementById("fecha_vencimiento").value;
+    //let imagen = document.getElementById("imagen").value;
+    if (codigo == "" || nombre == "" || detalle == "" || precio == "" || stock == "" || id_categoria == "" || fecha_vencimiento == "") {
+        Swal.fire({
+            title: "Error campos vacios!",
+            icon: "Error",
+            draggable: true
         });
-        let categorias = await resp.json();
-
-        sel.innerHTML = '<option value="" disabled selected>Seleccione una categoría</option>';
-        if (Array.isArray(categorias)) {
-            categorias.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c.id;
-                opt.textContent = c.nombre;
-                sel.appendChild(opt);
-            });
-        }
-    } catch (e) {
-        console.log('Error al cargar categorías:', e);
-    }
-}
-
-// ===================== CARGAR PROVEEDORES =====================
-// Proveedores: se usa el select `id_persona` en el formulario de producto (proveedores vienen del controlador de Usuario)
-async function cargarProveedores() {
-    try {
-        const sel = document.getElementById('id_persona');
-        if (!sel) return;
-
-        let resp = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_proveedores', {
-            method: 'POST'
-        });
-        let proveedores = await resp.json();
-
-        sel.innerHTML = '<option value="" disabled selected>Seleccione un proveedor</option>';
-        if (proveedores && proveedores.status && Array.isArray(proveedores.data)) {
-            proveedores.data.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p.id;
-                opt.textContent = p.razon_social || p.nombre || p.email || ('Proveedor ' + p.id);
-                sel.appendChild(opt);
-            });
-        } else if (Array.isArray(proveedores)) {
-            // fallback si controlador devuelve array directamente
-            proveedores.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p.id;
-                opt.textContent = p.razon_social || p.nombre || ('Proveedor ' + p.id);
-                sel.appendChild(opt);
-            });
-        }
-    } catch (e) {
-        console.log('Error al cargar proveedores:', e);
-    }
-}
-
-// ===================== VALIDAR FORMULARIO =====================
-function validar_producto(tipo) {
-    const codigo   = getVal('codigo');
-    const nombre   = getVal('nombre');
-    const detalle  = getVal('detalle');
-    const precio   = getVal('precio');
-    const stock    = getVal('stock');
-    const categoria= getVal('id_categoria');
-    // El formulario usa `id_persona` para el proveedor
-    const proveedor= hasEl('id_persona') ? getVal('id_persona') : '';
-
-    if (!codigo || !nombre || !detalle || !precio || !stock || !categoria) {
-        alert('ERROR: Complete todos los campos obligatorios');
         return;
     }
+    if (tipo == "nuevo") {
+        registrarProducto();
+    }
+    if (tipo == "actualizar") {
+        actualizarProducto();
+    }
 
-    if (tipo === 'nuevo') registrarProducto();
-    if (tipo === 'actualizar') actualizarProducto();
 }
 
-// ===================== REGISTRAR PRODUCTO =====================
-let frm_producto = document.querySelector('#frm_producto');
-if (frm_producto) {
-    frm_producto.onsubmit = function (e) {
+//EVITA QUE SE ENVIE EL FORMULARIO
+if (document.querySelector('#frm_product')) {
+    // evita que se envie el formulario
+    let frm_product = document.querySelector('#frm_product');
+    frm_product.onsubmit = function (e) {
         e.preventDefault();
-        validar_producto('nuevo');
+        validar_form("nuevo");
     }
 }
 
+//REGISTRAR PRODUCTO
 async function registrarProducto() {
     try {
-        const datos = new FormData(frm_producto);
-        let resp = await fetch(base_url + 'control/ProductoController.php?tipo=registrar', {
+        //capturar campos de formulario (HTML)
+        const datos = new FormData(frm_product);
+        //enviar datos a controlador
+        let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=registrar', {
             method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
             body: datos
         });
-        let text = await resp.text();
-        let json;
-        try {
-            json = JSON.parse(text);
-        } catch (e) {
-            alert('Respuesta inválida del servidor al registrar producto. Revisa la consola y el log de PHP.');
-            console.error('Respuesta cruda registrarProducto:', text);
-            return;
-        }
-        alert(json.msg);
-        if (json.status) {
-            frm_producto.reset();
-            verProductos();
-        }
-    } catch (error) {
-        console.log('Error al registrar producto:', error);
-    }
-}
-
-// ===================== LISTAR PRODUCTOS =====================
-async function verProductos() {
-    try {
-        let resp = await fetch(base_url + 'control/ProductoController.php?tipo=ver_products', { method: 'POST' });
-        let productos = await resp.json();
-        const content = document.getElementById('content_productos');
-        if (!content) return;
-
-        content.innerHTML = '';
-        productos.forEach((prod, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${prod.codigo ?? ''}</td>
-                <td>${prod.nombre ?? ''}</td>
-                <td>${prod.detalle ?? ''}</td>
-                <td>${prod.precio ?? ''}</td>
-                <td>${prod.stock ?? ''}</td>
-                <td>${prod.categoria ?? ''}</td>
-                <td>${prod.fecha_vencimiento ?? ''}</td>
-                <td>
-                    <a href="${base_url}edit-producto/${prod.id}" class="btn btn-primary btn-sm rounded-pill">
-                        <i class="bi bi-pencil-square"></i> Editar
-                    </a>
-                    <button data-id="${prod.id}" class="btn btn-eliminar btn-danger btn-sm rounded-pill">Eliminar</button>
-                </td>
-            `;
-            content.appendChild(tr);
-        });
-
-        // Botones de eliminar
-        document.querySelectorAll('.btn-eliminar').forEach(btn => {
-            btn.addEventListener('click', async function () {
-                if (confirm('\u00bfSeguro de eliminar este producto?')) {
-                    let id = this.getAttribute('data-id');
-                    let resp = await fetch(base_url + 'control/ProductoController.php?tipo=eliminar', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: 'id=' + encodeURIComponent(id)
-                    });
-                    let json = await resp.json();
-                    alert(json.msg);
-                    if (json.status) verProductos();
-                }
-            });
-        });
-
-    } catch (error) {
-        console.log('Error al listar productos:', error);
-    }
-}
-
-// ===================== OBTENER PRODUCTO POR ID =====================
-async function obtenerProductoPorId(id) {
-    try {
-        let resp = await fetch(base_url + 'control/ProductoController.php?tipo=ver', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'id_producto=' + encodeURIComponent(id)
-        });
-        let json = await resp.json();
-        if (!json || !json.data) {
-            alert('Producto no encontrado');
-            return;
-        }
-        let p = json.data;
-        if (hasEl('id_producto')) document.getElementById('id_producto').value = p.id;
-        if (hasEl('codigo')) document.getElementById('codigo').value = p.codigo || '';
-        if (hasEl('nombre')) document.getElementById('nombre').value = p.nombre || '';
-        if (hasEl('detalle')) document.getElementById('detalle').value = p.detalle || '';
-        if (hasEl('precio')) document.getElementById('precio').value = p.precio || '';
-        if (hasEl('stock')) document.getElementById('stock').value = p.stock || '';
-        if (hasEl('id_categoria')) document.getElementById('id_categoria').value = p.id_categoria || '';
-        if (hasEl('id_proveedor')) document.getElementById('id_proveedor').value = p.id_proveedor || '';
-        if (hasEl('fecha_vencimiento')) document.getElementById('fecha_vencimiento').value = p.fecha_vencimiento || '';
-        if (hasEl('imagen_actual')) document.getElementById('imagen_actual').value = p.imagen || '';
-    } catch (error) {
-        console.log('Error al obtener producto:', error);
-    }
-}
-
-// Alias para compatibilidad con la vista de editar
-function edit_product(id) {
-    if (!id) return;
-    obtenerProductoPorId(id);
-}
-
-// ===================== ACTUALIZAR PRODUCTO =====================
-let frm_edit_producto = document.querySelector('#frm_edit_producto');
-if (frm_edit_producto) {
-    frm_edit_producto.onsubmit = function (e) {
-        e.preventDefault();
-        validar_producto('actualizar');
-    }
-}
-
-async function actualizarProducto() {
-    try {
-        const datos = new FormData(frm_edit_producto);
-        let resp = await fetch(base_url + 'control/ProductoController.php?tipo=actualizar', {
-            method: 'POST',
-            body: datos
-        });
-        let text = await resp.text();
-        let json;
-        try {
-            json = JSON.parse(text);
-        } catch (e) {
-            alert('Respuesta inválida del servidor al actualizar producto. Revisa la consola y el log de PHP.');
-            console.error('Respuesta cruda actualizarProducto:', text);
-            return;
-        }
-        alert(json.msg);
-        if (json.status) {
-            window.location.href = base_url + "producto"; // redirige a la lista
-        }
-    } catch (error) {
-        console.log('Error al actualizar producto:', error);
-    }
-}
-
-// ===================== AUTOLOAD =====================
-document.addEventListener('DOMContentLoaded', () => {
-    if (hasEl('content_productos')) verProductos();
-    if (hasEl('id_categoria')) cargarCategorias();
-    if (hasEl('id_proveedor')) cargarProveedores();
-
-    // Precargar en editar
-    if (hasEl('id_producto')) {
-        let partes = window.location.pathname.split('/');
-        let id = partes[partes.length - 1];
-        if (!isNaN(id)) obtenerProductoPorId(id);
-    }
-});
-
-// cargar proveedor 
-async function cargarProveedores() {
-    try {
-        const sel = document.getElementById('id_persona'); // Usar id_persona en lugar de id_proveedor
-        if (!sel) {
-            console.log('Elemento con id="id_persona" no encontrado');
-            return;
-        }
-
-        let resp = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_proveedores', {
-            method: 'POST'
-        });
-        let proveedores = await resp.json();
-
-        sel.innerHTML = '<option value="" disabled selected>Seleccione un proveedor</option>';
-        if (proveedores.status && Array.isArray(proveedores.data)) {
-            proveedores.data.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p.id;
-                opt.textContent = p.razon_social;
-                sel.appendChild(opt);
-            });
+        let json = await respuesta.json();
+        // validamos que json.status sea = True
+        if (json.status) { //true
+            alert(json.msg);
+            document.getElementById('frm_product').reset();
         } else {
-            console.log('No se encontraron proveedores o la respuesta no es válida:', proveedores);
+            alert(json.msg);
         }
     } catch (e) {
-        console.log('Error al cargar proveedores:', e);
+        console.log("Error al registrar Producto:" + e);
     }
+}
+
+//VER PRODUCTOS
+async function view_products() {
+    try {
+        console.log('Iniciando carga de productos...');
+        let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=ver_productos', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+        console.log('Respuesta recibida:', respuesta);
+        json = await respuesta.json();
+        console.log('Datos recibidos:', json);
+        contenidot = document.getElementById('content_products');
+        if (json.status) {
+            let cont = 1;
+            json.data.forEach(producto => {
+                let nueva_fila = document.createElement("tr");
+                nueva_fila.id = "fila" + producto.id;
+                nueva_fila.className = "filas_tabla";
+                nueva_fila.innerHTML = `
+                            <td>${cont}</td>
+                            <td>${producto.codigo}</td>
+                            <td>${producto.nombre}</td>
+                            <td>${producto.detalle}</td>
+                            <td>${producto.precio}</td>
+                            <td>${producto.stock}</td>
+                            <td>${producto.categoria}</td>
+                            <td>${producto.fecha_vencimiento}</td>
+                            <td>
+                                <a href="`+ base_url + `edit-producto/` + producto.id + `" 
+                                class="btn btn-primary btn-sm rounded-pill">
+                                <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <button class="btn btn-danger btn-sm rounded-pill ms-1"
+                                 onclick="fn_eliminar(` + producto.id + `);" 
+                                style="background:#dc3545;">
+                                 <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                            </td>
+                            `;
+                cont++;
+                contenidot.appendChild(nueva_fila);
+            });
+        }
+    } catch (e) {
+        console.log('error en mostrar producto ' + e);
+    }
+}
+//llama a la funcion para ver productos si existe el contenedor
+if (document.getElementById('content_products')) {
+    view_products();
+}
+
+
+
+//EDITAR PRODUCTO
+// Ahora acepta un id opcional: edit_product(id)
+async function edit_product(id = null) {
+    try {
+        // Determinar id del producto: parámetro o campo oculto
+        let id_producto = id;
+        if (!id_producto) {
+            const el = document.getElementById('id_producto');
+            id_producto = el ? el.value : null;
+        }
+
+        if (!id_producto || isNaN(id_producto)) {
+            console.warn('edit_product: id_producto no válido', id_producto);
+            return;
+        }
+
+        const datos = new FormData();
+        datos.append('id_producto', id_producto);
+
+        let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=ver', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            body: datos
+        });
+        const json = await respuesta.json();
+        if (!json.status) {
+            alert(json.msg);
+            return;
+        }
+
+        // Rellenar campos del formulario
+        const data = json.data || {};
+        const setIfExists = (idField, value) => {
+            const field = document.getElementById(idField);
+            if (field) field.value = value ?? '';
+        };
+
+        setIfExists('codigo', data.codigo);
+        setIfExists('nombre', data.nombre);
+        setIfExists('detalle', data.detalle);
+        setIfExists('precio', data.precio);
+        setIfExists('stock', data.stock);
+        setIfExists('fecha_vencimiento', data.fecha_vencimiento);
+        setIfExists('imagen_actual', data.imagen);
+
+        // Los selects pueden no estar poblados todavía (cargar_categorias / cargar_proveedores
+        // son llamadas desde la vista sin await). Reintentamos asignar el valor varias veces.
+        const trySetSelect = (selectId, value, attempts = 6, delay = 150) => {
+            if (!selectId) return;
+            let i = 0;
+            const iv = setInterval(() => {
+                const sel = document.getElementById(selectId);
+                if (sel) {
+                    // si la opción existe, asignar y detener
+                    const optionExists = Array.from(sel.options).some(o => o.value == value);
+                    if (optionExists || sel.options.length > 0) {
+                        sel.value = value ?? '';
+                        clearInterval(iv);
+                    }
+                }
+                i++;
+                if (i >= attempts) clearInterval(iv);
+            }, delay);
+        };
+
+        trySetSelect('id_categoria', data.id_categoria);
+        trySetSelect('id_proveedor', data.id_proveedor);
+
+    } catch (error) {
+        console.log('oops, ocurrió un error ' + error);
+    }
+}
+
+//ACTUALIZAR PRODUCTO
+async function actualizarProducto() {
+    const datos = new FormData(frm_edit_producto);
+    let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=actualizar', {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        body: datos
+    });
+    json = await respuesta.json();
+    if (!json.status) {
+        alert("Oooooops, ocurrio un error al actualizar, intentelo nuevamente");
+        console.log(json.msg);
+        return;
+    } else {
+        alert(json.msg);
+    }
+}
+
+//funcion para eliminar producto
+async function fn_eliminar(id) {
+    if (window.confirm("¿Seguro que quiere eliminar?")) {
+        eliminar(id);
+    }
+}
+
+//ELIMINAR PRODUCTO
+async function eliminar(id) {
+    try {
+        const datos = new FormData();
+        datos.append('id_producto', id);
+
+        let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=eliminar', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            body: datos
+        });
+
+        const json = await respuesta.json();
+        if (json.status) {
+            // Si se eliminó correctamente, remover la fila de la tabla
+            const fila = document.getElementById('fila' + id);
+            if (fila) {
+                fila.remove();
+            }
+            alert(json.msg);
+        } else {
+            alert(json.msg || 'Error al eliminar el producto');
+        }
+    } catch (error) {
+        console.error('Error al eliminar producto:', error);
+        alert('Error al intentar eliminar el producto');
+    }
+}
+
+if (document.querySelector('#frm_edit_producto')) {
+    // evita que se envie el formulario
+    let frm_producto = document.querySelector('#frm_edit_producto');
+    frm_producto.onsubmit = function (e) {
+        e.preventDefault();
+        validar_form("actualizar");
+    }
+}
+
+
+
+async function cargar_categorias() {
+    let respuesta = await fetch(base_url + 'control/CategoriaController.php?tipo=ver_categorias', {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache'
+    });
+    let json = await respuesta.json();
+    let contenido = '<option>Seleccione Categoria</option>';
+    json.data.forEach(categoria => {
+        contenido += '<option value="' + categoria.id + '">' + categoria.nombre + '</option>';
+    });
+    //console.log(contenido);
+    document.getElementById("id_categoria").innerHTML = contenido;
+}
+
+
+//cargar proveedores en el select
+async function cargar_proveedores() {
+    let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_proveedores', {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache'
+    });
+    let json = await respuesta.json();
+    let contenido = '<option>Seleccione Proveedor</option>';
+    json.data.forEach(proveedor => {
+        contenido += '<option value="' + proveedor.id + '">' + proveedor.razon_social + '</option>';
+    });
+    //console.log(contenido);
+    document.getElementById("id_proveedor").innerHTML = contenido;
 }

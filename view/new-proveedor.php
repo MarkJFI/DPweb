@@ -12,7 +12,7 @@
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label for="razon_social" class="col-sm-4 col-form-label">Razon social:</label>
+                        <label for="razon_social" class="col-sm-4 col-form-label">Nombre:</label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" id="razon_social" name="razon_social" required>
                         </div>

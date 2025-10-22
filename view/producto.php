@@ -20,7 +20,7 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody id="content_productos">
+            <tbody id="content_products">
                 <!-- JS carga aquí los productos -->
             </tbody>
         </table>

@@ -74,48 +74,69 @@ async function registrarProveedor() {
 }
 
 async function view_proveedores() {
-    try {
-        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_proveedores', {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache'
-        });
-    json = await respuesta.json();
-    contenidot = document.getElementById('content_proveedor');
-        if (json.status) {
-            let cont = 1;
-            json.data.forEach(usuario => {
-                if (usuario.estado == 1) {
-                    estado = "activo";
-                } else {
-                    estado = "inactivo";
-                }
-                let nueva_fila = document.createElement("tr");
-                nueva_fila.id = "fila" + usuario.id;
-                nueva_fila.className = "filas_tabla";
-                nueva_fila.innerHTML = `
-                            <td>${cont}</td>
-                            <td>${usuario.nro_identidad}</td>
-                            <td>${usuario.razon_social}</td>
-                            <td>${usuario.correo}</td>
-                            <td>${usuario.rol}</td>
-                            <td>${estado}</td>
-                            <td>
-                                <a href="`+ base_url + `edit-proveedor/` + usuario.id + `">Editar</a>
-                                <button class="btn btn-danger" onclick="fn_eliminar(` + usuario.id + `);">Eliminar</button>
-                            </td>
-                `;
-                cont++;
-                contenidot.appendChild(nueva_fila);
-            });
-        }
-    } catch (error) {
-        console.log('error en mostrar usuario ' + e);
+  try {
+    const respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_proveedores', {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache'
+    });
+
+    const json = await respuesta.json();
+    const contenidot = document.getElementById('content_proveedor');
+    if (!contenidot) return;
+
+    contenidot.innerHTML = '';
+
+    if (json.status && Array.isArray(json.data)) {
+      let cont = 1;
+      json.data.forEach(usuario => {
+
+        // Indicador visual del estado (círculo verde o rojo)
+        const estadoHtml = usuario.estado == 1
+          ? '<span title="Activo" style="display:inline-block;width:16px;height:16px;background:#198754;border-radius:50%;"></span>'
+          : '<span title="Inactivo" style="display:inline-block;width:16px;height:16px;background:#dc3545;border-radius:50%;"></span>';
+
+        // Crear fila
+        const nueva_fila = document.createElement("tr");
+        nueva_fila.id = "fila" + usuario.id;
+        nueva_fila.className = "filas_tabla";
+
+        // Contenido de la fila
+        nueva_fila.innerHTML = `
+          <td>${cont}</td>
+          <td>${usuario.nro_identidad}</td>
+          <td>${usuario.razon_social}</td>
+          <td>${usuario.correo}</td>
+          <td>${usuario.rol}</td>
+          <td class="text-center">${estadoHtml}</td>
+          <td>
+            <a href="${base_url}edit-proveedor/${usuario.id}" 
+               class="btn btn-primary btn-sm rounded-pill">
+              <i class="bi bi-pencil-square"></i> Editar
+            </a>
+            <button onclick="fn_eliminar(${usuario.id});" 
+                    class="btn btn-eliminar btn-danger btn-sm rounded-pill ms-1" 
+                    style="background:#dc3545;">
+              <i class="bi bi-trash"></i> Eliminar
+            </button>
+          </td>
+        `;
+
+        contenidot.appendChild(nueva_fila);
+        cont++;
+      });
     }
+
+  } catch (e) {
+    console.error('Error al mostrar proveedores:', e);
+  }
 }
+
+// Ejecutar la función si existe la tabla
 if (document.getElementById('content_proveedor')) {
-    view_proveedores();
+  view_proveedores();
 }
+
 
 async function edit_proveedor() {
     try {

@@ -53,46 +53,63 @@ async function registrarCliente() {
 
 async function view_clients() {
   try {
-    const res = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_clients', {method:'POST'});
+    const res = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_clients', { method: 'POST' });
     const json = await res.json();
     const cont = document.getElementById('content_clients');
     if (!cont) return;
     cont.innerHTML = '';
+
     if (json.status && Array.isArray(json.data)) {
       let i = 1;
       json.data.forEach(item => {
-        const estado = item.estado == 1 ? 'activo' : 'inactivo';
+
+        // Indicador visual del estado verde y rojo
+        const estadoHtml = item.estado == 1
+          ? '<span title="Activo" style="display:inline-block;width:16px;height:16px;background:#198754;border-radius:50%;"></span>'
+          : '<span title="Inactivo" style="display:inline-block;width:16px;height:16px;background:#dc3545;border-radius:50%;"></span>';
+
         const tr = document.createElement('tr');
-        tr.id = 'fila'+item.id;
+        tr.id = 'fila' + item.id;
         tr.className = 'filas_tabla';
+
         tr.innerHTML = `
           <td>${i}</td>
           <td>${item.nro_identidad}</td>
           <td>${item.razon_social}</td>
           <td>${item.correo}</td>
           <td>${item.rol}</td>
-          <td>${estado}</td>
+          <td class="text-center">${estadoHtml}</td>
           <td>
-            <a href="${base_url}edit-client/${item.id}" class="btn btn-primary btn-sm">Editar</a>
-            <button class="btn btn-danger btn-sm ms-1" data-id="${item.id}">Eliminar</button>
+            <a href="${base_url}edit-client/${item.id}" 
+               class="btn btn-primary btn-sm rounded-pill">
+              <i class="bi bi-pencil-square"></i> Editar
+            </a>
+            <button class="btn btn-eliminar btn-danger btn-sm rounded-pill ms-1" 
+                    data-id="${item.id}" 
+                    style="background:#dc3545;">
+              <i class="bi bi-trash"></i> Eliminar
+            </button>
           </td>
         `;
+
         cont.appendChild(tr);
         i++;
       });
 
-      // listeners para eliminar
+      // Listeners para eliminar
       cont.querySelectorAll('button[data-id]').forEach(btn => {
-        btn.addEventListener('click', function(){
+        btn.addEventListener('click', function () {
           const id = this.getAttribute('data-id');
           if (confirm('¿Desea eliminar este registro?')) eliminar(id);
         });
       });
     }
+
   } catch (e) {
     console.error('Error al obtener clientes:', e);
   }
 }
+
 
 if (document.getElementById('content_clients')) view_clients();
 

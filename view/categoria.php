@@ -2,15 +2,34 @@
 <div class="d-flex flex-column align-items-center">
     <!-- Título -->
     <h3 class="mt-3 mb-4 text-center text-primary fw-bold py-3 px-4 rounded-pill shadow titulo-usuarios">
-        <i class="bi bi-tags"></i> LISTA DE CATEGORÍAS
+        LISTA DE CATEGORÍAS
     </h3>
 
     <div class="container">
 
+
+
+        <!-- Tabla categorías -->
+
+        <div class="card-body">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-primary">
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Detalle</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="content_categories">
+                    <!-- Aquí se cargarán las categorías dinámicamente -->
+                </tbody>
+            </table>
+        </div>
         <!-- Formulario agregar categoría -->
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-primary text-white fw-bold">
-                <i class="bi bi-plus-circle"></i> Agregar Categoría
+                Agregar Categoría
             </div>
             <div class="card-body">
                 <form id="frm_category">
@@ -33,29 +52,26 @@
             </div>
         </div>
 
-        <!-- Tabla categorías -->
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white fw-bold">
-                <i class="bi bi-list"></i> Categorías Registradas
-            </div>
-            <div class="card-body">
-                <table class="table table-bordered table-hover align-middle">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Detalle</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="content_categories">
-                        <!-- JS carga aquí las categorías -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+
+
+
+
+
 
     </div>
+</div>
+
+<!-- Incluir el archivo JavaScript -->
+<script src="<?= BASE_URL ?>view/function/categoria.js"></script>
+```
+<tbody id="content_categories">
+    <!-- JS carga aquí las categorías -->
+</tbody>
+</table>
+</div>
+</div>
+
+</div>
 </div>
 
 <!-- Bootstrap Icons -->

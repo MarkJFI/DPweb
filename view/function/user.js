@@ -14,7 +14,7 @@ function validar_form(tipo) {
         alert("ERROR: Campos vacios");
         return;
     }
-
+/*
     Swal.fire({
         title: '¡Procedemos a Registrar Tus datos!',
         text: 'Espere Por Favor.',
@@ -28,7 +28,7 @@ function validar_form(tipo) {
             popup: 'rounded-pill shadow border border-light'
         }
     });
-
+*/
     if (tipo == "nuevo") {
         registrarUsuario();
     }
@@ -114,6 +114,9 @@ async function iniciar_sesion() {
         console.log(error);
     }
 }
+
+
+
 async function view_users() {
     try {
         let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_usuarios', {

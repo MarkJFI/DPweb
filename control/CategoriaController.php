@@ -28,8 +28,11 @@ if ($tipo == 'registrar') {
 
 // Ver categorías
 if ($tipo == "ver_categorias") {
+    $respuesta = array('status' => false, 'msg' => 'Error');
     $categorias = $objCategoria->verCategorias();
-    echo json_encode($categorias);
+    $respuesta['status'] = true;
+    $respuesta['data'] = $categorias;
+    echo json_encode($respuesta);
 }
 
 // Ver una categoría
