@@ -1,3 +1,5 @@
+
+// VALIDAR FORMULARIO USUARIO
 function validar_form(tipo) {
     let nro_documento = document.getElementById("nro_identidad").value;
     let razon_social = document.getElementById("razon_social").value;
@@ -58,6 +60,8 @@ if (document.querySelector('#frm_user')) {
 
 
 /*----------------------------------------------------------------------*/
+
+// REGISTRAR USUARIO
 async function registrarUsuario() {
     try {
         //capturar campos de formulario (HTML)
@@ -86,6 +90,7 @@ async function registrarUsuario() {
 }
 
 
+// INICIAR SESION
 async function iniciar_sesion() {
     let usuario = document.getElementById("usuario").value;
     let password = document.getElementById("password").value;
@@ -116,7 +121,7 @@ async function iniciar_sesion() {
 }
 
 
-
+// VER LISTA DE USUARIOS
 async function view_users() {
     try {
         let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_usuarios', {
@@ -130,9 +135,9 @@ async function view_users() {
         content_users.innerHTML = '';
 
 
-        //LISTA DE USUARIOS
+//LISTA DE USUARIOS
         json.forEach((user, index) => {
-            let estadoHtml = user.estado == 1
+            let estadoHtml = user.estado == 1 // Verifica si el estado es activo
                 ? '<span style="display:inline-block;width:16px;height:16px;background:#198754;border-radius:50%;"></span>'
                 : '<span style="display:inline-block;width:16px;height:16px;background:#dc3545;border-radius:50%;"></span>';
             let fila = document.createElement('tr');
@@ -157,7 +162,7 @@ async function view_users() {
             content_users.appendChild(fila);
         });
 
-        // ELIMINAR
+// ELIMINAR USUARIO
         document.querySelectorAll('.btn-eliminar').forEach(btn => {
             btn.addEventListener('click', async function () {
                 if (confirm('¿Está seguro de eliminar este usuario?')) {
@@ -190,6 +195,7 @@ if (document.getElementById('content_users')) {
     view_users();
 }
 
+// FUNCION PARA EDITAR USUARIO
 async function edit_user() {
     try {
         let id_persona = document.getElementById('id_persona').value;
@@ -226,7 +232,8 @@ async function edit_user() {
     }
 
 }
-// actualizar////////////////////////////////////
+
+// ACTUALIZAR USUARIO
 if (document.querySelector('#frm_edit_user')) {
     //evita que se envie el formulario
     let frm_user = document.querySelector('#frm_edit_user');

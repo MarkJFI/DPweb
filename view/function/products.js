@@ -210,14 +210,12 @@ async function actualizarProducto() {
     }
 }
 
-//funcion para eliminar producto
+//ELIMINAR PRODUCTO
 async function fn_eliminar(id) {
     if (window.confirm("¿Seguro que quiere eliminar?")) {
         eliminar(id);
     }
 }
-
-//ELIMINAR PRODUCTO
 async function eliminar(id) {
     try {
         const datos = new FormData();
