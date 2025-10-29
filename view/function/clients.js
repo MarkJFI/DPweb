@@ -264,3 +264,4 @@ async function eliminar_cp(id) {
     alert('Error de red al eliminar, revisa la consola');
   }
 }
+

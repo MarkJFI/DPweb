@@ -87,7 +87,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-success">Actualizar</button>
-                <a href="<?php echo BASE_URL; ?>client-lista" class="btn btn-secondary">Volver</a>
+                <a href="<?php echo BASE_URL; ?>clientes" class="btn btn-secondary">Volver</a>
 
             </div>
         </form>

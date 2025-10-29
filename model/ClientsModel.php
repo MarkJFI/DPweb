@@ -12,8 +12,8 @@ class ClientsModel
     // Registrar cliente o proveedor (reutiliza estructura de UsuarioModel)
     public function registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password)
     {
-        $consulta = "INSERT INTO persona (nro_identidad,razon_social,telefono,correo, departamento, provincia, distrito, cod_postal, direccion, rol, password ) VALUES('$nro_identidad', '$razon_social',
-         '$telefono', '$correo', '$departamento', '$provincia', '$distrito', '$cod_postal', '$direccion', '$rol', '$password')";
+        $consulta = "INSERT INTO persona (nro_identidad,razon_social,telefono,correo, departamento, provincia, distrito, cod_postal, direccion, rol, password, estado) VALUES('$nro_identidad', '$razon_social',
+         '$telefono', '$correo', '$departamento', '$provincia', '$distrito', '$cod_postal', '$direccion', '$rol', '$password', 1)";
         $sql = $this->conexion->query($consulta);
         if ($sql) {
             $sql = $this->conexion->insert_id;

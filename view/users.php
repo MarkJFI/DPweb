@@ -1,5 +1,5 @@
 <div class="container">
-    <h4 class="mt-3 mb-3">Lista de Usuarios</h4>
+    <h4 class="mt-3 mb-3"><center>Lista de Usuarios</center></h4>
     <table class="table table-bordered table-striped">
         <thead>
             <tr>

@@ -49,7 +49,6 @@ async function registrarProducto() {
             datos.append('proveedor', datos.get('id_proveedor'));
         }
         if (!datos.has('imagen')) datos.append('imagen', '');
-        if (!datos.has('estado')) datos.append('estado', '1');
         let respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=registrar', {
             method: 'POST',
             mode: 'cors',
@@ -110,7 +109,8 @@ async function view_producto() {
                     <td>${producto.nombre || ''}</td>
                     <td>${producto.precio || ''}</td>
                     <td>${producto.stock || ''}</td>
-                    <td>${producto.id_categoria || ''}</td>
+                    <td>${producto.categoria_nombre || ''}</td>
+                    <td>${producto.proveedor_nombre || ''}</td>
                     <td>${producto.fecha_vencimiento || ''}</td>
                     <td>
                         <a href="${base_url}edit-products/${producto.id}" class="btn btn-primary">Editar</a>
@@ -120,11 +120,11 @@ async function view_producto() {
             });
             document.getElementById('content_productos').innerHTML = html;
         } else {
-            document.getElementById('content_productos').innerHTML = '<tr><td colspan="6">No hay productos disponibles</td></tr>';
+            document.getElementById('content_productos').innerHTML = '<tr><td colspan="8">No hay productos disponibles</td></tr>';
         }
     } catch (error) {
         console.log(error);
-        document.getElementById('content_productos').innerHTML = '<tr><td colspan="6">Error al cargar los productos</td></tr>';
+        document.getElementById('content_productos').innerHTML = '<tr><td colspan="8">Error al cargar los productos</td></tr>';
     }
 }
 
@@ -162,6 +162,9 @@ async function edit_product() {
         if ('categoria' in json.data && json.data.categoria !== null) {
             document.getElementById('id_categoria').value = json.data.categoria;
         }
+        if ('proveedor' in json.data && json.data.proveedor !== null) {
+            document.getElementById('id_proveedor').value = json.data.proveedor;
+        }
         document.getElementById('fecha_vencimiento').value = json.data.fecha_vencimiento;
 
     } catch (error) {
@@ -189,7 +192,6 @@ async function actualizarProducto() {
         datos.append('proveedor', datos.get('id_proveedor'));
     }
     if (!datos.has('imagen')) datos.append('imagen', '');
-    if (!datos.has('estado')) datos.append('estado', '1');
     let respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=actualizar', {
         method: 'POST',
         mode: 'cors',

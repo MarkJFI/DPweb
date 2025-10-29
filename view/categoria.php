@@ -12,24 +12,9 @@
 </head>
 <!--inicio de cuerpo de pagina-->
 
-<body>
-    <style>
-        .collapse {
-            background: linear-gradient(rgb(56, 184, 6), rgb(149, 160, 160));
-
-        }
-
-        .nav-link {
-            color: aliceblue;
-        }
-    </style>
-
     <nav class="navbar nav bar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand styled-logo" href="#">LOGO</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">

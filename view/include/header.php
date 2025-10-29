@@ -13,8 +13,15 @@
 
 <body>
     <style>
+        body{
+            background-image: url(https://png.pngtree.com/thumb_back/fw800/background/20231230/pngtree-vector-texture-unmissable-online-shopping-sale-marketing-image_13912090.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
         .collapse {
-            background: linear-gradient(rgba(137, 75, 243, 1), rgba(151, 148, 238, 1), rgba(203, 204, 200, 1));
+            background: linear-gradient(rgba(241, 238, 3, 1), rgba(238, 153, 26, 1), rgba(252, 3, 3, 1));
 
         }
 
@@ -26,7 +33,7 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand" href="">
-                <img src="https://cdn.worldvectorlogo.com/logos/balenciaga-4.svg" alt="Logo" style="height:90px; width:auto;">
+                <img src="https://png.pngtree.com/png-clipart/20220213/original/pngtree-online-shop-digital-shopping-logo-concept-for-mouse-and-cart-bag-png-image_7265985.png" alt="Logo" style="height:100px; width: auto;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon">

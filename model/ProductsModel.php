@@ -11,7 +11,7 @@ class ProductsModel
         $this->conexion = Conexion::connect();
     }
 
-    public function registrarProducto($codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor, $estado)
+    public function registrarProducto($codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor)
     {
         $arr_respuesta = ['status' => false, 'id' => ""];
 
@@ -19,38 +19,37 @@ class ProductsModel
         $precio = floatval($precio);
         $stock = intval($stock);
         $categoria = intval($categoria);
-        $estado = intval($estado);
         $proveedor_val = (is_numeric($proveedor) && intval($proveedor) > 0) ? intval($proveedor) : null;
         $fecha_venc_val = (!empty($fecha_vencimiento)) ? $fecha_vencimiento : null; // Permitir NULL
         $imagen_val = ($imagen !== null && $imagen !== '') ? $imagen : null; // Permitir NULL
 
-        $sql = "INSERT INTO producto(codigo, nombre, detalle, precio, stock, id_categoria, fecha_vencimiento, imagen, estado, fecha_creacion)
-                VALUES (?,?,?,?,?,?,?,?,?,NOW())";
+        $sql = "INSERT INTO producto(codigo, nombre, detalle, precio, stock, id_categoria, id_proveedor, fecha_vencimiento, imagen)
+                VALUES (?,?,?,?,?,?,?,?,?)";
         $stmt = $this->conexion->prepare($sql);
         if (!$stmt) {
             $arr_respuesta['error'] = $this->conexion->error;
             return $arr_respuesta;
         }
 
-        // sss d i i s s i -> 9 params
+        // sss d i i s s s -> 9 params
         $stmt->bind_param(
-            "sssdiissi",
+            "sssdiiiss",
             $codigo,
             $nombre,
             $detalle,
             $precio,
             $stock,
             $categoria,
+            $proveedor_val,
             $fecha_venc_val,
-            $imagen_val,
-            $estado
+            $imagen_val
         );
 
         if ($stmt->execute()) {
             $arr_respuesta['status'] = true;
             $arr_respuesta['id'] = $this->conexion->insert_id;
-            // Registrar movimiento inicial de stock
-            $this->registrarMovimiento($arr_respuesta['id'], 'entrada', $stock, $precio, 'Stock inicial del producto');
+            // Registrar movimiento inicial de stock (comentado porque la tabla no existe)
+            // $this->registrarMovimiento($arr_respuesta['id'], 'entrada', $stock, $precio, 'Stock inicial del producto');
         } else {
             $arr_respuesta['error'] = $stmt->error;
         }
@@ -61,9 +60,10 @@ class ProductsModel
     public function obtenerProductos()
     {
         $res = $this->conexion->query("
-        SELECT p.*, c.nombre AS categoria_nombre
-        FROM producto p 
-        LEFT JOIN categoria c ON p.id_categoria = c.id 
+        SELECT p.*, c.nombre AS categoria_nombre, pr.razon_social AS proveedor_nombre
+        FROM producto p
+        LEFT JOIN categoria c ON p.id_categoria = c.id
+        LEFT JOIN persona pr ON p.id_proveedor = pr.id
         ORDER BY p.nombre ASC
     ");
 
@@ -74,9 +74,10 @@ class ProductsModel
 
     public function verProducto($id)
     {
-        $sql = "SELECT p.*, c.nombre as categoria_nombre
+        $sql = "SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre
                 FROM producto p
                 LEFT JOIN categoria c ON p.id_categoria = c.id
+                LEFT JOIN persona pr ON p.id_proveedor = pr.id
                 WHERE p.id = ?";
         $stmt = $this->conexion->prepare($sql);
         if (!$stmt) return [];
@@ -113,13 +114,12 @@ class ProductsModel
         return $rows;
     }
 
-    public function actualizarProducto($id, $codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor, $estado)
+    public function actualizarProducto($id, $codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor)
     {
         $id = intval($id);
         $precio = floatval($precio);
         $stock = intval($stock);
         $categoria = intval($categoria);
-        $estado = intval($estado);
         $proveedor_val = (is_numeric($proveedor) && intval($proveedor) > 0) ? intval($proveedor) : null;
         $fecha_venc_val = (!empty($fecha_vencimiento)) ? $fecha_vencimiento : null;
         $imagen_val = ($imagen !== null && $imagen !== '') ? $imagen : null;
@@ -138,24 +138,24 @@ class ProductsModel
             $stmtPrev->close();
         }
 
-        $sql = "UPDATE producto 
-                SET codigo = ?, nombre = ?, detalle = ?, precio = ?, stock = ?, id_categoria = ?, 
-                    fecha_vencimiento = ?, imagen = ?, estado = ?, fecha_actualizacion = NOW() 
+        $sql = "UPDATE producto
+                SET codigo = ?, nombre = ?, detalle = ?, precio = ?, stock = ?, id_categoria = ?, id_proveedor = ?,
+                    fecha_vencimiento = ?, imagen = ?
                 WHERE id = ?";
         $stmt = $this->conexion->prepare($sql);
         if (!$stmt) return false;
 
         $stmt->bind_param(
-            "sssdiissii",
+            "sssdiiissi",
             $codigo,
             $nombre,
             $detalle,
             $precio,
             $stock,
             $categoria,
+            $proveedor_val,
             $fecha_venc_val,
             $imagen_val,
-            $estado,
             $id
         );
 
@@ -166,7 +166,8 @@ class ProductsModel
             $diferencia = $stock - $stock_anterior;
             $tipo_movimiento = $diferencia > 0 ? 'entrada' : 'salida';
             $cantidad = abs($diferencia);
-            $this->registrarMovimiento($id, $tipo_movimiento, $cantidad, $precio, 'Ajuste por actualización de producto');
+            // Registrar movimiento (comentado porque la tabla no existe)
+            // $this->registrarMovimiento($id, $tipo_movimiento, $cantidad, $precio, 'Ajuste por actualización de producto');
         }
 
         return $ok;
@@ -426,13 +427,9 @@ class ProductsModel
 
     public function obtenerProveedores()
     {
-        // No existe tabla de proveedores en este proyecto, devolvemos opción por defecto
-        return [
-            [
-                'id' => null,
-                'nombre' => 'Sin proveedor'
-            ]
-        ];
+        $res = $this->conexion->query("SELECT id, razon_social as nombre FROM persona WHERE rol = 'Proveedor' ORDER BY razon_social ASC");
+        if (!$res) return [];
+        return $res->fetch_all(MYSQLI_ASSOC);
     }
 
     public function contarProductos()

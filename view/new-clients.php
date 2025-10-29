@@ -76,7 +76,7 @@
                 <br>
                 <button type="submit" class="btn btn-success">Registrar</button>
                 <button type="reset" class="btn btn-secondary">Limpiar</button>
-                <button type="button" class="btn btn-danger">Cancelar</button>
+                <a href="<?php echo BASE_URL; ?>clientes" class="btn btn-danger">Cancelar</a>
 
             </div>
         </form>

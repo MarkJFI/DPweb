@@ -24,7 +24,6 @@ if ($tipo == "registrar") {
         // Imagen: si viene por FILES, no se procesa aquí (quedará vacío)
         $imagen = $_POST['imagen'] ?? '';
         $proveedor = $_POST['proveedor'] ?? '';
-        $estado = isset($_POST['estado']) ? intval($_POST['estado']) : 1;
 
         // Validación básica
         if ($codigo === '' || $nombre === '' || $detalle === '' || $precio <= 0 || $stock < 0 || $categoria <= 0 || empty($fecha_vencimiento)) {
@@ -32,7 +31,7 @@ if ($tipo == "registrar") {
             exit;
         }
 
-        $arr_respuesta = $objProduct->registrarProducto($codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor, $estado);
+        $arr_respuesta = $objProduct->registrarProducto($codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor);
 
         if (empty($arr_respuesta['id'])) {
             $msg = !empty($arr_respuesta['error'] ?? '') ? $arr_respuesta['error'] : "Error al registrar producto";
@@ -93,11 +92,10 @@ if ($tipo == "actualizar") {
         $stock = $_POST['stock'];
         $categoria = $_POST['categoria'];
         $fecha_vencimiento = $_POST['fecha_vencimiento'];
-        $imagen = $_POST['imagen'];
+        $imagen = $_POST['imagen'] ?? '';
         $proveedor = $_POST['proveedor'];
-        $estado = $_POST['estado'];
         
-        $arr_respuesta = $objProduct->actualizarProducto($id_producto, $codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor, $estado);
+        $arr_respuesta = $objProduct->actualizarProducto($id_producto, $codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor);
         
         if ($arr_respuesta) {
             $response = array('status' => true, 'msg' => "Producto actualizado correctamente");
