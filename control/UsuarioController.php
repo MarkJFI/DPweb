@@ -1,4 +1,10 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    exit(0);
+}
 require_once("../model/UsuarioModel.php");
 
 $objPersona = new UsuarioModel();
@@ -39,8 +45,8 @@ if ($tipo == "registrar") {
     echo json_encode($arrResponse);
 }
 if ($tipo == 'iniciar_sesion') {
-    $nro_identidad = $_POST['username'];
-    $password = $_POST['password'];
+    $nro_identidad = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
     if ($nro_identidad == "" || $password == "") {
         $respuesta = array('status' => false, 'msg' => 'Error, campos vacios');
     } else {
