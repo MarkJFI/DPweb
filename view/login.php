@@ -56,7 +56,7 @@
       <center> <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjopiHq_3AR78yIAK34Wd5y4dUbvEBUHTs-DbnZnaqA8v8-nyFhVMCeLSVm0KF4VrFrKZrwl4pdXfiHhaYjaj1Spc3XbhuhCzJS8-OOLfb7m4kvuUr_fK15GSNDcobHeUkRNv8NuCpGkfyA/s900/Las-Grandes-Empresas-no-Despengan-en-La-Venta-Online.gif" alt="" width="250px" height="200px" </center>
         <input type="text" placeholder="Usuario" id="User" name="username">
         <input type="tex" placeholder="Contraseña" id="Contraseña" name="password">
-        <button type="button" placeholder="Ingresar" onclick="iniciar_sesion();">Ingresar </button>
+        <button type="button" placeholder="Ingresar" onclick="iniciar_sesion();">Ingresar</button>
     </form>
     <br>
     <div class="forgot">
