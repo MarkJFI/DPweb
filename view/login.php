@@ -1,5 +1,5 @@
 
-<!--?php
+<?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usuario = $_POST["usuario"];
     $clave = $_POST["clave"];
@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     exit();
 }
-? -->
+?>
 
 <!DOCTYPE html>
 <html lang="en">
