@@ -1,27 +1,10 @@
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
-        <div class="d-flex align-items-center">
-            <a href="<?php echo BASE_URL; ?>new-products" class="btn btn-success me-3"><i class="bi bi-plus-circle"></i>+ Nuevo Producto</a>
-            <h5 class="mb-0"><center><i>Lista de Productos</i></center></h5>
-        </div>
-    </div>
-
-    <table class="table table-striped-columns">
-        <thead>
-            <tr>
-                <th><i>Nro</i></th>
-                <th><i>Código</i></th>
-                <th><i>Nombre</i></th>
-                <th><i>Precio</i></th>
-                <th><i>Stock</i></th>
-                <th><i>Categoria</i></th>
-                <th><i>Proveedor</i></th>
-                <th><i>Fecha de vencimiento</i></th>
-                <th><i>Acciones</i></th>
-            </tr>
-        </thead>
-        <tbody id="content_productos"></tbody>
-    </table>
+<?php include_once dirname(__DIR__) . '/config/config.php'; ?>
+<div class="container mt-4">
+  <h3 class="mb-3">Lista de Productos</h3>
+  <a href="<?= BASE_URL; ?>new-products" class="btn btn-success mb-4">Nuevo Producto</a>
+  <div id="products_grid" class="row g-3"></div>
 </div>
-
-<script src="<?php echo BASE_URL; ?>view/function/producto.js"></script>
+<script>
+  const base_url = '<?= BASE_URL; ?>';
+</script>
+<script src="<?= BASE_URL; ?>view/function/producto.js"></script>
