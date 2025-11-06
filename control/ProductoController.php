@@ -216,4 +216,3 @@ if ($tipo === "eliminar") {
     }
     exit;
 }
-

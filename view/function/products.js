@@ -287,3 +287,94 @@ async function cargar_proveedores() {
     //console.log(contenido);
     document.getElementById("id_proveedor").innerHTML = contenido;
 }
+
+
+
+
+// Función para mostrar productos en tarjetas
+async function view_products_cards() {
+    try {
+        console.log("Cargando productos en vista de cards...");
+        let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=ver_productos', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+
+        let json = await respuesta.json();
+        console.log("Datos recibidos:", json);
+
+        let contenido = document.getElementById('content_products');
+        if (!contenido) {
+            console.error("❌ No se encontró el contenedor #content_products");
+            return;
+        }
+
+        contenido.innerHTML = '';
+
+        if (json.status && json.data.length > 0) {
+            let fila = document.createElement('div');
+            fila.className = 'row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4';
+
+            json.data.forEach(producto => {
+                let rutaImagen = producto.imagen && producto.imagen.trim() !== ""
+                    ? base_url + 'uploads/productos/' + producto.imagen
+                    : base_url + 'assets/img/no-image.png';
+
+                let col = document.createElement('div');
+                col.className = 'col';
+
+                col.innerHTML = `
+                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                        <img src="${rutaImagen}" 
+                             class="card-img-top" 
+                             alt="${producto.nombre}" 
+                             style="height: 200px; object-fit: cover;">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-primary fw-bold">${producto.nombre}</h5>
+                            <p class="card-text small text-muted">${producto.detalle}</p>
+                            <p class="fw-semibold text-success">S/ ${parseFloat(producto.precio).toFixed(2)}</p>
+                            <span class="badge bg-secondary mb-2">Stock: ${producto.stock}</span>
+                            <p class="text-muted small mb-0">Categoría: ${producto.categoria ?? '—'}</p>
+                            <p class="text-muted small">Proveedor: ${producto.proveedor ?? '—'}</p>
+                            <p class="text-muted small">Vence: ${producto.fecha_vencimiento ?? '—'}</p>
+                        </div>
+                        <div class="card-footer bg-light border-0 d-flex justify-content-center gap-2 pb-3">
+                            <button class="btn btn-outline-primary btn-sm rounded-pill">
+                                <i class="bi bi-eye"></i> Ver Detalles
+                            </button>
+                            <button class="btn btn-outline-success btn-sm rounded-pill">
+                                <i class="bi bi-cart-plus"></i> Agregar al Carrito
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                fila.appendChild(col);
+            });
+
+            contenido.appendChild(fila);
+        } else {
+            contenido.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bi bi-box-seam display-4 text-muted"></i>
+                    <h5 class="mt-3 text-muted">No hay productos disponibles</h5>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error("Error al mostrar productos en tarjetas:", error);
+        let contenido = document.getElementById('content_products');
+        if (contenido) {
+            contenido.innerHTML = `
+                <div class="alert alert-danger text-center" role="alert">
+                    Error al cargar los productos. Intente nuevamente más tarde.
+                </div>
+            `;
+        }
+    }
+}
+
+if (document.getElementById('content_products')) {
+    view_products_cards();
+}

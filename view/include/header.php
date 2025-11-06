@@ -208,6 +208,10 @@
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>producto">productos</a>
                     </li>
+                  <!--  
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= BASE_URL ?>vista-productos">Vista de productos</a>
+                    </li>-->
 
 
                     <li class="nav-item">
