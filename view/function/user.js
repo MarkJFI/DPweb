@@ -36,7 +36,6 @@ if (document.querySelector("#frm_user")) {
   frm_user.onsubmit = function (e) {
     e.preventDefault();
     validar_form("nuevo");
-
   }
 
 }
