@@ -317,38 +317,53 @@ async function view_products_cards() {
             fila.className = 'row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4';
 
             json.data.forEach(producto => {
-                let rutaImagen = producto.imagen && producto.imagen.trim() !== ""
-                    ? base_url + 'uploads/productos/' + producto.imagen
-                    : base_url + 'assets/img/no-image.png';
+
+                let rutaImagen;
+                if (producto.imagen && producto.imagen.startsWith('data:image')) {
+                    rutaImagen = producto.imagen; // ya viene en base64
+                } else if (producto.imagen && producto.imagen.trim() !== "") {
+                    rutaImagen = base_url + 'uploads/productos' + producto.imagen;
+                } else {
+                    rutaImagen = base_url + 'assets/img/no-image.png';
+                }
 
                 let col = document.createElement('div');
                 col.className = 'col';
+                col.setAttribute('data-producto-id', producto.id);
 
                 col.innerHTML = `
                     <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
-                        <img src="${rutaImagen}" 
-                             class="card-img-top" 
-                             alt="${producto.nombre}" 
-                             style="height: 200px; object-fit: cover;">
-                        <div class="card-body text-center">
-                            <h5 class="card-title text-primary fw-bold">${producto.nombre}</h5>
-                            <p class="card-text small text-muted">${producto.detalle}</p>
-                            <p class="fw-semibold text-success">S/ ${parseFloat(producto.precio).toFixed(2)}</p>
-                            <span class="badge bg-secondary mb-2">Stock: ${producto.stock}</span>
-                            <p class="text-muted small mb-0">Categoría: ${producto.categoria ?? '—'}</p>
-                            <p class="text-muted small">Proveedor: ${producto.proveedor ?? '—'}</p>
-                            <p class="text-muted small">Vence: ${producto.fecha_vencimiento ?? '—'}</p>
-                        </div>
-                        <div class="card-footer bg-light border-0 d-flex justify-content-center gap-2 pb-3">
-                            <button class="btn btn-outline-primary btn-sm rounded-pill">
-                                <i class="bi bi-eye"></i> Ver Detalles
-                            </button>
-                            <button class="btn btn-outline-success btn-sm rounded-pill">
-                                <i class="bi bi-cart-plus"></i> Agregar al Carrito
-                            </button>
-                        </div>
-                    </div>
-                `;
+                       <img src="${rutaImagen}" 
+             class="card-img-top img-fluid" 
+             alt="${producto.nombre}" 
+             style="height: 200px; object-fit: cover; transition: transform 0.3s ease;">
+        
+        <div class="card-body text-center">
+            <h5 class="card-title text-primary fw-bold mb-2">${producto.nombre}</h5>
+            <p class="card-text text-muted small mb-2">${producto.detalle}</p>
+            <p class="fw-semibold text-success fs-6 mb-2">S/ ${parseFloat(producto.precio).toFixed(2)}</p>
+            <span class="badge bg-secondary mb-2 px-3 py-2">Stock: ${producto.stock}</span>
+            <p class="text-muted small mb-1"><i class="bi bi-tags"></i> Categoría: ${producto.categoria ?? '—'}</p>
+            <p class="text-muted small mb-1"><i class="bi bi-truck"></i> Proveedor: ${producto.proveedor ?? '—'}</p>
+            <p class="text-muted small mb-0"><i class="bi bi-calendar-event"></i> Fecha: ${producto.fecha_vencimiento ?? '—'}</p>
+        </div>
+
+        <div class="card-footer bg-light border-0 d-flex justify-content-center gap-2 pb-3">
+            <button class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                <i class="bi bi-eye"></i> Ver Detalles
+            </button>
+            <a href="${base_url}edit-producto/${producto.id}" class="btn btn-outline-warning btn-sm rounded-pill px-3">
+                <i class="bi bi-pencil-square"></i> Editar
+            </a>
+            <button class="btn btn-outline-success btn-sm rounded-pill px-3">
+                <i class="bi bi-cart-plus"></i> Agregar al Carrito
+            </button>
+            <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="fn_eliminar(${producto.id})">
+                <i class="bi bi-trash"></i> Eliminar
+            </button>
+        </div>
+    </div>
+`;
 
                 fila.appendChild(col);
             });
