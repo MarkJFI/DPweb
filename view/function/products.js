@@ -62,58 +62,7 @@ async function registrarProducto() {
     }
 }
 
-//VER PRODUCTOS
-async function view_products() {
-    try {
-        console.log('Iniciando carga de productos...');
-        let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=ver_productos', {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache'
-        });
-        console.log('Respuesta recibida:', respuesta);
-        json = await respuesta.json();
-        console.log('Datos recibidos:', json);
-        contenidot = document.getElementById('content_products');
-        if (json.status) {
-            let cont = 1;
-            json.data.forEach(producto => {
-                let nueva_fila = document.createElement("tr");
-                nueva_fila.id = "fila" + producto.id;
-                nueva_fila.className = "filas_tabla";
-                nueva_fila.innerHTML = `
-                            <td>${cont}</td>
-                            <td>${producto.codigo}</td>
-                            <td>${producto.nombre}</td>
-                            <td>${producto.detalle}</td>
-                            <td>${producto.precio}</td>
-                            <td>${producto.stock}</td>
-                            <td>${producto.categoria}</td>
-                            <td>${producto.fecha_vencimiento}</td>
-                            <td>
-                                <a href="`+ base_url + `edit-producto/` + producto.id + `" 
-                                class="btn btn-primary btn-sm rounded-pill">
-                                <i class="bi bi-pencil-square"></i> Editar
-                                </a>
-                                <button class="btn btn-danger btn-sm rounded-pill ms-1"
-                                 onclick="fn_eliminar(` + producto.id + `);" 
-                                style="background:#dc3545;">
-                                 <i class="bi bi-trash"></i> Eliminar
-                                </button>
-                            </td>
-                            `;
-                cont++;
-                contenidot.appendChild(nueva_fila);
-            });
-        }
-    } catch (e) {
-        console.log('error en mostrar producto ' + e);
-    }
-}
-//llama a la funcion para ver productos si existe el contenedor
-if (document.getElementById('content_products')) {
-    view_products();
-}
+
 
 
 
@@ -289,8 +238,6 @@ async function cargar_proveedores() {
 }
 
 
-
-
 // Función para mostrar productos en tarjetas
 async function view_products_cards() {
     try {
@@ -320,12 +267,13 @@ async function view_products_cards() {
 
                 let rutaImagen;
                 if (producto.imagen && producto.imagen.startsWith('data:image')) {
-                    rutaImagen = producto.imagen; // ya viene en base64
+                    rutaImagen = producto.imagen;
                 } else if (producto.imagen && producto.imagen.trim() !== "") {
-                    rutaImagen = base_url + 'uploads/productos' + producto.imagen;
+                    rutaImagen = base_url + producto.imagen;
                 } else {
                     rutaImagen = base_url + 'assets/img/no-image.png';
                 }
+
 
                 let col = document.createElement('div');
                 col.className = 'col';
@@ -393,3 +341,5 @@ async function view_products_cards() {
 if (document.getElementById('content_products')) {
     view_products_cards();
 }
+
+

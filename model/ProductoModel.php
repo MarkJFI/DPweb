@@ -79,9 +79,12 @@ class ProductoModel
         $sql = $this->conexion->query($consulta);
         return $sql;
     }
+     
 
-// Mostrar mis productos
-      public function mostrarMisProductos()
+
+
+    // Nuevo método para mostrar productos en la tienda
+    public function mostrarMisProductos()
     {
         $arr_productos = array();
         $consulta = "SELECT nombre, precio, id_categoria, imagen FROM producto";
@@ -91,5 +94,8 @@ class ProductoModel
         }
         return $arr_productos;
     }
-       
+
+
+
+
 }
