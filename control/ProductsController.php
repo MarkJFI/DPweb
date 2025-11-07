@@ -10,8 +10,49 @@ function send_json($data) {
     if (!empty($buf)) {
         error_log("Unexpected output before JSON response in ProductsController: " . $buf);
     }
+    // Intentar codificar a JSON manejando errores de codificación (UTF-8)
+    $json = @json_encode($data, JSON_UNESCAPED_UNICODE);
+    if ($json === false) {
+        $err = json_last_error_msg();
+        error_log("JSON encode error in ProductsController: " . $err . " - attempting utf8 normalization");
+
+        // Función recursiva para normalizar strings a UTF-8
+        $utf8ize = function ($mixed) use (&$utf8ize) {
+            if (is_array($mixed)) {
+                $res = [];
+                foreach ($mixed as $k => $v) {
+                    $res[$k] = $utf8ize($v);
+                }
+                return $res;
+            } elseif (is_string($mixed)) {
+                // Convertir a UTF-8 si no lo está
+                if (!mb_check_encoding($mixed, 'UTF-8')) {
+                    return mb_convert_encoding($mixed, 'UTF-8', 'auto');
+                }
+                return $mixed;
+            }
+            return $mixed;
+        };
+
+        $safe = $utf8ize($data);
+        $json = @json_encode($safe, JSON_UNESCAPED_UNICODE);
+        if ($json === false) {
+            $err2 = json_last_error_msg();
+            error_log("JSON encode still failing after utf8 normalization: " . $err2);
+            // Fallback: enviar un JSON mínimo y registrar los datos completos en el log
+            error_log("ProductsController response data (for debugging): " . print_r($data, true));
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'status' => false,
+                'msg' => 'Error serializando respuesta JSON en el servidor',
+                'json_error' => $err2
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+    }
+
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode($data);
+    echo $json;
     exit;
 }
 
