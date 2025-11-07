@@ -286,17 +286,37 @@ async function view_products_cards() {
                        <img src="${rutaImagen}" 
              class="card-img-top img-fluid" 
              alt="${producto.nombre}" 
-             style="height: 200px; object-fit: cover; transition: transform 0.3s ease;">
+             style="height: 300px; width: 900px; object-fit: cover; transition: transform 0.3s ease;">
         
-        <div class="card-body text-center">
-            <h5 class="card-title text-primary fw-bold mb-2">${producto.nombre}</h5>
-            <p class="card-text text-muted small mb-2">${producto.detalle}</p>
-            <p class="fw-semibold text-success fs-6 mb-2">S/ ${parseFloat(producto.precio).toFixed(2)}</p>
-            <span class="badge bg-secondary mb-2 px-3 py-2">Stock: ${producto.stock}</span>
-            <p class="text-muted small mb-1"><i class="bi bi-tags"></i> Categoría: ${producto.categoria ?? '—'}</p>
-            <p class="text-muted small mb-1"><i class="bi bi-truck"></i> Proveedor: ${producto.proveedor ?? '—'}</p>
-            <p class="text-muted small mb-0"><i class="bi bi-calendar-event"></i> Fecha: ${producto.fecha_vencimiento ?? '—'}</p>
+       <div class="card-body text-center bg-light rounded-4 shadow-sm py-4">
+    <h5 class="card-title fw-bold mb-3 text-dark">
+        ${producto.nombre}
+    </h5>
+    <p class="card-text small text-secondary mb-3">
+        ${producto.detalle}
+    </p>
+    <p class="fw-semibold fs-5 text-dark mb-3">
+        💰 S/ ${parseFloat(producto.precio).toFixed(2)}
+    </p>
+    <span class="badge bg-dark text-white mb-3 px-4 py-2 rounded-pill">
+        Stock: ${producto.stock}
+    </span>
+    <div class="border-top pt-3">
+        <p class="text-dark small mb-2">
+            <i class="bi bi-tags me-1 text-secondary"></i>
+            <strong>Categoría:</strong> ${producto.categoria ?? '—'}
+        </p>
+        <p class="text-dark small mb-2">
+            <i class="bi bi-truck me-1 text-secondary"></i>
+            <strong>Proveedor:</strong> ${producto.proveedor ?? '—'}
+        </p>
+        <p class="text-dark small mb-0">
+            <i class="bi bi-calendar-event me-1 text-secondary"></i>
+            <strong>Fecha:</strong> ${producto.fecha_vencimiento ?? '—'}
+        </p>
+            </div>
         </div>
+
 
         <div class="card-footer bg-light border-0 d-flex justify-content-center gap-2 pb-3">
             <button class="btn btn-outline-primary btn-sm rounded-pill px-3">
