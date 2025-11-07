@@ -17,6 +17,7 @@ function validar_form(tipo) {
             confirmButtonText: 'Entendido'
         });
         return;
+
     }
     if (tipo == "nuevo") {
         registrarProducto();
