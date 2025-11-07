@@ -21,8 +21,31 @@ if ($tipo == "registrar") {
         // Aceptar tanto 'categoria' como 'id_categoria' desde el formulario
         $categoria = isset($_POST['categoria']) ? intval($_POST['categoria']) : (isset($_POST['id_categoria']) ? intval($_POST['id_categoria']) : 0);
         $fecha_vencimiento = $_POST['fecha_vencimiento'] ?? null;
-        // Imagen: si viene por FILES, no se procesa aquí (quedará vacío)
-        $imagen = $_POST['imagen'] ?? '';
+        // Procesar imagen subida (si existe) y moverla a uploads/productos/
+        $imagen = '';
+        if (isset($_FILES['imagen']) && isset($_FILES['imagen']['tmp_name']) && $_FILES['imagen']['tmp_name'] != '') {
+            $file = $_FILES['imagen'];
+            if ($file['error'] === UPLOAD_ERR_OK) {
+                $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mime = finfo_file($finfo, $file['tmp_name']);
+                finfo_close($finfo);
+                if (in_array($mime, $allowed)) {
+                    $uploadDir = __DIR__ . '/../uploads/productos/';
+                    if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+                    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                    $filename = uniqid('prod_') . '.' . $ext;
+                    $target = $uploadDir . $filename;
+                    if (move_uploaded_file($file['tmp_name'], $target)) {
+                        // Guardamos la ruta relativa que usará la app para mostrar la imagen
+                        $imagen = 'uploads/productos/' . $filename;
+                    }
+                }
+            }
+        } else {
+            // posibilidad de recibir nombre/txt en formulario
+            $imagen = $_POST['imagen'] ?? '';
+        }
         $proveedor = $_POST['proveedor'] ?? '';
 
         // Validación básica
@@ -92,8 +115,43 @@ if ($tipo == "actualizar") {
         $stock = $_POST['stock'];
         $categoria = $_POST['categoria'];
         $fecha_vencimiento = $_POST['fecha_vencimiento'];
-        $imagen = $_POST['imagen'] ?? '';
         $proveedor = $_POST['proveedor'];
+
+        // Obtener la imagen actual para no perderla si no se sube nueva
+        $current = $objProduct->verProducto($id_producto);
+        $currentImage = !empty($current['imagen']) ? $current['imagen'] : '';
+
+        // Procesar imagen subida (si existe) y moverla a uploads/productos/
+        $imagen = $currentImage;
+        if (isset($_FILES['imagen']) && isset($_FILES['imagen']['tmp_name']) && $_FILES['imagen']['tmp_name'] != '') {
+            $file = $_FILES['imagen'];
+            if ($file['error'] === UPLOAD_ERR_OK) {
+                $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mime = finfo_file($finfo, $file['tmp_name']);
+                finfo_close($finfo);
+                if (in_array($mime, $allowed)) {
+                    $uploadDir = __DIR__ . '/../uploads/productos/';
+                    if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+                    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                    $filename = uniqid('prod_') . '.' . $ext;
+                    $target = $uploadDir . $filename;
+                    if (move_uploaded_file($file['tmp_name'], $target)) {
+                        // Eliminar imagen anterior si existía y es un archivo dentro de uploads
+                        if (!empty($currentImage) && file_exists(__DIR__ . '/../' . $currentImage)) {
+                            @unlink(__DIR__ . '/../' . $currentImage);
+                        }
+                        // Guardamos la ruta relativa que usará la app para mostrar la imagen
+                        $imagen = 'uploads/productos/' . $filename;
+                    }
+                }
+            }
+        } else {
+            // permitir que venga por POST (si es el caso)
+            if (isset($_POST['imagen']) && $_POST['imagen'] != '') {
+                $imagen = $_POST['imagen'];
+            }
+        }
         
         $arr_respuesta = $objProduct->actualizarProducto($id_producto, $codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor);
         

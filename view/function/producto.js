@@ -103,22 +103,26 @@ async function view_producto() {
         if (json && json.status && Array.isArray(json.data) && json.data.length > 0) {
             let html = '';
             json.data.forEach((producto, index) => {
-                html += `<div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <img src="${producto.imagen || 'default-image.jpg'}" class="card-img-top" alt="${producto.nombre || ''}" style="height: 200px; object-fit: cover;">
-                        <div class="card-body">
-                            <h5 class="card-title">${producto.nombre || ''}</h5>
-                            <p class="card-text"><strong>Código:</strong> ${producto.codigo || ''}</p>
-                            <p class="card-text"><strong>Precio:</strong> ${producto.precio || ''}</p>
-                            <p class="card-text"><strong>Detalle:</strong> ${producto.detalle || ''}</p>
-                            <p class="card-text"><strong>Categoría:</strong> ${producto.categoria_nombre || ''}</p>
-                            <p class="card-text"><strong>Proveedor:</strong> ${producto.proveedor_nombre || ''}</p>
-                            <p class="card-text"><strong>Fecha de vencimiento:</strong> ${producto.fecha_vencimiento || ''}</p>
-                            <p class="card-text"><strong>Stock:</strong> ${producto.stock || ''}</p>
+                const defaultImg = base_url + 'view/img/imagen.avif';
+                const imgSrc = producto.imagen ? (base_url + producto.imagen) : defaultImg;
+                html += `<div class="col-12 col-md-4 mb-4">
+                    <div class="card h-100 d-flex flex-column text-center shadow-sm">
+                        <div class="card-img-container" style="height:300px;padding:1rem;display:flex;align-items:center;justify-content:center;background:#fff;">
+                            <img src="${imgSrc}" class="card-img-top" alt="${producto.nombre || ''}" 
+                                style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;" 
+                                onerror="this.onerror=null;this.src='${defaultImg}'">
                         </div>
-                        <div class="card-footer">
-                            <a href="${base_url}edit-products/${producto.id}" class="btn btn-primary">Editar</a>
-                            <button onclick="eliminar(${producto.id})" class="btn btn-danger">Eliminar</button>
+                        <div class="card-body d-flex flex-column align-items-center">
+                            <h5 class="card-title text-primary fw-bold">${producto.nombre || ''}</h5>
+                            <div class="text-muted mb-2">${producto.detalle || ''}</div>
+                            <div class="fw-bold text-success mb-2">S/ ${producto.precio || ''}</div>
+                            <div class="small text-muted">Categoría: ${producto.categoria_nombre || ''}</div>
+                            <div class="small text-muted">Proveedor: ${producto.proveedor_nombre || ''}</div>
+                            <div class="small text-muted">Vence: ${producto.fecha_vencimiento || ''}</div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <a href="${base_url}edit-products/${producto.id}" class="btn btn-primary btn-sm">Editar</a>
+                            <button onclick="eliminar(${producto.id})" class="btn btn-danger btn-sm">Eliminar</button>
                         </div>
                     </div>
                 </div>`;
@@ -173,23 +177,36 @@ async function render_cards_productos() {
             html = '<div class="col-12"><div class="alert alert-info">No hay productos disponibles</div></div>';
         } else {
             html = json.data.map(p => {
-                const img = p.imagen ? (base_url + p.imagen) : (base_url + 'view/bootstrap/img/placeholder.png');
+                const defaultImg = base_url + 'view/img/imagen.avif';
+                const img = p.imagen ? (base_url + p.imagen) : defaultImg;
                 const precio = (p.precio !== undefined && p.precio !== null) ? Number(p.precio).toFixed(2) : '0.00';
-                const estado_o_detalle = p.estado || p.detalle || '';
+                const detalle = p.detalle || p.estado || '';
                 return `
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                  <div class="card h-100">
-                    <img src="${img}" class="card-img-top" alt="${p.nombre || ''}" onerror="this.src='${base_url}view/bootstrap/img/placeholder.png'">
-                    <div class="card-body text-center">
-                      <h5 class="card-title"><a href="#" class="text-primary">${p.nombre || ''}</a></h5>
-                      <div class="text-muted">${estado_o_detalle}</div>
-                      <div class="fw-bold text-success mt-2">S/ ${precio}</div>
-                      <div class="small text-muted mt-3">Categoría: ${p.categoria_nombre || ''}</div>
-                      <div class="small text-muted">Proveedor: ${p.proveedor_nombre || ''}</div>
-                      <div class="small text-muted">Vence: ${p.fecha_vencimiento || ''}</div>
-                    </div>
-                  </div>
-                </div>`;
+                                            <div class="col-12 col-md-4 mb-4">
+                                                <div class="card h-100 d-flex flex-column text-center shadow-sm">
+                                                    <div class="card-img-container" style="height:380px;padding:1.5rem;display:flex;align-items:center;justify-content:center;background:#f8f9fa;border-bottom:1px solid rgba(0,0,0,0.1);">
+                                                        <img src="${img}" class="card-img-top" alt="${p.nombre || ''}" 
+                                                            style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:cover;" 
+                                                            onerror="this.onerror=null;this.src='${defaultImg}'">
+                                                    </div>
+                                                    <div class="card-body d-flex flex-column" style="min-height:220px;">
+                                                        <h5 class="card-title text-primary fw-bold mb-3">${p.nombre || ''}</h5>
+                                                        <div class="text-muted mb-2">${detalle}</div>
+                                                        <div class="fw-bold text-success mb-3 fs-4">S/ ${precio}</div>
+                                                        <div class="small text-muted mb-1">Categoría: ${p.categoria_nombre || ''}</div>
+                                                        <div class="small text-muted mb-1">Proveedor: ${p.proveedor_nombre || ''}</div>
+                                                        <div class="small text-muted mb-3">Vence: ${p.fecha_vencimiento || ''}</div>
+                                                    </div>
+                                                    <div class="card-footer bg-transparent border-top-0 d-flex justify-content-center gap-3 py-3">
+                                                        <a href="${base_url}edit-products/${p.id}" class="btn btn-outline-primary">
+                                                            <i class="fas fa-edit me-1"></i> Editar
+                                                        </a>
+                                                        <button onclick="eliminar(${p.id})" class="btn btn-outline-danger">
+                                                            <i class="fas fa-trash me-1"></i> Eliminar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>`;
             }).join('');
         }
         // Asignar de una sola vez para minimizar repintados
@@ -286,6 +303,9 @@ async function actualizarProducto() {
             icon: 'success',
             title: 'Éxito',
             text: json.msg
+        }).then(() => {
+            // Después de actualizar, volver a la lista para ver la imagen actualizada
+            window.location.href = base_url + 'products-list';
         });
     }
 }

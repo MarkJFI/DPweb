@@ -10,7 +10,7 @@
             }
             ?>
         </div>
-        <form id="frm_edit_producto" action="" method="">
+    <form id="frm_edit_producto" action="" method="post" enctype="multipart/form-data">
             <input type="hidden" name="id_producto" id="id_producto" value="<?= $ruta[1]; ?>">
             <div class="card-body">
 
