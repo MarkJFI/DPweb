@@ -35,7 +35,7 @@
                 <div class="mb-3 row">
                     <label for="precio" class="col-sm-2 col-form-label">precio</label>
                     <div class="col-sm-10">
-                        <input type="decimal" class="form-control" id="precio" name="precio" required>
+                        <input type="number" step="0.01" min="0" class="form-control" id="precio" name="precio" required>
                     </div>
                 </div>
                 <div class="mb-3 row">

@@ -74,7 +74,11 @@ class ProductsModel
 
     public function verProducto($id)
     {
-        $sql = "SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre
+        $sql = "SELECT p.*,
+                       p.id_categoria,
+                       p.id_proveedor,
+                       c.nombre as categoria_nombre,
+                       pr.razon_social as proveedor_nombre
                 FROM producto p
                 LEFT JOIN categoria c ON p.id_categoria = c.id
                 LEFT JOIN persona pr ON p.id_proveedor = pr.id

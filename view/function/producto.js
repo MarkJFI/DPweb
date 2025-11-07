@@ -253,9 +253,18 @@ async function edit_product() {
         if ('categoria' in json.data && json.data.categoria !== null) {
             document.getElementById('id_categoria').value = json.data.categoria;
         }
-        if ('proveedor' in json.data && json.data.proveedor !== null) {
-            document.getElementById('id_proveedor').value = json.data.proveedor;
-        }
+        // Aseguramos que los selectores estén cargados antes de asignar valores
+        Promise.all([
+            cargar_categorias(),
+            cargar_proveedores()
+        ]).then(() => {
+            if ('categoria' in json.data && json.data.categoria !== null) {
+                document.getElementById('id_categoria').value = json.data.categoria;
+            }
+            if ('proveedor' in json.data && json.data.proveedor !== null) {
+                document.getElementById('id_proveedor').value = json.data.proveedor;
+            }
+        });
         document.getElementById('fecha_vencimiento').value = json.data.fecha_vencimiento;
 
     } catch (error) {
@@ -286,46 +295,64 @@ if (document.readyState === 'loading') {
 //actualiza el producto
 async function actualizarProducto() {
     try {
-        // Verificar que tenemos el ID del producto
-        const id_producto = document.getElementById('id_producto').value;
-        if (!id_producto) {
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "No se pudo identificar el producto a actualizar"
-            });
-            return;
-        }
-
+        console.log('Iniciando actualización del producto');
+        
         const frm_edit_producto = document.querySelector("#frm_edit_producto");
         if (!frm_edit_producto) {
-            console.error("Formulario no encontrado");
-            return;
+            throw new Error('Formulario no encontrado');
         }
 
         const datos = new FormData(frm_edit_producto);
         
-        // Asegurar que tenemos el ID en el FormData
-        if (!datos.has('id_producto')) {
-            datos.append('id_producto', id_producto);
+        // Verificar ID del producto
+        const id_producto = datos.get('id_producto');
+        if (!id_producto) {
+            throw new Error('ID del producto no encontrado');
         }
 
-        // Map id_categoria -> categoria
-        if (datos.has('id_categoria') && !datos.has('categoria')) {
-            datos.append('categoria', datos.get('id_categoria'));
+        // Verificar campos requeridos
+        const camposRequeridos = ['codigo', 'nombre', 'detalle', 'precio', 'stock', 'categoria'];
+        for (const campo of camposRequeridos) {
+            if (!datos.get(campo) && !datos.get('id_' + campo)) {
+                throw new Error(`El campo ${campo} es requerido`);
+            }
+        }
+
+        console.log('Preparando datos para actualización...');
+        
+        // Asegurar que tenemos los campos correctos
+        if (datos.has('id_categoria')) {
+            const categoria = datos.get('id_categoria');
+            datos.set('categoria', categoria); // Usar set en lugar de append para evitar duplicados
+            console.log('Categoría mapeada:', categoria);
         }
         
-        // Map id_proveedor -> proveedor (opcional)
-        if (datos.has('id_proveedor') && !datos.has('proveedor')) {
-            datos.append('proveedor', datos.get('id_proveedor'));
+        if (datos.has('id_proveedor')) {
+            const proveedor = datos.get('id_proveedor');
+            datos.set('proveedor', proveedor); // Usar set en lugar de append para evitar duplicados
+            console.log('Proveedor mapeado:', proveedor);
         }
+        
+        // Asegurar que tenemos todos los campos requeridos
+        const camposEsperados = ['id_producto', 'codigo', 'nombre', 'detalle', 'precio', 'stock', 'categoria', 'fecha_vencimiento'];
+        console.log('Verificación de campos:');
+        camposEsperados.forEach(campo => {
+            console.log(`${campo}: ${datos.has(campo) ? 'presente' : 'falta'}`);
+        });
 
         // Manejar imagen
-        if (!datos.has('imagen')) {
-            datos.append('imagen', '');
+        if (!datos.has('imagen') || (datos.get('imagen') instanceof File && datos.get('imagen').size === 0)) {
+            datos.set('imagen', '');
         }
 
-        console.log('Enviando actualización para producto ID:', id_producto);
+        // Mostrar los datos que se van a enviar
+        console.log('Datos a enviar:');
+        for (let pair of datos.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+
+        console.log('Enviando solicitud al servidor...');
+        console.log('URL:', base_url + 'control/ProductsController.php?tipo=actualizar');
         
         const respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=actualizar', {
             method: 'POST',
@@ -334,20 +361,29 @@ async function actualizarProducto() {
             body: datos
         });
 
-        if (!respuesta.ok) {
-            throw new Error(`Error HTTP: ${respuesta.status}`);
+        // Obtener el texto de la respuesta primero
+        const texto = await respuesta.text();
+        console.log('Respuesta del servidor (raw):', texto);
+        console.log('Status:', respuesta.status);
+        console.log('Headers:', Object.fromEntries(respuesta.headers));
+
+        // Intentar parsear como JSON
+        let json;
+        try {
+            json = JSON.parse(texto);
+        } catch (e) {
+            console.error('Error parseando JSON:', e);
+            console.error('Contenido recibido:', texto);
+            throw new Error('El servidor devolvió una respuesta inválida. Por favor, contacte al administrador.');
         }
 
-        const json = await respuesta.json();
+        if (!respuesta.ok) {
+            throw new Error(`Error en la respuesta del servidor: ${respuesta.status}`);
+        }
         console.log('Respuesta del servidor:', json);
 
         if (!json.status) {
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: json.msg || "Ocurrió un error al actualizar el producto"
-            });
-            return;
+            throw new Error(json.msg || "Error al actualizar el producto");
         }
 
         await Swal.fire({
@@ -356,14 +392,16 @@ async function actualizarProducto() {
             text: json.msg || 'Producto actualizado correctamente'
         });
 
-        // Redireccionar solo después de que el usuario vea el mensaje de éxito
+        // Redireccionar solo después de mostrar el mensaje de éxito
         window.location.href = base_url + 'products-list';
+
     } catch (error) {
-        console.error('Error al actualizar:', error);
-        Swal.fire({
+        console.error('Error en la actualización:', error);
+        
+        await Swal.fire({
             icon: "error",
             title: "Error",
-            text: "Hubo un problema al actualizar el producto. Por favor, intente nuevamente."
+            text: error.message || "Hubo un problema al actualizar el producto. Por favor, intente nuevamente."
         });
     }
 }
@@ -444,20 +482,29 @@ async function cargar_proveedores() {
     try {
         const sel = document.getElementById('id_proveedor');
         if (!sel) return;
+        
+        console.log('Cargando proveedores...');
         const respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=obtener_proveedores', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache'
         });
+        
         const json = await respuesta.json();
+        console.log('Respuesta de proveedores:', json);
+        
         let opciones = '<option value="" selected disabled>Seleccionar</option>';
         if (json && json.status && Array.isArray(json.data)) {
             json.data.forEach(proveedor => {
                 opciones += `<option value="${proveedor.id}">${proveedor.nombre}</option>`;
             });
+            console.log('Proveedores cargados:', json.data.length);
+        } else {
+            console.log('No se recibieron proveedores válidos');
         }
+        
         sel.innerHTML = opciones;
     } catch (e) {
-        console.log('Error cargando proveedores', e);
+        console.error('Error cargando proveedores:', e);
     }
 }
