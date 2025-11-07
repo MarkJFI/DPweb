@@ -263,49 +263,107 @@ async function edit_product() {
     }
 }
 
-if (document.querySelector("#frm_edit_producto")) {
-    let frm_edit_producto = document.querySelector("#frm_edit_producto");
-    frm_edit_producto.onsubmit = function (e) {
+// Configurar el evento submit del formulario de edición
+function setupEditForm() {
+    const frm_edit_producto = document.querySelector("#frm_edit_producto");
+    if (!frm_edit_producto) return;
+
+    console.log('Configurando formulario de edición');
+    
+    frm_edit_producto.onsubmit = function(e) {
         e.preventDefault();
+        console.log('Formulario enviado - validando...');
         validar_form("actualizar");
-    }
+    };
+}
+
+// Ejecutar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupEditForm);
+} else {
+    setupEditForm();
 }
 //actualiza el producto
 async function actualizarProducto() {
-    const frm_edit_producto = document.querySelector("#frm_edit_producto")
-    const datos = new FormData(frm_edit_producto);
-    // Map id_categoria -> categoria
-    if (datos.has('id_categoria') && !datos.has('categoria')) {
-        datos.append('categoria', datos.get('id_categoria'));
-    }
-    // Map id_proveedor -> proveedor (opcional)
-    if (datos.has('id_proveedor') && !datos.has('proveedor')) {
-        datos.append('proveedor', datos.get('id_proveedor'));
-    }
-    if (!datos.has('imagen')) datos.append('imagen', '');
-    let respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=actualizar', {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        body: datos
-    });
-    json = await respuesta.json();
-    if (!json.status) {
+    try {
+        // Verificar que tenemos el ID del producto
+        const id_producto = document.getElementById('id_producto').value;
+        if (!id_producto) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "No se pudo identificar el producto a actualizar"
+            });
+            return;
+        }
+
+        const frm_edit_producto = document.querySelector("#frm_edit_producto");
+        if (!frm_edit_producto) {
+            console.error("Formulario no encontrado");
+            return;
+        }
+
+        const datos = new FormData(frm_edit_producto);
+        
+        // Asegurar que tenemos el ID en el FormData
+        if (!datos.has('id_producto')) {
+            datos.append('id_producto', id_producto);
+        }
+
+        // Map id_categoria -> categoria
+        if (datos.has('id_categoria') && !datos.has('categoria')) {
+            datos.append('categoria', datos.get('id_categoria'));
+        }
+        
+        // Map id_proveedor -> proveedor (opcional)
+        if (datos.has('id_proveedor') && !datos.has('proveedor')) {
+            datos.append('proveedor', datos.get('id_proveedor'));
+        }
+
+        // Manejar imagen
+        if (!datos.has('imagen')) {
+            datos.append('imagen', '');
+        }
+
+        console.log('Enviando actualización para producto ID:', id_producto);
+        
+        const respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=actualizar', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            body: datos
+        });
+
+        if (!respuesta.ok) {
+            throw new Error(`Error HTTP: ${respuesta.status}`);
+        }
+
+        const json = await respuesta.json();
+        console.log('Respuesta del servidor:', json);
+
+        if (!json.status) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: json.msg || "Ocurrió un error al actualizar el producto"
+            });
+            return;
+        }
+
+        await Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: json.msg || 'Producto actualizado correctamente'
+        });
+
+        // Redireccionar solo después de que el usuario vea el mensaje de éxito
+        window.location.href = base_url + 'products-list';
+    } catch (error) {
+        console.error('Error al actualizar:', error);
         Swal.fire({
             icon: "error",
             title: "Error",
-            text: "Ops, ocurrio un error al actualizar, contacte con el administrador",
-        });
-        console.log(json.msg);
-        return;
-    } else {
-        Swal.fire({
-            icon: 'success',
-            title: 'Éxito',
-            text: json.msg
-        }).then(() => {
-            // Después de actualizar, volver a la lista para ver la imagen actualizada
-            window.location.href = base_url + 'products-list';
+            text: "Hubo un problema al actualizar el producto. Por favor, intente nuevamente."
         });
     }
 }
