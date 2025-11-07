@@ -238,6 +238,8 @@ async function cargar_proveedores() {
 }
 
 
+
+
 // Función para mostrar productos en tarjetas
 async function view_products_cards() {
     try {
