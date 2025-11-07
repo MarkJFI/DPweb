@@ -103,28 +103,33 @@ async function view_producto() {
         if (json && json.status && Array.isArray(json.data) && json.data.length > 0) {
             let html = '';
             json.data.forEach((producto, index) => {
-                html += `<tr>
-                    <td>${index + 1}</td>
-                    <td>${producto.codigo || ''}</td>
-                    <td>${producto.nombre || ''}</td>
-                    <td>${producto.precio || ''}</td>
-                    <td>${producto.stock || ''}</td>
-                    <td>${producto.categoria_nombre || ''}</td>
-                    <td>${producto.proveedor_nombre || ''}</td>
-                    <td>${producto.fecha_vencimiento || ''}</td>
-                    <td>
-                        <a href="${base_url}edit-products/${producto.id}" class="btn btn-primary">Editar</a>
-                        <button onclick="eliminar(${producto.id})" class="btn btn-danger">Eliminar</button>
-                    </td>
-                </tr>`;
+                html += `<div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="${producto.imagen || 'default-image.jpg'}" class="card-img-top" alt="${producto.nombre || ''}" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">${producto.nombre || ''}</h5>
+                            <p class="card-text"><strong>Código:</strong> ${producto.codigo || ''}</p>
+                            <p class="card-text"><strong>Precio:</strong> ${producto.precio || ''}</p>
+                            <p class="card-text"><strong>Detalle:</strong> ${producto.detalle || ''}</p>
+                            <p class="card-text"><strong>Categoría:</strong> ${producto.categoria_nombre || ''}</p>
+                            <p class="card-text"><strong>Proveedor:</strong> ${producto.proveedor_nombre || ''}</p>
+                            <p class="card-text"><strong>Fecha de vencimiento:</strong> ${producto.fecha_vencimiento || ''}</p>
+                            <p class="card-text"><strong>Stock:</strong> ${producto.stock || ''}</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="${base_url}edit-products/${producto.id}" class="btn btn-primary">Editar</a>
+                            <button onclick="eliminar(${producto.id})" class="btn btn-danger">Eliminar</button>
+                        </div>
+                    </div>
+                </div>`;
             });
             document.getElementById('content_productos').innerHTML = html;
         } else {
-            document.getElementById('content_productos').innerHTML = '<tr><td colspan="8">No hay productos disponibles</td></tr>';
+            document.getElementById('content_productos').innerHTML = '<div class="col-12"><p>No hay productos disponibles</p></div>';
         }
     } catch (error) {
         console.log(error);
-        document.getElementById('content_productos').innerHTML = '<tr><td colspan="8">Error al cargar los productos</td></tr>';
+        document.getElementById('content_productos').innerHTML = '<div class="col-12"><p>Error al cargar los productos</p></div>';
     }
 }
 

@@ -6,22 +6,7 @@
         </div>
     </div>
 
-    <table class="table table-striped-columns">
-        <thead>
-            <tr>
-                <th><i>Nro</i></th>
-                <th><i>Código</i></th>
-                <th><i>Nombre</i></th>
-                <th><i>Precio</i></th>
-                <th><i>Stock</i></th>
-                <th><i>Categoria</i></th>
-                <th><i>Proveedor</i></th>
-                <th><i>Fecha de vencimiento</i></th>
-                <th><i>Acciones</i></th>
-            </tr>
-        </thead>
-        <tbody id="content_productos"></tbody>
-    </table>
+    <div class="row" id="content_productos"></div>
 </div>
 
 <script src="<?php echo BASE_URL; ?>view/function/producto.js"></script>
