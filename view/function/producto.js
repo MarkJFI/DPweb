@@ -137,6 +137,75 @@ if (document.getElementById('content_productos')) {
     view_producto();
 }
 
+// Render en cards para products-list
+async function render_cards_productos() {
+    const grid = document.getElementById('products_grid');
+    if (!grid) return;
+
+    // Guard global para evitar re-ejecuciones si el script se incluye 2 veces
+    if (window.__PRODUCTS_LIST_RENDERED) return;
+    window.__PRODUCTS_LIST_RENDERED = true;
+
+    // Evitar ejecuciones simultáneas o repetidas por eventos
+    if (grid.dataset.loading === '1') return;
+    grid.dataset.loading = '1';
+
+    try {
+        const resp = await fetch(base_url + 'control/ProductsController.php?tipo=ver_productos', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+        const raw = await resp.text();
+        if (!resp.ok) {
+            console.error('HTTP', resp.status, raw);
+            grid.innerHTML = '<div class="col-12"><div class="alert alert-danger">Error al cargar productos (' + resp.status + ')</div></div>';
+            return;
+        }
+        let json;
+        try { json = JSON.parse(raw); } catch (e) {
+            console.error('Respuesta no-JSON', raw);
+            grid.innerHTML = '<div class="col-12"><div class="alert alert-warning">Respuesta inválida del servidor</div></div>';
+            return;
+        }
+        let html = '';
+        if (!json.status || !Array.isArray(json.data) || json.data.length === 0) {
+            html = '<div class="col-12"><div class="alert alert-info">No hay productos disponibles</div></div>';
+        } else {
+            html = json.data.map(p => {
+                const img = p.imagen ? (base_url + p.imagen) : (base_url + 'view/bootstrap/img/placeholder.png');
+                const precio = (p.precio !== undefined && p.precio !== null) ? Number(p.precio).toFixed(2) : '0.00';
+                const estado_o_detalle = p.estado || p.detalle || '';
+                return `
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <div class="card h-100">
+                    <img src="${img}" class="card-img-top" alt="${p.nombre || ''}" onerror="this.src='${base_url}view/bootstrap/img/placeholder.png'">
+                    <div class="card-body text-center">
+                      <h5 class="card-title"><a href="#" class="text-primary">${p.nombre || ''}</a></h5>
+                      <div class="text-muted">${estado_o_detalle}</div>
+                      <div class="fw-bold text-success mt-2">S/ ${precio}</div>
+                      <div class="small text-muted mt-3">Categoría: ${p.categoria_nombre || ''}</div>
+                      <div class="small text-muted">Proveedor: ${p.proveedor_nombre || ''}</div>
+                      <div class="small text-muted">Vence: ${p.fecha_vencimiento || ''}</div>
+                    </div>
+                  </div>
+                </div>`;
+            }).join('');
+        }
+        // Asignar de una sola vez para minimizar repintados
+        grid.innerHTML = html;
+    } catch (err) {
+        console.error('Error cargando productos:', err);
+        grid.innerHTML = '<div class="col-12"><div class="alert alert-danger">No se pudo cargar la lista de productos</div></div>';
+    } finally {
+        grid.dataset.loading = '0';
+    }
+}
+
+if (document.getElementById('products_grid')) {
+    render_cards_productos();
+}
+
 //Edita productos
 async function edit_product() {
     try {
