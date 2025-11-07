@@ -1,5 +1,5 @@
 <?php
-require_once("../library/conexion.php");
+require_once __DIR__ . '/../library/conexion.php';
 
 class ProductsModel
 {

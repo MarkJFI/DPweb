@@ -1,14 +1,28 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
+// Evitar que cualquier output previo rompa las respuestas JSON
+ob_start();
+ini_set('display_errors', '0'); // no mostrar errores en la salida JSON
+error_reporting(E_ALL);
 
-// Capturar todos los errores
+// Helper para enviar JSON de forma segura (limpia buffer y registra salida inesperada)
+function send_json($data) {
+    $buf = ob_get_clean();
+    if (!empty($buf)) {
+        error_log("Unexpected output before JSON response in ProductsController: " . $buf);
+    }
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($data);
+    exit;
+}
+
+// Capturar todos los errores y convertirlos en excepciones
 function exception_error_handler($severity, $message, $file, $line) {
     throw new ErrorException($message, 0, $severity, $file, $line);
 }
 set_error_handler("exception_error_handler");
 
 try {
-    require_once "../model/ProductsModel.php";
+    require_once __DIR__ . '/../model/ProductsModel.php';
 
     if (!isset($_REQUEST['tipo'])) {
         throw new Exception('Tipo de operación no especificado');
@@ -132,21 +146,19 @@ try {
             throw new Exception('Error al actualizar el producto en la base de datos');
         }
 
-        echo json_encode([
+        send_json([
             'status' => true,
             'msg' => 'Producto actualizado correctamente'
         ]);
-        exit;
     }
 
     // Resto de operaciones aquí...
     if ($tipo == "ver_productos") {
         $arr_respuesta = $objProduct->obtenerProductos();
-        echo json_encode([
+        send_json([
             'status' => !empty($arr_respuesta),
             'data' => $arr_respuesta ?: []
         ]);
-        exit;
     }
 
     if ($tipo == "eliminar") {
@@ -159,11 +171,10 @@ try {
         }
         
         $result = $objProduct->eliminarProducto($id_producto);
-        echo json_encode([
+        send_json([
             'status' => $result,
             'msg' => $result ? 'Producto eliminado correctamente' : 'Error al eliminar el producto'
         ]);
-        exit;
     }
 
     if ($tipo == "ver") {
@@ -188,28 +199,26 @@ try {
             $producto['proveedor'] = $producto['id_proveedor'];
         }
         
-        echo json_encode([
+        send_json([
             'status' => true,
             'msg' => 'Producto encontrado',
             'data' => $producto
         ]);
-        exit;
     }
 
     if ($tipo == "obtener_proveedores") {
         $proveedores = $objProduct->obtenerProveedores();
-        echo json_encode([
+        send_json([
             'status' => true,
             'data' => $proveedores
         ]);
-        exit;
     }
 
     throw new Exception('Tipo de operación no válido: ' . $tipo);
 
 } catch (Exception $e) {
     error_log("Error en ProductsController: " . $e->getMessage());
-    echo json_encode([
+    send_json([
         'status' => false,
         'msg' => $e->getMessage(),
         'debug' => [
