@@ -1,4 +1,3 @@
-<!-- products.php -->
 <div class="d-flex flex-column align-items-center">
     <h3 class="mt-3 mb-4 text-center text-primary fw-bold py-3 px-4 rounded-pill shadow titulo-usuarios">
         <i class="bi bi-box-seam"></i>
@@ -27,19 +26,14 @@
         <!-- Botón para agregar producto -->
         <div class="text-end mt-3">
             <a href="<?= BASE_URL ?>new-producto" class="btn btn-primary btn-lg rounded-pill">
-                <i class="bi bi-plus-circle"></i> Agregar   producto
+                <i class="bi bi-plus-circle"></i> Agregar producto
             </a>
         </div>
-
-        <div class="text-end mt-3">
-            <a href="<?= BASE_URL ?>producto-lista" class="btn btn-primary btn-lg rounded-pill">
-                <i class="bi bi-plus-circle"></i> Lista de productos
-            </a>
-        </div>
-
-
     </div>
+
+    <!-- Contenedor donde se mostrarán las tarjetas de productos -->
+    <div id="content_products" class="mt-5"></div>
 </div>
 
-<!-- Enlaza tu JS -->
+<!-- Script que genera las cards -->
 <script src="<?= BASE_URL ?>view/function/products.js"></script>
