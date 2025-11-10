@@ -200,7 +200,13 @@
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>users">Usuarios</a>
                     </li>
-   <!--edit producto 
+
+                    <!--<li class="nav-item">
+                        <a class="nav-link" href="<?= BASE_URL ?>producto-lista">Lista de productos</a>
+                    </li>-->
+
+
+                    <!--edit producto 
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>edit-producto">edit-producto</a>
                     </li>-->
