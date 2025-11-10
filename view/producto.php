@@ -4,6 +4,8 @@
         <i class="bi bi-cart4"></i>
         PRODUCTOS
     </h3>
+    
+    
     <div class="container">
         <table class="table table-bordered table-hover">
             <thead class="table-success">
@@ -15,7 +17,7 @@
                     <th>Precio</th>
                     <th>Stock</th>
                     <th>Categoría</th>
-                    <th>Fecha Vencimiento</th>
+                    <th>Fecha</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -31,10 +33,10 @@
         </div>
 
         <div class="text-end mt-3">
-            <a href="<?= BASE_URL ?>producto-lista" class="btn btn-primary btn-lg rounded-pill">
-                <i class="bi bi-plus-circle"></i> Lista de productos
-            </a>
-        </div>
+    <a href="<?= BASE_URL ?>producto-lista" class="btn btn-success btn-lg rounded-pill">
+        <i class="bi bi-plus-circle"></i> Lista de productos
+    </a>
+</div>
     </div>
 
     <!-- Contenedor donde se mostrarán las tarjetas de productos -->
