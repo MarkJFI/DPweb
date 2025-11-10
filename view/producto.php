@@ -29,6 +29,12 @@
                 <i class="bi bi-plus-circle"></i> Agregar producto
             </a>
         </div>
+
+        <div class="text-end mt-3">
+            <a href="<?= BASE_URL ?>producto-lista" class="btn btn-primary btn-lg rounded-pill">
+                <i class="bi bi-plus-circle"></i> Lista de productos
+            </a>
+        </div>
     </div>
 
     <!-- Contenedor donde se mostrarán las tarjetas de productos -->

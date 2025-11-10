@@ -79,15 +79,11 @@ async function view_products_cards() {
             <button class="btn btn-outline-primary btn-sm rounded-pill px-3">
                 <i class="bi bi-eye"></i> Ver Detalles
             </button>
-            <a href="${base_url}edit-producto/${producto.id}" class="btn btn-outline-warning btn-sm rounded-pill px-3">
-                <i class="bi bi-pencil-square"></i> Editar
-            </a>
+            
             <button class="btn btn-outline-success btn-sm rounded-pill px-3">
                 <i class="bi bi-cart-plus"></i> Agregar al Carrito
             </button>
-            <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="fn_eliminar(${producto.id})">
-                <i class="bi bi-trash"></i> Eliminar
-            </button>
+            
         </div>
     </div>
 `;
