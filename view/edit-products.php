@@ -10,7 +10,7 @@
             }
             ?>
         </div>
-        <form id="frm_edit_producto" action="" method="">
+        <form id="frm_edit_producto" action="" method="" enctype="multipart/form-data">
             <input type="hidden" name="id_producto" id="id_producto" value="<?= $ruta[1]; ?>">
             <div class="card-body">
 
@@ -64,6 +64,7 @@
                     <label for="imagen" class="col-sm-2 col-form-label">Imagen</label>
                     <div class="col-sm-10">
                         <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                        <div id="imagen_actual" class="mt-2"></div>
                     </div>
                 </div>
                 <div class="mb-3 row">

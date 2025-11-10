@@ -21,8 +21,19 @@ if ($tipo == "registrar") {
         // Aceptar tanto 'categoria' como 'id_categoria' desde el formulario
         $categoria = isset($_POST['categoria']) ? intval($_POST['categoria']) : (isset($_POST['id_categoria']) ? intval($_POST['id_categoria']) : 0);
         $fecha_vencimiento = $_POST['fecha_vencimiento'] ?? null;
-        // Imagen: si viene por FILES, no se procesa aquí (quedará vacío)
-        $imagen = $_POST['imagen'] ?? '';
+        // Procesar imagen si viene por FILES
+        $imagen = '';
+        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
+            $uploadDir = '../assets/images/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $fileName = uniqid() . '_' . basename($_FILES['imagen']['name']);
+            $uploadFile = $uploadDir . $fileName;
+            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $uploadFile)) {
+                $imagen = $fileName;
+            }
+        }
         $proveedor = $_POST['proveedor'] ?? '';
 
         // Validación básica
@@ -92,11 +103,27 @@ if ($tipo == "actualizar") {
         $stock = $_POST['stock'];
         $categoria = $_POST['categoria'];
         $fecha_vencimiento = $_POST['fecha_vencimiento'];
-        $imagen = $_POST['imagen'] ?? '';
+        // Procesar imagen si viene por FILES
+        $imagen = '';
+        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
+            $uploadDir = '../assets/images/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $fileName = uniqid() . '_' . basename($_FILES['imagen']['name']);
+            $uploadFile = $uploadDir . $fileName;
+            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $uploadFile)) {
+                $imagen = $fileName;
+            }
+        } else {
+            // Si no se sube nueva imagen, mantener la existente
+            $producto_actual = $objProduct->verProducto($id_producto);
+            $imagen = $producto_actual['imagen'] ?? '';
+        }
         $proveedor = $_POST['proveedor'];
-        
+
         $arr_respuesta = $objProduct->actualizarProducto($id_producto, $codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor);
-        
+
         if ($arr_respuesta) {
             $response = array('status' => true, 'msg' => "Producto actualizado correctamente");
         } else {

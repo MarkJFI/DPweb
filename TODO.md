@@ -1,35 +1,12 @@
-# TODO: Add Password Field to Client and Supplier Registration and Edit Forms
-
-## Steps to Complete
-
-1. **Add password field to view/new-clients.php**
-   - Insert a new input field for password after the existing fields, before the rol select.
-   - [x] Completed
-
-2. **Add password field to view/new-proveedor.php**
-   - Insert a new input field for password after the existing fields, before the rol select.
-   - [x] Completed
-
-3. **Add password field to view/edit-client.php**
-   - Insert a new input field for password after the existing fields, before the rol select.
-   - [x] Completed
-
-4. **Update validation in view/function/clients.js**
-   - Add password to the validation function validar_form_client.
-   - Ensure password is checked for emptiness.
-   - [x] Completed
-
-5. **Update control/ClientsController.php**
-   - In the "registrar" section, change password generation from hashing nro_identidad to hashing the provided password.
-   - Add password to the validation check.
-   - In the "actualizar" section, add password handling.
-   - [x] Completed
-
-6. **Update model/ClientsModel.php**
-   - Modify the actualizar method to include password in the UPDATE query.
-   - [x] Completed
-
-## Followup Steps
-- [] Test registration of new clients and suppliers with password.
-- [] Test updating existing clients/suppliers with password changes.
-- [] Verify password hashing and storage in database.
+- [x] Agregar botón "Mostrar Productos" en view/products-list.php que redirige directamente a view/ventas.php (sin modal)
+- [x] Modificar view/ventas.php para mostrar productos en cards con imagen, nombre, precio, detalle, categoría, proveedor y botones "Detalles" y "Añadir al carrito"
+- [x] Agregar función JavaScript en view/function/producto.js para cargar y renderizar productos en ventas.php
+- [x] Crear view/function/ventas.js con funciones para cargar productos dinámicamente y manejar botones
+- [x] Agregar "ventas" a la whitelist en model/views_model.php para evitar error 404
+- [x] Restaurar la sección de "Lista de Compra" en view/ventas.php según solicitud del usuario
+- [x] Agregar columna de imagen en la tabla de productos-list.php y mostrar imágenes en la lista
+- [x] Crear directorio assets/images para almacenar imágenes de productos
+- [x] Implementar subida de imágenes en el controlador para registrar y actualizar productos
+- [x] Agregar enctype="multipart/form-data" a los formularios de registro y edición
+- [x] Mostrar imagen actual en el formulario de edición
+- [ ] Probar la funcionalidad del botón y la visualización de productos
