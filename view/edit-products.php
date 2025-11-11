@@ -10,7 +10,11 @@
             }
             ?>
         </div>
+
         <form id="frm_edit_producto" action="" method="" enctype="multipart/form-data">
+
+    <form id="frm_edit_producto" action="" method="post" enctype="multipart/form-data">
+
             <input type="hidden" name="id_producto" id="id_producto" value="<?= $ruta[1]; ?>">
             <div class="card-body">
 
@@ -35,7 +39,7 @@
                 <div class="mb-3 row">
                     <label for="precio" class="col-sm-2 col-form-label">precio</label>
                     <div class="col-sm-10">
-                        <input type="decimal" class="form-control" id="precio" name="precio" required>
+                        <input type="number" step="0.01" min="0" class="form-control" id="precio" name="precio" required>
                     </div>
                 </div>
                 <div class="mb-3 row">

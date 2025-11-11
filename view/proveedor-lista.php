@@ -14,7 +14,7 @@
             <tr>
                 <th><i>Nro</i></th>
                 <th><i>DNI</i></th>
-                <th><i>Nombre y Apellido</i></th>
+                <th><i>Nombre y Apellidos</i></th>
                 <th><i>Correo</i></th>
                 <th><i>Estado</i></th>
                 <th><i>Acciones</i></th>

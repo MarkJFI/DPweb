@@ -36,7 +36,6 @@ if (document.querySelector("#frm_user")) {
   frm_user.onsubmit = function (e) {
     e.preventDefault();
     validar_form("nuevo");
-
   }
 
 }
@@ -71,11 +70,11 @@ async function iniciar_sesion() {
   let usuario = document.getElementById("User").value;
   let password = document.getElementById("Contraseña").value;
 
-  if (usuario == "" || password == "") {
-    alert("Error, campos vacios");
+  if (usuario === "" || password === "") {
+    alert("Error, campos vacíos");
     return;
-
   }
+
   try {
     const datos = new FormData(document.querySelector("#frm_login"));
     let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=iniciar_sesion', {
@@ -95,7 +94,6 @@ async function iniciar_sesion() {
     console.log(error);
 
   }
-
 }
 
 async function view_users() {
