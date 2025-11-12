@@ -169,6 +169,7 @@ async function view_producto() {
         if (json && json.status && Array.isArray(json.data) && json.data.length > 0) {
             let html = '';
             json.data.forEach((producto, index) => {
+
                 let imagenSrc = producto.imagen ? base_url + 'assets/images/' + producto.imagen : 'https://via.placeholder.com/50x50?text=Sin+Imagen';
                 html += `<tr>
                     <td>${index + 1}</td>
@@ -185,19 +186,126 @@ async function view_producto() {
                         <button onclick="eliminar(${producto.id})" class="btn btn-danger">Eliminar</button>
                     </td>
                 </tr>`;
+
+                const defaultImg = base_url + 'view/img/imagen.avif';
+                const imgSrc = producto.imagen ? (base_url + producto.imagen) : defaultImg;
+                html += `<div class="col-12 col-md-4 mb-4">
+                    <div class="card h-100 d-flex flex-column text-center shadow-sm">
+                        <div class="card-img-container" style="height:300px;padding:1rem;display:flex;align-items:center;justify-content:center;background:#fff;">
+                            <img src="${imgSrc}" class="card-img-top" alt="${producto.nombre || ''}" 
+                                style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;" 
+                                onerror="this.onerror=null;this.src='${defaultImg}'">
+                        </div>
+                        <div class="card-body d-flex flex-column align-items-center">
+                            <h5 class="card-title text-primary fw-bold">${producto.nombre || ''}</h5>
+                            <div class="text-muted mb-2">${producto.detalle || ''}</div>
+                            <div class="fw-bold text-success mb-2">S/ ${producto.precio || ''}</div>
+                            <div class="small text-muted">Categoría: ${producto.categoria_nombre || ''}</div>
+                            <div class="small text-muted">Proveedor: ${producto.proveedor_nombre || ''}</div>
+                            <div class="small text-muted">Vence: ${producto.fecha_vencimiento || ''}</div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <a href="${base_url}edit-products/${producto.id}" class="btn btn-primary btn-sm">Editar</a>
+                            <button onclick="eliminar(${producto.id})" class="btn btn-danger btn-sm">Eliminar</button>
+                        </div>
+                    </div>
+                </div>`;
+
             });
             document.getElementById('content_productos').innerHTML = html;
         } else {
-            document.getElementById('content_productos').innerHTML = '<tr><td colspan="8">No hay productos disponibles</td></tr>';
+            document.getElementById('content_productos').innerHTML = '<div class="col-12"><p>No hay productos disponibles</p></div>';
         }
     } catch (error) {
         console.log(error);
-        document.getElementById('content_productos').innerHTML = '<tr><td colspan="8">Error al cargar los productos</td></tr>';
+        document.getElementById('content_productos').innerHTML = '<div class="col-12"><p>Error al cargar los productos</p></div>';
     }
 }
 
 if (document.getElementById('content_productos')) {
     view_producto();
+}
+
+// Render en cards para products-list
+async function render_cards_productos() {
+    const grid = document.getElementById('products_grid');
+    if (!grid) return;
+
+    // Guard global para evitar re-ejecuciones si el script se incluye 2 veces
+    if (window.__PRODUCTS_LIST_RENDERED) return;
+    window.__PRODUCTS_LIST_RENDERED = true;
+
+    // Evitar ejecuciones simultáneas o repetidas por eventos
+    if (grid.dataset.loading === '1') return;
+    grid.dataset.loading = '1';
+
+    try {
+        const resp = await fetch(base_url + 'control/ProductsController.php?tipo=ver_productos', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+        const raw = await resp.text();
+        if (!resp.ok) {
+            console.error('HTTP', resp.status, raw);
+            grid.innerHTML = '<div class="col-12"><div class="alert alert-danger">Error al cargar productos (' + resp.status + ')</div></div>';
+            return;
+        }
+        let json;
+        try { json = JSON.parse(raw); } catch (e) {
+            console.error('Respuesta no-JSON', raw);
+            grid.innerHTML = '<div class="col-12"><div class="alert alert-warning">Respuesta inválida del servidor</div></div>';
+            return;
+        }
+        let html = '';
+        if (!json.status || !Array.isArray(json.data) || json.data.length === 0) {
+            html = '<div class="col-12"><div class="alert alert-info">No hay productos disponibles</div></div>';
+        } else {
+            html = json.data.map(p => {
+                const defaultImg = base_url + 'view/img/imagen.avif';
+                const img = p.imagen ? (base_url + p.imagen) : defaultImg;
+                const precio = (p.precio !== undefined && p.precio !== null) ? Number(p.precio).toFixed(2) : '0.00';
+                const detalle = p.detalle || p.estado || '';
+                return `
+                                            <div class="col-12 col-md-4 mb-4">
+                                                <div class="card h-100 d-flex flex-column text-center shadow-sm">
+                                                    <div class="card-img-container" style="height:380px;padding:1.5rem;display:flex;align-items:center;justify-content:center;background:#f8f9fa;border-bottom:1px solid rgba(0,0,0,0.1);">
+                                                        <img src="${img}" class="card-img-top" alt="${p.nombre || ''}" 
+                                                            style="max-width:100%;max-height:100%;width:auto;height:auto;object-fit:cover;" 
+                                                            onerror="this.onerror=null;this.src='${defaultImg}'">
+                                                    </div>
+                                                    <div class="card-body d-flex flex-column" style="min-height:220px;">
+                                                        <h5 class="card-title text-primary fw-bold mb-3">${p.nombre || ''}</h5>
+                                                        <div class="text-muted mb-2">${detalle}</div>
+                                                        <div class="fw-bold text-success mb-3 fs-4">S/ ${precio}</div>
+                                                        <div class="small text-muted mb-1">Categoría: ${p.categoria_nombre || ''}</div>
+                                                        <div class="small text-muted mb-1">Proveedor: ${p.proveedor_nombre || ''}</div>
+                                                        <div class="small text-muted mb-3">Vence: ${p.fecha_vencimiento || ''}</div>
+                                                    </div>
+                                                    <div class="card-footer bg-transparent border-top-0 d-flex justify-content-center gap-3 py-3">
+                                                        <a href="${base_url}edit-products/${p.id}" class="btn btn-outline-primary">
+                                                            <i class="fas fa-edit me-1"></i> Editar
+                                                        </a>
+                                                        <button onclick="eliminar(${p.id})" class="btn btn-outline-danger">
+                                                            <i class="fas fa-trash me-1"></i> Eliminar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>`;
+            }).join('');
+        }
+        // Asignar de una sola vez para minimizar repintados
+        grid.innerHTML = html;
+    } catch (err) {
+        console.error('Error cargando productos:', err);
+        grid.innerHTML = '<div class="col-12"><div class="alert alert-danger">No se pudo cargar la lista de productos</div></div>';
+    } finally {
+        grid.dataset.loading = '0';
+    }
+}
+
+if (document.getElementById('products_grid')) {
+    render_cards_productos();
 }
 
 //Edita productos
@@ -230,9 +338,18 @@ async function edit_product() {
         if ('categoria' in json.data && json.data.categoria !== null) {
             document.getElementById('id_categoria').value = json.data.categoria;
         }
-        if ('proveedor' in json.data && json.data.proveedor !== null) {
-            document.getElementById('id_proveedor').value = json.data.proveedor;
-        }
+        // Aseguramos que los selectores estén cargados antes de asignar valores
+        Promise.all([
+            cargar_categorias(),
+            cargar_proveedores()
+        ]).then(() => {
+            if ('categoria' in json.data && json.data.categoria !== null) {
+                document.getElementById('id_categoria').value = json.data.categoria;
+            }
+            if ('proveedor' in json.data && json.data.proveedor !== null) {
+                document.getElementById('id_proveedor').value = json.data.proveedor;
+            }
+        });
         document.getElementById('fecha_vencimiento').value = json.data.fecha_vencimiento;
 
         // Mostrar imagen actual si existe
@@ -246,46 +363,136 @@ async function edit_product() {
     }
 }
 
-if (document.querySelector("#frm_edit_producto")) {
-    let frm_edit_producto = document.querySelector("#frm_edit_producto");
-    frm_edit_producto.onsubmit = function (e) {
+// Configurar el evento submit del formulario de edición
+function setupEditForm() {
+    const frm_edit_producto = document.querySelector("#frm_edit_producto");
+    if (!frm_edit_producto) return;
+
+    console.log('Configurando formulario de edición');
+    
+    frm_edit_producto.onsubmit = function(e) {
         e.preventDefault();
+        console.log('Formulario enviado - validando...');
         validar_form("actualizar");
-    }
+    };
+}
+
+// Ejecutar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupEditForm);
+} else {
+    setupEditForm();
 }
 //actualiza el producto
 async function actualizarProducto() {
-    const frm_edit_producto = document.querySelector("#frm_edit_producto")
-    const datos = new FormData(frm_edit_producto);
-    // Map id_categoria -> categoria
-    if (datos.has('id_categoria') && !datos.has('categoria')) {
-        datos.append('categoria', datos.get('id_categoria'));
-    }
-    // Map id_proveedor -> proveedor (opcional)
-    if (datos.has('id_proveedor') && !datos.has('proveedor')) {
-        datos.append('proveedor', datos.get('id_proveedor'));
-    }
-    if (!datos.has('imagen')) datos.append('imagen', '');
-    let respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=actualizar', {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        body: datos
-    });
-    json = await respuesta.json();
-    if (!json.status) {
-        Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Ops, ocurrio un error al actualizar, contacte con el administrador",
+    try {
+        console.log('Iniciando actualización del producto');
+        
+        const frm_edit_producto = document.querySelector("#frm_edit_producto");
+        if (!frm_edit_producto) {
+            throw new Error('Formulario no encontrado');
+        }
+
+        const datos = new FormData(frm_edit_producto);
+        
+        // Verificar ID del producto
+        const id_producto = datos.get('id_producto');
+        if (!id_producto) {
+            throw new Error('ID del producto no encontrado');
+        }
+
+        // Verificar campos requeridos
+        const camposRequeridos = ['codigo', 'nombre', 'detalle', 'precio', 'stock', 'categoria'];
+        for (const campo of camposRequeridos) {
+            if (!datos.get(campo) && !datos.get('id_' + campo)) {
+                throw new Error(`El campo ${campo} es requerido`);
+            }
+        }
+
+        console.log('Preparando datos para actualización...');
+        
+        // Asegurar que tenemos los campos correctos
+        if (datos.has('id_categoria')) {
+            const categoria = datos.get('id_categoria');
+            datos.set('categoria', categoria); // Usar set en lugar de append para evitar duplicados
+            console.log('Categoría mapeada:', categoria);
+        }
+        
+        if (datos.has('id_proveedor')) {
+            const proveedor = datos.get('id_proveedor');
+            datos.set('proveedor', proveedor); // Usar set en lugar de append para evitar duplicados
+            console.log('Proveedor mapeado:', proveedor);
+        }
+        
+        // Asegurar que tenemos todos los campos requeridos
+        const camposEsperados = ['id_producto', 'codigo', 'nombre', 'detalle', 'precio', 'stock', 'categoria', 'fecha_vencimiento'];
+        console.log('Verificación de campos:');
+        camposEsperados.forEach(campo => {
+            console.log(`${campo}: ${datos.has(campo) ? 'presente' : 'falta'}`);
         });
-        console.log(json.msg);
-        return;
-    } else {
-        Swal.fire({
+
+        // Manejar imagen
+        if (!datos.has('imagen') || (datos.get('imagen') instanceof File && datos.get('imagen').size === 0)) {
+            datos.set('imagen', '');
+        }
+
+        // Mostrar los datos que se van a enviar
+        console.log('Datos a enviar:');
+        for (let pair of datos.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+
+        console.log('Enviando solicitud al servidor...');
+        console.log('URL:', base_url + 'control/ProductsController.php?tipo=actualizar');
+        
+        const respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=actualizar', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            body: datos
+        });
+
+        // Obtener el texto de la respuesta primero
+        const texto = await respuesta.text();
+        console.log('Respuesta del servidor (raw):', texto);
+        console.log('Status:', respuesta.status);
+        console.log('Headers:', Object.fromEntries(respuesta.headers));
+
+        // Intentar parsear como JSON
+        let json;
+        try {
+            json = JSON.parse(texto);
+        } catch (e) {
+            console.error('Error parseando JSON:', e);
+            console.error('Contenido recibido:', texto);
+            throw new Error('El servidor devolvió una respuesta inválida. Por favor, contacte al administrador.');
+        }
+
+        if (!respuesta.ok) {
+            throw new Error(`Error en la respuesta del servidor: ${respuesta.status}`);
+        }
+        console.log('Respuesta del servidor:', json);
+
+        if (!json.status) {
+            throw new Error(json.msg || "Error al actualizar el producto");
+        }
+
+        await Swal.fire({
             icon: 'success',
             title: 'Éxito',
-            text: json.msg
+            text: json.msg || 'Producto actualizado correctamente'
+        });
+
+        // Redireccionar solo después de mostrar el mensaje de éxito
+        window.location.href = base_url + 'products-list';
+
+    } catch (error) {
+        console.error('Error en la actualización:', error);
+        
+        await Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message || "Hubo un problema al actualizar el producto. Por favor, intente nuevamente."
         });
     }
 }
@@ -366,20 +573,29 @@ async function cargar_proveedores() {
     try {
         const sel = document.getElementById('id_proveedor');
         if (!sel) return;
+        
+        console.log('Cargando proveedores...');
         const respuesta = await fetch(base_url + 'control/ProductsController.php?tipo=obtener_proveedores', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache'
         });
+        
         const json = await respuesta.json();
+        console.log('Respuesta de proveedores:', json);
+        
         let opciones = '<option value="" selected disabled>Seleccionar</option>';
         if (json && json.status && Array.isArray(json.data)) {
             json.data.forEach(proveedor => {
                 opciones += `<option value="${proveedor.id}">${proveedor.nombre}</option>`;
             });
+            console.log('Proveedores cargados:', json.data.length);
+        } else {
+            console.log('No se recibieron proveedores válidos');
         }
+        
         sel.innerHTML = opciones;
     } catch (e) {
-        console.log('Error cargando proveedores', e);
+        console.error('Error cargando proveedores:', e);
     }
 }
