@@ -39,7 +39,7 @@
     }
 
     button {
-      background: #78f503cb;
+      background: #70f503cb;
       width: 160px;
       height: 40px;
       border-radius: 20px;

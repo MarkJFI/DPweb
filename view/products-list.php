@@ -1,4 +1,3 @@
-
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
         <div class="d-flex align-items-center">
@@ -6,12 +5,11 @@
             <a href="<?php echo BASE_URL; ?>ventas" class="btn btn-primary me-3">
                 <i class="bi bi-eye"></i> Mostrar Productos
             </a>
-            <h5 class="mb-0"><center><i>Lista de Productos</i></center></h5>
+            <h5 class="mb-0">
+                <center><i>Lista de Productos</i></center>
+            </h5>
         </div>
     </div>
-
-
-
     <table class="table table-striped-columns">
         <thead>
             <tr>
@@ -43,60 +41,63 @@
 <script src="<?php echo BASE_URL; ?>view/function/producto.js"></script>
 <!-- end -->
 
-    <script>
-        // Debug helper: si después de 2s no hay tarjetas reemplaza el placeholder con la respuesta cruda
-        (function () {
-            const placeholder = document.getElementById('products_grid_placeholder');
-            const grid = document.getElementById('products_grid');
-            function showDebug(msg) {
-                if (!placeholder) return;
-                placeholder.innerHTML = '<pre style="text-align:left; white-space:pre-wrap; word-break:break-word;">' + msg + '</pre>';
+<script>
+    // Debug helper: si después de 2s no hay tarjetas reemplaza el placeholder con la respuesta cruda
+    (function() {
+        const placeholder = document.getElementById('products_grid_placeholder');
+        const grid = document.getElementById('products_grid');
+
+        function showDebug(msg) {
+            if (!placeholder) return;
+            placeholder.innerHTML = '<pre style="text-align:left; white-space:pre-wrap; word-break:break-word;">' + msg + '</pre>';
+        }
+
+        setTimeout(async () => {
+            // Si grid tiene más de un hijo (tarjetas) entonces ok
+            if (!grid) return;
+            const cards = grid.querySelectorAll('.card');
+            if (cards.length > 0) {
+                // productos renderizados correctamente
+                const ph = document.getElementById('products_grid_placeholder');
+                if (ph) ph.style.display = 'none';
+                return;
             }
 
-            setTimeout(async () => {
-                // Si grid tiene más de un hijo (tarjetas) entonces ok
-                if (!grid) return;
-                const cards = grid.querySelectorAll('.card');
-                if (cards.length > 0) {
-                    // productos renderizados correctamente
-                    const ph = document.getElementById('products_grid_placeholder');
-                    if (ph) ph.style.display = 'none';
+            // Comprueba si base_url existe
+            if (typeof base_url === 'undefined') {
+                showDebug('Error: la variable JavaScript base_url no está definida. Asegúrate de cargar la página a través de la plantilla que incluye header.php.');
+                console.error('base_url no definido');
+                return;
+            }
+
+            // Intenta obtener la respuesta del controlador para mostrar errores
+            try {
+                const resp = await fetch(base_url + 'control/ProductsController.php?tipo=ver_productos', {
+                    method: 'POST'
+                });
+                const text = await resp.text();
+                if (!resp.ok) {
+                    showDebug('HTTP ' + resp.status + '\n\n' + text);
+                    console.error('HTTP', resp.status, text);
                     return;
                 }
-
-                // Comprueba si base_url existe
-                if (typeof base_url === 'undefined') {
-                    showDebug('Error: la variable JavaScript base_url no está definida. Asegúrate de cargar la página a través de la plantilla que incluye header.php.');
-                    console.error('base_url no definido');
-                    return;
-                }
-
-                // Intenta obtener la respuesta del controlador para mostrar errores
+                // Si la respuesta parece JSON, la parseamos y mostramos un resumen
                 try {
-                    const resp = await fetch(base_url + 'control/ProductsController.php?tipo=ver_productos', { method: 'POST' });
-                    const text = await resp.text();
-                    if (!resp.ok) {
-                        showDebug('HTTP ' + resp.status + '\n\n' + text);
-                        console.error('HTTP', resp.status, text);
-                        return;
-                    }
-                    // Si la respuesta parece JSON, la parseamos y mostramos un resumen
-                    try {
-                        const json = JSON.parse(text);
-                        if (!json || !json.status) {
-                            showDebug('Respuesta del servidor (no status true):\n' + JSON.stringify(json, null, 2));
-                        } else if (Array.isArray(json.data) && json.data.length === 0) {
-                            showDebug('No hay productos en la base de datos. JSON válido recibido: ' + JSON.stringify(json, null, 2));
-                        } else {
-                            // Si el renderer falla por alguna razón, renderizamos una vista mínima de fallback
-                            try {
-                                const items = json.data;
-                                                                const html = items.map(p => {
-                                                                        const nombre = p.nombre || '';
-                                                                        const precio = (p.precio !== undefined && p.precio !== null) ? Number(p.precio).toFixed(2) : '0.00';
-                                                                        const img = p.imagen ? (base_url + p.imagen) : (base_url + 'view/img/imagen.avif');
-                                                                        const detalle = p.detalle || p.estado || '';
-                                                                        return `<div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    const json = JSON.parse(text);
+                    if (!json || !json.status) {
+                        showDebug('Respuesta del servidor (no status true):\n' + JSON.stringify(json, null, 2));
+                    } else if (Array.isArray(json.data) && json.data.length === 0) {
+                        showDebug('No hay productos en la base de datos. JSON válido recibido: ' + JSON.stringify(json, null, 2));
+                    } else {
+                        // Si el renderer falla por alguna razón, renderizamos una vista mínima de fallback
+                        try {
+                            const items = json.data;
+                            const html = items.map(p => {
+                                const nombre = p.nombre || '';
+                                const precio = (p.precio !== undefined && p.precio !== null) ? Number(p.precio).toFixed(2) : '0.00';
+                                const img = p.imagen ? (base_url + p.imagen) : (base_url + 'view/img/imagen.avif');
+                                const detalle = p.detalle || p.estado || '';
+                                return `<div class="col-12 col-sm-6 col-md-4 col-lg-3">
                                                                                 <div class="card h-100 d-flex flex-column text-center">
                                                                                     <img src="${img}" class="card-img-top" alt="${nombre}" style="height:160px; object-fit:cover;" onerror="this.onerror=null;this.src='${base_url}view/img/imagen.avif'">
                                                                                     <div class="card-body d-flex flex-column align-items-center">
@@ -113,22 +114,22 @@
                                                                                     </div>
                                                                                 </div>
                                                                             </div>`;
-                                                                }).join('');
-                                grid.innerHTML = html;
-                                const ph = document.getElementById('products_grid_placeholder');
-                                if (ph) ph.style.display = 'none';
-                            } catch (e) {
-                                showDebug('JSON válido recibido. Productos: ' + (json.data ? json.data.length : 0) + '\n\n' + JSON.stringify(json.data ? json.data.slice(0,5) : json, null, 2));
-                            }
+                            }).join('');
+                            grid.innerHTML = html;
+                            const ph = document.getElementById('products_grid_placeholder');
+                            if (ph) ph.style.display = 'none';
+                        } catch (e) {
+                            showDebug('JSON válido recibido. Productos: ' + (json.data ? json.data.length : 0) + '\n\n' + JSON.stringify(json.data ? json.data.slice(0, 5) : json, null, 2));
                         }
-                    } catch (e) {
-                        // respuesta no JSON
-                        showDebug('Respuesta no-JSON recibida del servidor:\n' + text);
                     }
-                } catch (err) {
-                    showDebug('Error al hacer fetch: ' + err);
-                    console.error(err);
+                } catch (e) {
+                    // respuesta no JSON
+                    showDebug('Respuesta no-JSON recibida del servidor:\n' + text);
                 }
-            }, 2000);
-        })();
-    </script>
+            } catch (err) {
+                showDebug('Error al hacer fetch: ' + err);
+                console.error(err);
+            }
+        }, 2000);
+    })();
+</script>
