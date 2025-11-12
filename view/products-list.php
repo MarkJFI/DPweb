@@ -15,7 +15,6 @@
         <thead>
             <tr>
                 <th><i>Nro</i></th>
-                <th><i>Imagen</i></th>
                 <th><i>Código</i></th>
                 <th><i>Nombre</i></th>
                 <th><i>Precio</i></th>
