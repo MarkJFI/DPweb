@@ -34,39 +34,6 @@ function send_json($data) {
             return $mixed;
         };
 
-// Instanciar el modelo
-$objProduct = new ProductsModel();
-
-if ($tipo == "registrar") {
-    // Registrar nuevo producto
-    if ($_POST) {
-        $codigo = trim($_POST['codigo'] ?? '');
-        $nombre = trim($_POST['nombre'] ?? '');
-        $detalle = trim($_POST['detalle'] ?? '');
-        $precio = isset($_POST['precio']) ? floatval($_POST['precio']) : 0;
-        $stock = isset($_POST['stock']) ? intval($_POST['stock']) : 0;
-        // Aceptar tanto 'categoria' como 'id_categoria' desde el formulario
-        $categoria = isset($_POST['categoria']) ? intval($_POST['categoria']) : (isset($_POST['id_categoria']) ? intval($_POST['id_categoria']) : 0);
-        $fecha_vencimiento = $_POST['fecha_vencimiento'] ?? null;
-        // Procesar imagen si viene por FILES
-        $imagen = '';
-        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
-            $uploadDir = '../assets/images/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $fileName = uniqid() . '_' . basename($_FILES['imagen']['name']);
-            $uploadFile = $uploadDir . $fileName;
-            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $uploadFile)) {
-                $imagen = $fileName;
-            }
-        }
-        $proveedor = $_POST['proveedor'] ?? '';
-
-        // Validación básica
-        if ($codigo === '' || $nombre === '' || $detalle === '' || $precio <= 0 || $stock < 0 || $categoria <= 0 || empty($fecha_vencimiento)) {
-            echo json_encode(['status' => false, 'msg' => 'Datos inválidos o incompletos']);
-
         $safe = $utf8ize($data);
         $json = @json_encode($safe, JSON_UNESCAPED_UNICODE);
         if ($json === false) {
@@ -80,7 +47,6 @@ if ($tipo == "registrar") {
                 'msg' => 'Error serializando respuesta JSON en el servidor',
                 'json_error' => $err2
             ], JSON_UNESCAPED_UNICODE);
-
             exit;
         }
     }
@@ -104,11 +70,57 @@ try {
     }
 
     $tipo = $_REQUEST['tipo'];
-    
+
     // Instanciar el modelo
     $objProduct = new ProductsModel();
 
-    // Manejar la actualización de productos
+    if ($tipo == "registrar") {
+        // Registrar nuevo producto
+        if (!$_POST) {
+            throw new Exception('No se recibieron datos POST');
+        }
+
+        $codigo = trim($_POST['codigo'] ?? '');
+        $nombre = trim($_POST['nombre'] ?? '');
+        $detalle = trim($_POST['detalle'] ?? '');
+        $precio = isset($_POST['precio']) ? floatval($_POST['precio']) : 0;
+        $stock = isset($_POST['stock']) ? intval($_POST['stock']) : 0;
+        // Aceptar tanto 'categoria' como 'id_categoria' desde el formulario
+        $categoria = isset($_POST['categoria']) ? intval($_POST['categoria']) : (isset($_POST['id_categoria']) ? intval($_POST['id_categoria']) : 0);
+        $fecha_vencimiento = $_POST['fecha_vencimiento'] ?? null;
+        // Procesar imagen si viene por FILES
+        $imagen = '';
+        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
+            $uploadDir = '../assets/images/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $fileName = uniqid() . '_' . basename($_FILES['imagen']['name']);
+            $uploadFile = $uploadDir . $fileName;
+            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $uploadFile)) {
+                $imagen = $fileName;
+            }
+        }
+        $proveedor = isset($_POST['id_proveedor']) ? filter_var($_POST['id_proveedor'], FILTER_VALIDATE_INT) : null;
+
+        // Validación básica
+        if ($codigo === '' || $nombre === '' || $detalle === '' || $precio <= 0 || $stock < 0 || $categoria <= 0 || empty($fecha_vencimiento)) {
+            throw new Exception('Datos inválidos o incompletos');
+        }
+
+        $arr_respuesta = $objProduct->registrarProducto($codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor);
+
+        if ($arr_respuesta['status']) {
+            send_json([
+                'status' => true,
+                'msg' => 'Producto registrado correctamente',
+                'id' => $arr_respuesta['id']
+            ]);
+        } else {
+            throw new Exception('Error al registrar el producto');
+        }
+    }
+
     if ($tipo == "actualizar") {
         if (!$_POST) {
             throw new Exception('No se recibieron datos POST');
@@ -116,17 +128,17 @@ try {
 
         // Debug: registrar datos recibidos
         error_log("Datos POST recibidos: " . print_r($_POST, true));
-        
+
         // Validación de campos requeridos
         $campos_requeridos = ['id_producto', 'codigo', 'nombre', 'detalle', 'precio', 'stock', 'id_categoria', 'fecha_vencimiento'];
         $faltan_campos = [];
-        
+
         foreach ($campos_requeridos as $campo) {
             if (!isset($_POST[$campo]) || trim($_POST[$campo]) === '') {
                 $faltan_campos[] = $campo;
             }
         }
-        
+
         if (!empty($faltan_campos)) {
             throw new Exception('Faltan campos requeridos: ' . implode(', ', $faltan_campos));
         }
@@ -144,38 +156,11 @@ try {
         $stock = filter_var($_POST['stock'], FILTER_VALIDATE_INT);
         $categoria = filter_var($_POST['id_categoria'], FILTER_VALIDATE_INT);
         $fecha_vencimiento = $_POST['fecha_vencimiento'];
-        // Procesar imagen si viene por FILES
-        $imagen = '';
-        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == UPLOAD_ERR_OK) {
-            $uploadDir = '../assets/images/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $fileName = uniqid() . '_' . basename($_FILES['imagen']['name']);
-            $uploadFile = $uploadDir . $fileName;
-            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $uploadFile)) {
-                $imagen = $fileName;
-            }
-        } else {
-            // Si no se sube nueva imagen, mantener la existente
-            $producto_actual = $objProduct->verProducto($id_producto);
-            $imagen = $producto_actual['imagen'] ?? '';
-        }
-        $proveedor = $_POST['proveedor'];
-
-        $arr_respuesta = $objProduct->actualizarProducto($id_producto, $codigo, $nombre, $detalle, $precio, $stock, $categoria, $fecha_vencimiento, $imagen, $proveedor);
-
-        if ($arr_respuesta) {
-            $response = array('status' => true, 'msg' => "Producto actualizado correctamente");
-        } else {
-            $response = array('status' => false, 'msg' => "Error al actualizar producto");
-
         $proveedor = isset($_POST['id_proveedor']) ? filter_var($_POST['id_proveedor'], FILTER_VALIDATE_INT) : null;
 
         // Validar valores
         if ($precio === false || $precio <= 0) {
             throw new Exception('Precio inválido');
-
         }
         if ($stock === false || $stock < 0) {
             throw new Exception('Stock inválido');
@@ -254,7 +239,6 @@ try {
         ]);
     }
 
-    // Resto de operaciones aquí...
     if ($tipo == "ver_productos") {
         $arr_respuesta = $objProduct->obtenerProductos();
         send_json([
@@ -271,7 +255,7 @@ try {
         if (!$id_producto) {
             throw new Exception('ID de producto inválido');
         }
-        
+
         $result = $objProduct->eliminarProducto($id_producto);
         send_json([
             'status' => $result,
@@ -287,12 +271,12 @@ try {
         if (!$id_producto) {
             throw new Exception('ID de producto inválido');
         }
-        
+
         $producto = $objProduct->verProducto($id_producto);
         if (!$producto) {
             throw new Exception('Producto no encontrado');
         }
-        
+
         // Asegurar que los campos de categoria y proveedor estén correctamente mapeados
         if (isset($producto['id_categoria'])) {
             $producto['categoria'] = $producto['id_categoria'];
@@ -300,7 +284,7 @@ try {
         if (isset($producto['id_proveedor'])) {
             $producto['proveedor'] = $producto['id_proveedor'];
         }
-        
+
         send_json([
             'status' => true,
             'msg' => 'Producto encontrado',
