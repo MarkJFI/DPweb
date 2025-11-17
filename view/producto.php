@@ -4,7 +4,7 @@
         <i class="bi bi-cart4"></i>
         PRODUCTOS
     </h3>
-    
+       
     
     <div class="container">
         <table class="table table-bordered table-hover">
@@ -18,6 +18,7 @@
                     <th>Stock</th>
                     <th>Categoría</th>
                     <th>Fecha</th>
+                    <th>Codigo de Barra</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -45,3 +46,5 @@
 
 <!-- Script que genera las cards -->
 <script src="<?= BASE_URL ?>view/function/products.js"></script>
+<script src="<?= BASE_URL ?>view/function/JsBarcode.all.min.js"></script>
+

@@ -8,6 +8,7 @@ function validar_form(tipo) {
     let precio = document.getElementById("precio").value;
     let stock = document.getElementById("stock").value;
     let id_categoria = document.getElementById("id_categoria").value;
+    let codigo_barra = document.getElementById("codigo_barra").value;//nuevo
     let fecha_vencimiento = document.getElementById("fecha_vencimiento").value;
     //let imagen = document.getElementById("imagen").value;
     if (codigo == "" || nombre == "" || detalle == "" || precio == "" || stock == "" || id_categoria == "" || fecha_vencimiento == "") {
@@ -110,6 +111,7 @@ async function edit_product(id = null) {
         setIfExists('precio', data.precio);
         setIfExists('stock', data.stock);
         setIfExists('fecha_vencimiento', data.fecha_vencimiento);
+        setIfExists('codigo_barra', data.codigo_barra);
         setIfExists('imagen_actual', data.imagen);
 
         // Los selects pueden no estar poblados todavía (cargar_categorias / cargar_proveedores
@@ -204,7 +206,7 @@ if (document.querySelector('#frm_edit_producto')) {
 }
 
 
-
+//CARGAR CATEGORIAS EN EL SELECT
 async function cargar_categorias() {
     let respuesta = await fetch(base_url + 'control/CategoriaController.php?tipo=ver_categorias', {
         method: 'POST',
@@ -221,7 +223,7 @@ async function cargar_categorias() {
 }
 
 
-//cargar proveedores en el select
+//CARGAR PROVEEDORES EN EL SELECT
 async function cargar_proveedores() {
     let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_proveedores', {
         method: 'POST',
@@ -240,7 +242,7 @@ async function cargar_proveedores() {
 
 
 
-// Función para mostrar productos en tarjetas
+// FUNCION PARA VER PRODUCTOS EN LA VISTA DE TABLA
 async function view_products() {
     try {
         console.log('Iniciando carga de productos...');
@@ -268,6 +270,7 @@ async function view_products() {
                             <td>${producto.stock}</td>
                             <td>${producto.categoria}</td>
                             <td>${producto.fecha_vencimiento}</td>
+                            <td><svg id="barcode${producto.id}"></svg></td>
                             <td>
                                 <a href="`+ base_url + `edit-producto/` + producto.id + `" 
                                 class="btn btn-primary btn-sm rounded-pill">
@@ -282,6 +285,11 @@ async function view_products() {
                             `;
                 cont++;
                 contenidot.appendChild(nueva_fila);
+                JsBarcode("#barcode" + producto.id, "" + producto.codigo, {
+                    width: 2,
+                    height: 40,
+                });
+                //JsBarcode("#barcode" + producto.id, producto.codigo, {format: "CODE128", width: 2, height: 40});
             });
         }
     } catch (e) {

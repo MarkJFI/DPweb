@@ -15,17 +15,30 @@
         </a>
     </div>
 
+
+
+
     <!-- Barra de búsqueda -->
-    <div class="row mb-4 justify-content-center">
-        <div class="col-md-6">
-            <div class="input-group input-group-lg shadow rounded-pill">
-                <span class="input-group-text bg-primary text-white border-0 rounded-start-pill">
-                    <i class="bi bi-search"></i>
-                </span>
-                <input type="text" id="busquedaProducto" class="form-control border-0 rounded-end-pill" placeholder="Buscar producto...">
-            </div>
+    <div class="col-md-6">
+        <div class="input-group input-group-lg shadow rounded-pill">
+
+            <span class="input-group-text bg-primary text-white border-0 rounded-start-pill">
+                <i class="bi bi-search"></i>
+            </span>
+
+            <input
+                type="text"
+                class="form-control border-0 rounded-end-pill"
+                placeholder="BUSCAR PRODUCTO POR NOMBRE O CÓDIGO"
+                id="busquedaProducto"
+                onkeyup="view_products_cards()">
+
         </div>
     </div>
+
+
+
+
 
     <!-- Contenido principal -->
     <div class="row">
@@ -93,16 +106,3 @@
 <!-- Script que genera las cards -->
 <script src="<?= BASE_URL ?>view/function/lista.js"></script>
 <script src="<?= BASE_URL ?>view/function/venta.js"></script>
-
-<!-- Filtro de búsqueda -->
-<script>
-    document.getElementById("busquedaProducto").addEventListener("keyup", function() {
-        const valor = this.value.toLowerCase();
-        const cards = document.querySelectorAll("#content_products .card");
-
-        cards.forEach(card => {
-            const nombre = card.textContent.toLowerCase();
-            card.parentElement.style.display = nombre.includes(valor) ? "" : "none";
-        });
-    });
-</script>

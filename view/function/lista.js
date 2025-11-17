@@ -1,10 +1,14 @@
 async function view_products_cards() {
     try {
-        console.log("Cargando productos en vista de cards...");
-        let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=ver_productos', {
+        let dato = document.getElementById('busquedaProducto').value;
+        const datos = new FormData();
+        datos.append('dato', dato);
+        //console.log("Cargando productos en vista de cards...");
+        let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=buscar_producto_venta', {
             method: 'POST',
             mode: 'cors',
-            cache: 'no-cache'
+            cache: 'no-cache',
+            body: datos
         });
 
         let json = await respuesta.json();
@@ -15,7 +19,7 @@ async function view_products_cards() {
             console.error("❌ No se encontró el contenedor #content_products");
             return;
         }
-
+        let cont =1;
         contenido.innerHTML = '';
 
         if (json.status && json.data.length > 0) {

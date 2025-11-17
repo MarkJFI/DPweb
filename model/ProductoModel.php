@@ -8,7 +8,7 @@ class ProductoModel
         $this->conexion = new Conexion();
         $this->conexion = $this->conexion->connect();
     }
-    
+
     public function verProductos()
     {
         $arr_categorias = array();
@@ -19,6 +19,8 @@ class ProductoModel
         }
         return $arr_categorias;
     }
+
+
     public function existeCodigo($codigo)
     {
         $codigo = $this->conexion->real_escape_string($codigo);
@@ -57,7 +59,9 @@ class ProductoModel
         return $sql->fetch_object();
     }
 
-    public function actualizar($id_producto, $codigo, $nombre, $detalle, $precio, $stock, $id_categoria, $fecha_vencimiento, $imagen, $id_proveedor) {
+    //ACTUALIZAR PRODUCTO
+    public function actualizar($id_producto, $codigo, $nombre, $detalle, $precio, $stock, $id_categoria, $fecha_vencimiento, $imagen, $id_proveedor)
+    {
         // Sanitizar y preparar valores
         $id_producto      = intval($id_producto);
         $codigo           = $this->conexion->real_escape_string($codigo);
@@ -66,7 +70,7 @@ class ProductoModel
         $precio           = floatval($precio);
         $stock            = intval($stock);
         $id_categoria     = intval($id_categoria);
-        $fecha_vencimiento= $this->conexion->real_escape_string($fecha_vencimiento);
+        $fecha_vencimiento = $this->conexion->real_escape_string($fecha_vencimiento);
         $id_proveedor     = intval($id_proveedor);
         $imagen           = $this->conexion->real_escape_string($imagen);
 
@@ -74,28 +78,23 @@ class ProductoModel
         $sql = $this->conexion->query($consulta);
         return $sql;
     }
-     public function eliminar($id){
+    public function eliminar($id)
+    {
         $consulta = "DELETE FROM producto WHERE id='$id'";
         $sql = $this->conexion->query($consulta);
         return $sql;
     }
-     
 
 
-
-    // Nuevo método para mostrar productos en la tienda
-    public function mostrarMisProductos()
+// BUSCAR PRODUCTO POR NOMBRE O CÓDIGO
+    public function buscarProductoByNombreOrCodigo($dato)
     {
         $arr_productos = array();
-        $consulta = "SELECT nombre, precio, id_categoria, imagen FROM producto";
+        $consulta = "SELECT * FROM producto WHERE codigo LIKE '$dato%' OR nombre LIKE '%$dato%' OR detalle LIKE '%$dato%'";
         $sql = $this->conexion->query($consulta);
         while ($objeto = $sql->fetch_object()) {
             array_push($arr_productos, $objeto);
         }
         return $arr_productos;
     }
-
-
-
-
 }

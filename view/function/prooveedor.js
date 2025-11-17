@@ -208,7 +208,11 @@ async function fn_eliminar(id) {
         eliminar(id);
     }
 }
+
+
+// Eliminar proveedor
 async function eliminar(id) {
+    if (!confirm("¿Estás seguro de eliminar este usuario?")) return;
     try {
         const datos = new FormData();
         datos.append('id', id);
@@ -220,11 +224,10 @@ async function eliminar(id) {
         });
         let json = await respuesta.json();
         if (!json.status) {
-            alert("Oooooops, ocurrio un error al eliminar persona, intentelo mas tarde");
+            alert("❌ Ocurrió un error al eliminar la persona. Inténtelo más tarde.");
             console.log(json.msg);
-            return;
         } else {
-            alert(json.msg);
+            alert("✅ " + json.msg);
             if (document.getElementById('content_proveedor')) {
                 document.getElementById('content_proveedor').innerHTML = '';
                 view_proveedores();
