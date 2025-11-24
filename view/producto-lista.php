@@ -16,8 +16,6 @@
     </div>
 
 
-
-
     <!-- Barra de búsqueda -->
     <div class="col-md-6">
         <div class="input-group input-group-lg shadow rounded-pill">

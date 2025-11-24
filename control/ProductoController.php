@@ -218,38 +218,37 @@ if ($tipo === "eliminar") {
 
 
 
-// Mostrar mis productos
+    // Mostrar mis productos
 
     if ($tipo == "mostrarMisProductos") {
-    $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
-    $productos = $objProducto->mostrarMisProductos();
-    $arrProduct = array();
-    
-    if (count($productos)) {
-        foreach ($productos as $producto) {
-            // Solo obtenemos la categoría que necesitamos
-            $categoria = $objCategoria->ver($producto->id_categoria);
-            $nombreCategoria = ($categoria && property_exists($categoria, 'nombre')) 
-                ? $categoria->nombre 
-                : "Sin categoría";
+        $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
+        $productos = $objProducto->mostrarMisProductos();
+        $arrProduct = array();
 
-            // Creamos un objeto simplificado con solo los campos necesarios
-            $productoSimple = new stdClass();
-            $productoSimple->imagen = $producto->imagen;
-            $productoSimple->nombre = $producto->nombre;
-            $productoSimple->precio = $producto->precio;
-            $productoSimple->categoria = $nombreCategoria;
+        if (count($productos)) {
+            foreach ($productos as $producto) {
+                // Solo obtenemos la categoría que necesitamos
+                $categoria = $objCategoria->ver($producto->id_categoria);
+                $nombreCategoria = ($categoria && property_exists($categoria, 'nombre'))
+                    ? $categoria->nombre
+                    : "Sin categoría";
 
-            array_push($arrProduct, $productoSimple);
+                // Creamos un objeto simplificado con solo los campos necesarios
+                $productoSimple = new stdClass();
+                $productoSimple->imagen = $producto->imagen;
+                $productoSimple->nombre = $producto->nombre;
+                $productoSimple->precio = $producto->precio;
+                $productoSimple->categoria = $nombreCategoria;
+
+                array_push($arrProduct, $productoSimple);
+            }
+            $respuesta = array('status' => true, 'msg' => '', 'data' => $arrProduct);
         }
-        $respuesta = array('status' => true, 'msg' => '', 'data' => $arrProduct);
-    }
-    
-    header('Content-Type: application/json');
-    echo json_encode($respuesta);
-    exit;
-}
 
+        header('Content-Type: application/json');
+        echo json_encode($respuesta);
+        exit;
+    }
 }
 
 
@@ -270,11 +269,3 @@ if ($tipo == "buscar_producto_venta") {
     }
     echo json_encode($respuesta);
 }
-
-
-
-
-
-
-
-

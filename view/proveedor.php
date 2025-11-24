@@ -5,6 +5,15 @@
         LISTA DE PROVEEDORES
     </h3>
     <div class="container">
+
+        <div class="text-end mt-3">
+            <a href="<?= BASE_URL ?>new-proveedor" class="btn btn-success btn-lg rounded-pill">
+                <i class="bi bi-person-plus"></i> Agregar proveedor
+            </a>
+        </div>
+
+
+
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
@@ -13,7 +22,7 @@
                     <th>Nombres y Apellidos</th>
                     <th>Correo</th>
                     <th>Rol</th>
-                    <th>Estado</th> 
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -22,11 +31,7 @@
             </tbody>
         </table>
         <!-- Botón para agregar usuario -->
-        <div class="text-end mt-3">
-            <a href="<?= BASE_URL ?>new-proveedor" class="btn btn-success btn-lg rounded-pill">
-                <i class="bi bi-person-plus"></i> Agregar proveedor
-            </a>
-        </div>
+
     </div>
 </div>
 

@@ -2,21 +2,23 @@
 
 //VALIDAR FORMULARIO
 function validar_form(tipo) {
-    let codigo = document.getElementById("codigo").value;
-    let nombre = document.getElementById("nombre").value;
-    let detalle = document.getElementById("detalle").value;
-    let precio = document.getElementById("precio").value;
-    let stock = document.getElementById("stock").value;
-    let id_categoria = document.getElementById("id_categoria").value;
-    let codigo_barra = document.getElementById("codigo_barra").value;//nuevo
-    let fecha_vencimiento = document.getElementById("fecha_vencimiento").value;
+    // helper para obtener valores de forma segura (evita errores si el elemento no existe)
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.value : '';
+    };
+
+    let codigo = getVal("codigo");
+    let nombre = getVal("nombre");
+    let detalle = getVal("detalle");
+    let precio = getVal("precio");
+    let stock = getVal("stock");
+    let id_categoria = getVal("id_categoria");
+    let codigo_barra = getVal("codigo_barra"); // puede no existir en la vista
+    let fecha_vencimiento = getVal("fecha_vencimiento");
     //let imagen = document.getElementById("imagen").value;
     if (codigo == "" || nombre == "" || detalle == "" || precio == "" || stock == "" || id_categoria == "" || fecha_vencimiento == "") {
-        Swal.fire({
-            title: "Error campos vacios!",
-            icon: "Error",
-            draggable: true
-        });
+        showMessage("Error, campos vacíos", 'error');
         return;
     }
     if (tipo == "nuevo") {
@@ -29,20 +31,62 @@ function validar_form(tipo) {
 }
 
 //EVITA QUE SE ENVIE EL FORMULARIO
-if (document.querySelector('#frm_product')) {
-    // evita que se envie el formulario
-    let frm_product = document.querySelector('#frm_product');
-    frm_product.onsubmit = function (e) {
+// Adjuntar el listener de forma robusta
+const _form_product = document.getElementById('frm_product');
+if (_form_product) {
+    _form_product.addEventListener('submit', function (e) {
         e.preventDefault();
-        validar_form("nuevo");
+        try {
+            validar_form("nuevo");
+        } catch (err) {
+            // Mostrar información útil en consola y en la UI para depuración local
+            console.error('Error en handler submit:', err);
+            const msg = err && err.message ? 'Error interno: ' + err.message : 'Error interno al procesar el formulario';
+            showMessage(msg, 'error');
+        }
+    });
+}
+
+// Helper: mostrar mensajes con fallback a alert si Swal no está disponible
+function showMessage(message, type = 'info') {
+    try {
+        if (typeof Swal !== 'undefined') {
+            const icon = (type === 'error') ? 'error' : (type === 'success' ? 'success' : 'info');
+            Swal.fire({ title: message, icon: icon });
+            return;
+        }
+    } catch (e) {
+        console.warn('Swal showMessage fallo:', e);
     }
+    // fallback
+    if (type === 'error') alert(message);
+    else alert(message);
 }
 
 //REGISTRAR PRODUCTO
 async function registrarProducto() {
     try {
         //capturar campos de formulario (HTML)
-        const datos = new FormData(frm_product);
+        const formElem = document.getElementById('frm_product');
+        if (!formElem) {
+            console.error('Formulario #frm_product no encontrado');
+            return;
+        }
+        const datos = new FormData(formElem);
+        // DEBUG: mostrar contenido de FormData (no muestra contenido de archivos en algunos navegadores, pero permite verificar claves)
+        try {
+            console.groupCollapsed('FormData (registrarProducto)');
+            for (const pair of datos.entries()) {
+                if (pair[1] instanceof File) {
+                    console.log(pair[0] + ': File ->', pair[1].name, pair[1].type, pair[1].size);
+                } else {
+                    console.log(pair[0] + ':', pair[1]);
+                }
+            }
+            console.groupEnd();
+        } catch (logErr) {
+            console.warn('No se pudo listar FormData:', logErr);
+        }
         //enviar datos a controlador
         let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=registrar', {
             method: 'POST',
@@ -50,13 +94,41 @@ async function registrarProducto() {
             cache: 'no-cache',
             body: datos
         });
-        let json = await respuesta.json();
+        // Mejor manejo de respuesta: si no es OK, mostrar texto de respuesta para depuración
+        if (!respuesta.ok) {
+            const txt = await respuesta.text();
+            console.error('Respuesta no OK:', respuesta.status, txt);
+            alert('Error en la petición al servidor (ver consola)');
+            return;
+        }
+        let text = await respuesta.text();
+        // intentar parsear JSON con control de error
+        let json;
+        try {
+            json = JSON.parse(text);
+        } catch (parseErr) {
+            console.error('No se pudo parsear JSON. Texto recibido:', text);
+            alert('Respuesta del servidor no es JSON (revisar consola)');
+            return;
+        }
+
+        console.log('Respuesta JSON registrarProducto:', json);
         // validamos que json.status sea = True
         if (json.status) { //true
-            alert(json.msg);
-            document.getElementById('frm_product').reset();
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ title: json.msg, icon: 'success' }).then(() => {
+                    document.getElementById('frm_product').reset();
+                });
+            } else {
+                alert(json.msg);
+                document.getElementById('frm_product').reset();
+            }
         } else {
-            alert(json.msg);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ title: json.msg || 'Error', icon: 'error' });
+            } else {
+                alert(json.msg || 'Error al registrar');
+            }
         }
     } catch (e) {
         console.log("Error al registrar Producto:" + e);
@@ -181,7 +253,6 @@ async function eliminar(id) {
 
         const json = await respuesta.json();
         if (json.status) {
-            // Si se eliminó correctamente, remover la fila de la tabla
             const fila = document.getElementById('fila' + id);
             if (fila) {
                 fila.remove();
@@ -213,14 +284,17 @@ async function cargar_categorias() {
         mode: 'cors',
         cache: 'no-cache'
     });
+
     let json = await respuesta.json();
-    let contenido = '<option>Seleccione Categoria</option>';
+    let contenido = '<option value="">Seleccione Categoria</option>';
     json.data.forEach(categoria => {
         contenido += '<option value="' + categoria.id + '">' + categoria.nombre + '</option>';
     });
     //console.log(contenido);
     document.getElementById("id_categoria").innerHTML = contenido;
 }
+
+
 
 
 //CARGAR PROVEEDORES EN EL SELECT
@@ -231,7 +305,7 @@ async function cargar_proveedores() {
         cache: 'no-cache'
     });
     let json = await respuesta.json();
-    let contenido = '<option>Seleccione Proveedor</option>';
+    let contenido = '<option value="">Seleccione Proveedor</option>';
     json.data.forEach(proveedor => {
         contenido += '<option value="' + proveedor.id + '">' + proveedor.razon_social + '</option>';
     });
@@ -273,8 +347,8 @@ async function view_products() {
                             <td><svg id="barcode${producto.id}"></svg></td>
                             <td>
                                 <a href="`+ base_url + `edit-producto/` + producto.id + `" 
-                                class="btn btn-primary btn-sm rounded-pill">
-                                <i class="bi bi-pencil-square"></i> Editar
+                                     class="btn btn-primary btn-sm rounded-pill">
+                                    <i class="bi bi-pencil-square"></i> Editar
                                 </a>
                                 <button class="btn btn-danger btn-sm rounded-pill ms-1"
                                  onclick="fn_eliminar(` + producto.id + `);" 

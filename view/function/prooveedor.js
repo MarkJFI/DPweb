@@ -74,35 +74,35 @@ async function registrarProveedor() {
 }
 
 async function view_proveedores() {
-  try {
-    const respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_proveedores', {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache'
-    });
+    try {
+        const respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_proveedores', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
 
-    const json = await respuesta.json();
-    const contenidot = document.getElementById('content_proveedor');
-    if (!contenidot) return;
+        const json = await respuesta.json();
+        const contenidot = document.getElementById('content_proveedor');
+        if (!contenidot) return;
 
-    contenidot.innerHTML = '';
+        contenidot.innerHTML = '';
 
-    if (json.status && Array.isArray(json.data)) {
-      let cont = 1;
-      json.data.forEach(usuario => {
+        if (json.status && Array.isArray(json.data)) {
+            let cont = 1;
+            json.data.forEach(usuario => {
 
-        // Indicador visual del estado (círculo verde o rojo)
-        const estadoHtml = usuario.estado == 1
-          ? '<span title="Activo" style="display:inline-block;width:16px;height:16px;background:#198754;border-radius:50%;"></span>'
-          : '<span title="Inactivo" style="display:inline-block;width:16px;height:16px;background:#dc3545;border-radius:50%;"></span>';
+                // Indicador visual del estado (círculo verde o rojo)
+                const estadoHtml = usuario.estado == 1
+                    ? '<span title="Activo" style="display:inline-block;width:16px;height:16px;background:#198754;border-radius:50%;"></span>'
+                    : '<span title="Inactivo" style="display:inline-block;width:16px;height:16px;background:#dc3545;border-radius:50%;"></span>';
 
-        // Crear fila
-        const nueva_fila = document.createElement("tr");
-        nueva_fila.id = "fila" + usuario.id;
-        nueva_fila.className = "filas_tabla";
+                // Crear fila
+                const nueva_fila = document.createElement("tr");
+                nueva_fila.id = "fila" + usuario.id;
+                nueva_fila.className = "filas_tabla";
 
-        // Contenido de la fila
-        nueva_fila.innerHTML = `
+                // Contenido de la fila
+                nueva_fila.innerHTML = `
           <td>${cont}</td>
           <td>${usuario.nro_identidad}</td>
           <td>${usuario.razon_social}</td>
@@ -122,19 +122,19 @@ async function view_proveedores() {
           </td>
         `;
 
-        contenidot.appendChild(nueva_fila);
-        cont++;
-      });
-    }
+                contenidot.appendChild(nueva_fila);
+                cont++;
+            });
+        }
 
-  } catch (e) {
-    console.error('Error al mostrar proveedores:', e);
-  }
+    } catch (e) {
+        console.error('Error al mostrar proveedores:', e);
+    }
 }
 
 // Ejecutar la función si existe la tabla
 if (document.getElementById('content_proveedor')) {
-  view_proveedores();
+    view_proveedores();
 }
 
 
@@ -181,8 +181,8 @@ if (document.querySelector('#frm_edit_proveedor')) {
 
 async function actualizarProveedor() {
     try {
-    const form = document.getElementById('frm_edit_proveedor');
-    const datos = new FormData(form);
+        const form = document.getElementById('frm_edit_proveedor');
+        const datos = new FormData(form);
         let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=actualizar', {
             method: 'POST',
             mode: 'cors',
@@ -224,10 +224,10 @@ async function eliminar(id) {
         });
         let json = await respuesta.json();
         if (!json.status) {
-            alert("❌ Ocurrió un error al eliminar la persona. Inténtelo más tarde.");
+            alert(" Ocurrió un error al eliminar la persona. Inténtelo más tarde.");
             console.log(json.msg);
         } else {
-            alert("✅ " + json.msg);
+            alert(" " + json.msg);
             if (document.getElementById('content_proveedor')) {
                 document.getElementById('content_proveedor').innerHTML = '';
                 view_proveedores();

@@ -16,7 +16,7 @@ async function view_products_cards() {
 
         let contenido = document.getElementById('content_products');
         if (!contenido) {
-            console.error("❌ No se encontró el contenedor #content_products");
+            console.error(" No se encontró el contenedor #content_products");
             return;
         }
         let cont =1;
@@ -44,53 +44,60 @@ async function view_products_cards() {
 
                 col.innerHTML = `
                     <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+
                        <img src="${rutaImagen}" 
-             class="card-img-top img-fluid" 
-             alt="${producto.nombre}" 
-             style="height: 300px; width: 900px; object-fit: cover; transition: transform 0.3s ease;">
+                        class="card-img-top img-fluid" 
+                        alt="${producto.nombre}" 
+                        style="height: 300px; width: 900px; object-fit: cover; transition: transform 0.3s ease;">
         
-       <div class="card-body text-center bg-light rounded-4 shadow-sm py-4">
-    <h5 class="card-title fw-bold mb-3 text-dark">
-        ${producto.nombre}
-    </h5>
-    <p class="card-text small text-secondary mb-3">
-        ${producto.detalle}
-    </p>
-    <p class="fw-semibold fs-5 text-dark mb-3">
-        💰 S/ ${parseFloat(producto.precio).toFixed(2)}
-    </p>
-    <span class="badge bg-dark text-white mb-3 px-4 py-2 rounded-pill">
-        Stock: ${producto.stock}
-    </span>
-    <div class="border-top pt-3">
-        <p class="text-dark small mb-2">
-            <i class="bi bi-tags me-1 text-secondary"></i>
-            <strong>Categoría:</strong> ${producto.categoria ?? '—'}
-        </p>
-        <p class="text-dark small mb-2">
-            <i class="bi bi-truck me-1 text-secondary"></i>
-            <strong>Proveedor:</strong> ${producto.proveedor ?? '—'}
-        </p>
-        <p class="text-dark small mb-0">
-            <i class="bi bi-calendar-event me-1 text-secondary"></i>
-            <strong>Fecha:</strong> ${producto.fecha_vencimiento ?? '—'}
-        </p>
-            </div>
-        </div>
+                    <div class="card-body text-center bg-light rounded-4 shadow-sm py-4">
+                        <h5 class="card-title fw-bold mb-3 text-dark">
+                            ${producto.nombre}
+                        </h5>
+
+                        <p class="card-text small text-secondary mb-3">
+                            ${producto.detalle}
+                        </p>
+
+                        <p class="fw-semibold fs-5 text-dark mb-3">
+                        S/ ${parseFloat(producto.precio).toFixed(2)}
+                        </p>
+
+                        <span class="badge bg-dark text-white mb-3 px-4 py-2 rounded-pill">
+                            Stock: ${producto.stock}
+                        </span>
+
+                        <div class="border-top pt-3">
+                        <p class="text-dark small mb-2">
+                            <i class="bi bi-tags me-1 text-secondary"></i>
+                            <strong>Categoría:</strong> ${producto.categoria ?? '—'}
+                        </p>
+
+                        <p class="text-dark small mb-2">
+                            <i class="bi bi-truck me-1 text-secondary"></i>
+                            <strong>Proveedor:</strong> ${producto.proveedor ?? '—'}
+                        </p>
+
+                        <p class="text-dark small mb-0">
+                            <i class="bi bi-calendar-event me-1 text-secondary"></i>
+                            <strong>Fecha:</strong> ${producto.fecha_vencimiento ?? '—'}
+                        </p>
+                    </div>
+                    </div>
 
 
-        <div class="card-footer bg-light border-0 d-flex justify-content-center gap-2 pb-3">
-            <button class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                <i class="bi bi-eye"></i> Ver Detalles
-            </button>
+                        <div class="card-footer bg-light border-0 d-flex justify-content-center gap-2 pb-3">
+                            <button class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                            <i class="bi bi-eye"></i> Ver Detalles
+                            </button>
             
-            <button class="btn btn-outline-success btn-sm rounded-pill px-3">
-                <i class="bi bi-cart-plus"></i> Agregar al Carrito
-            </button>
+                            <button class="btn btn-outline-success btn-sm rounded-pill px-3">
+                            <i class="bi bi-cart-plus"></i> Agregar al Carrito
+                            </button>
             
-        </div>
-    </div>
-`;
+                        </div>
+                    </div>
+                 `;
 
                 fila.appendChild(col);
             });
