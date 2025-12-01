@@ -3,8 +3,19 @@
         <i class="bi bi-people-fill"></i>
         <i class="bi bi-person-check-fill"></i>
         LISTA DE CLIENTES
+
     </h3>
+
     <div class="container">
+        <div class="text-end mt-3">
+            <a href="<?= BASE_URL ?>new-client" class="btn btn-success btn-lg rounded-pill">
+                <i class="bi bi-person-plus"></i> Agregar clientes
+            </a>
+        </div>
+        
+        <div class="text-end mt-3"></div>
+
+
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
@@ -22,11 +33,8 @@
             </tbody>
         </table>
         <!-- Botón para agregar usuario -->
-        <div class="text-end mt-3">
-            <a href="<?= BASE_URL ?>new-client" class="btn btn-success btn-lg rounded-pill">
-                <i class="bi bi-person-plus"></i> Agregar clientes
-            </a>
-        </div>
+
+
     </div>
 </div>
 

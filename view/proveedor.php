@@ -11,7 +11,8 @@
                 <i class="bi bi-person-plus"></i> Agregar proveedor
             </a>
         </div>
-
+        
+        <div class="text-end mt-3"></div>
 
 
         <table class="table table-bordered table-striped">
@@ -27,7 +28,6 @@
                 </tr>
             </thead>
             <tbody id="content_proveedor">
-
             </tbody>
         </table>
         <!-- Botón para agregar usuario -->

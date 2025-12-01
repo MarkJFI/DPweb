@@ -31,10 +31,13 @@
                 id="busquedaProducto"
                 onkeyup="view_products_cards()">
 
+                <input type="hidden" id="id_producto_venta">
+                <input type="hidden" id="producto_precio_venta">
+                <input type="hidden" id="producto_cantidad_venta">
+            
+
         </div>
     </div>
-
-
 
 
 
@@ -104,3 +107,11 @@
 <!-- Script que genera las cards -->
 <script src="<?= BASE_URL ?>view/function/lista.js"></script>
 <script src="<?= BASE_URL ?>view/function/venta.js"></script>
+<script>
+    let input = document.getElementById("busquedaProducto");
+    input.addEventListener('keydown',(event)=>{
+        if (event.key =='Enter'){
+            agregar_producto_temporal();
+        }
+    })
+</script>
