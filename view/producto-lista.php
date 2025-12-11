@@ -4,7 +4,7 @@
         <h3 class="mt-3 mb-4 text-center text-primary fw-bold py-3 px-4 rounded-pill shadow titulo-usuarios">
             <i class="bi bi-box-seam"></i>
             <i class="bi bi-cart4"></i>
-            LISTA DE PRODUCTOS
+            LISTA DE PRODUCTOS CON IMAGEN
         </h3>
     </div>
 
@@ -115,3 +115,60 @@
         }
     })
 </script>
+<!-- Modal para ver detalles del producto -->
+<style>
+    /* Estilos para modal de producto */
+    .product-modal-img { max-height: 320px; object-fit: contain; border-radius: .5rem; box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+    .product-price { font-size: 1.6rem; color: #0d6efd; font-weight: 700; }
+    .product-badge { font-size: .85rem; margin-right: .4rem; }
+    .product-attr { color: #6c757d; }
+</style>
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-body p-0">
+                <div class="row g-0">
+                    <div class="col-md-5 bg-light d-flex align-items-center justify-content-center p-4">
+                        <img id="modalProductoImagen" src="" alt="Imagen" class="img-fluid product-modal-img">
+                    </div>
+                    <div class="col-md-7 p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 id="modalProductoNombre" class="mb-1"></h3>
+                                <div class="mb-2">
+                                    <span id="modalProductoCategoria" class="badge bg-secondary product-badge">Categoría</span>
+                                    <span id="modalProductoProveedor" class="badge bg-info text-dark product-badge">Proveedor</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="product-price mb-1" id="modalProductoPrecio">S/ 0.00</div>
+                                <div class="product-attr">Stock: <span id="modalProductoStock">0</span></div>
+                            </div>
+                        </div>
+
+                        <p id="modalProductoDetalle" class="text-muted small mt-3"></p>
+
+                        <div class="row mt-4">
+                            <div class="col-sm-6">
+                                <label class="small text-muted">Fecha de vencimiento</label>
+                                <div class="fw-medium" id="modalProductoFecha">—</div>
+                            </div>
+                            <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+                                <div class="d-inline-flex align-items-center gap-2">
+                                    <button id="modalQtyMinus" class="btn btn-outline-secondary btn-sm">-</button>
+                                    <input id="modalCantidad" type="number" min="1" value="1" class="form-control form-control-sm text-center" style="width:80px">
+                                    <button id="modalQtyPlus" class="btn btn-outline-secondary btn-sm">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 d-flex gap-2">
+                            <button id="modalAgregarBtn" class="btn btn-primary btn-lg px-4"> <i class="bi bi-cart-plus me-2"></i> Agregar al Carrito</button>
+                            <button type="button" class="btn btn-outline-secondary btn-lg px-4" data-bs-dismiss="modal"><i class="bi bi-x-lg me-2"></i>Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

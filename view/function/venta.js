@@ -40,11 +40,8 @@ async function agregar_producto_temporal() {
         });
         json = await respuesta.json();
         if (json.status) {
-            if (json.msg == "registrado") {
-                alert("el producto fue registrado");
-            } else {
-                alert("el producto fue actualizado");
-            }
+            // No mostrar alert nativo. Registrar en consola para depuración.
+            console.log('agregar_producto_temporal:', json.msg);
         }
 
     } catch (error) {
