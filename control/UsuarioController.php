@@ -6,7 +6,7 @@ $tipo = $_GET['tipo'];
 
 if ($tipo == 'registrar') {
 
-//print_r($_POST);
+    //print_r($_POST);
     $nro_identidad = $_POST['nro_identidad'];
     $razon_social = $_POST['razon_social'];
     $telefono = $_POST['telefono'];

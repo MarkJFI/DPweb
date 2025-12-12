@@ -1,7 +1,7 @@
 // clients.js - funciones para listar, editar, crear, actualizar y eliminar clientes
 
 function validar_form(tipo) {
-  const fields = ['nro_identidad','razon_social','telefono','correo','departamento','provincia','distrito','cod_postal','direccion','rol'];
+  const fields = ['nro_identidad', 'razon_social', 'telefono', 'correo', 'departamento', 'provincia', 'distrito', 'cod_postal', 'direccion', 'rol'];
   for (let f of fields) {
     const el = document.getElementById(f);
     if (!el || el.value.trim() === '') {
@@ -15,12 +15,12 @@ function validar_form(tipo) {
 
 // vincular formularios
 if (document.querySelector('#frm_client')) {
-  document.querySelector('#frm_client').addEventListener('submit', function(e){
+  document.querySelector('#frm_client').addEventListener('submit', function (e) {
     e.preventDefault(); validar_form('nuevo');
   });
 }
 if (document.querySelector('#frm_user')) {
-  document.querySelector('#frm_user').addEventListener('submit', function(e){
+  document.querySelector('#frm_user').addEventListener('submit', function (e) {
     e.preventDefault(); validar_form('nuevo');
   });
 }
@@ -31,7 +31,7 @@ async function registrarCliente() {
     if (!form) return console.warn('Formulario no encontrado para registrar cliente');
     const datos = new FormData(form);
     // Forzar rol cliente por seguridad
-    if (datos.has('rol')) datos.set('rol','Cliente'); else datos.append('rol','Cliente');
+    if (datos.has('rol')) datos.set('rol', 'Cliente'); else datos.append('rol', 'Cliente');
     const res = await fetch(base_url + 'control/UsuarioController.php?tipo=registrar', {
       method: 'POST', body: datos
     });
@@ -118,11 +118,11 @@ async function edit_client() {
     const id_persona = document.getElementById('id_persona') ? document.getElementById('id_persona').value : null;
     if (!id_persona) return console.warn('id_persona no encontrado');
     const datos = new FormData(); datos.append('id_persona', id_persona);
-    const res = await fetch(base_url + 'control/UsuarioController.php?tipo=ver', {method:'POST', body: datos});
+    const res = await fetch(base_url + 'control/UsuarioController.php?tipo=ver', { method: 'POST', body: datos });
     const json = await res.json();
     if (!json.status) { alert(json.msg); return; }
     const data = json.data;
-    ['nro_identidad','razon_social','telefono','correo','departamento','provincia','distrito','cod_postal','direccion','rol'].forEach(k=>{
+    ['nro_identidad', 'razon_social', 'telefono', 'correo', 'departamento', 'provincia', 'distrito', 'cod_postal', 'direccion', 'rol'].forEach(k => {
       const el = document.getElementById(k);
       if (el && data[k] !== undefined) el.value = data[k];
     });
@@ -130,7 +130,7 @@ async function edit_client() {
 }
 
 if (document.querySelector('#frm_edit_client')) {
-  document.querySelector('#frm_edit_client').addEventListener('submit', function(e){
+  document.querySelector('#frm_edit_client').addEventListener('submit', function (e) {
     e.preventDefault(); validar_form('actualizar');
   });
 }
@@ -140,7 +140,7 @@ async function actualizarCliente() {
     const form = document.getElementById('frm_edit_client');
     if (!form) return console.warn('Formulario de edición no encontrado');
     const datos = new FormData(form);
-    const res = await fetch(base_url + 'control/UsuarioController.php?tipo=actualizar', {method:'POST', body: datos});
+    const res = await fetch(base_url + 'control/UsuarioController.php?tipo=actualizar', { method: 'POST', body: datos });
     const json = await res.json();
     alert(json.msg);
     if (json.status) window.location.href = base_url + 'clients';
@@ -150,7 +150,7 @@ async function actualizarCliente() {
 async function eliminar(id) {
   try {
     const datos = new FormData(); datos.append('id', id);
-    const res = await fetch(base_url + 'control/UsuarioController.php?tipo=eliminar', {method:'POST', body: datos});
+    const res = await fetch(base_url + 'control/UsuarioController.php?tipo=eliminar', { method: 'POST', body: datos });
     const json = await res.json();
     alert(json.msg);
     if (json.status) {

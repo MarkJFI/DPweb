@@ -4,47 +4,52 @@
         <i class="bi bi-cart4"></i>
         PRODUCTOS
     </h3>
-       
-    
+
+    <!-- Botón para agregar producto -->
     <div class="container">
-        <table class="table table-bordered table-hover">
-            <thead class="table-success">
-                <tr>
-                    <th>Nro</th>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Detalle</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Categoría</th>
-                    <th>Fecha</th>
-                    <th>Codigo de Barra</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="content_products">
-                <!-- JS carga aquí los productos -->
-            </tbody>
-        </table>
-        <!-- Botón para agregar producto -->
         <div class="text-end mt-3">
             <a href="<?= BASE_URL ?>new-producto" class="btn btn-primary btn-lg rounded-pill">
-                <i class="bi bi-plus-circle"></i> Agregar producto
-            </a>
+                <i class="bi bi-plus-circle"></i>Agregar producto</a>
         </div>
 
         <div class="text-end mt-3">
-    <a href="<?= BASE_URL ?>producto-lista" class="btn btn-success btn-lg rounded-pill">
-        <i class="bi bi-plus-circle"></i> Lista de productos
-    </a>
-</div>
+            <a href="<?= BASE_URL ?>producto-lista" class="btn btn-success btn-lg rounded-pill">
+                <i class="bi bi-plus-circle"></i>Lista de productos</a>
+        </div>
+
+        <div class="text-end mt-3"></div>
+
+
+
+    
+
+        <div class="container">
+            <table class="table table-bordered table-hover">
+                <thead class="table-success">
+                    <tr>
+                        <th>Nro</th>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Detalle</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Categoría</th>
+                        <th>Fecha</th>
+                        <th>Codigo de Barra</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="content_products">
+                    <!-- JS carga aquí los productos -->
+                </tbody>
+            </table>
+
+        </div>
+
+        <!-- Contenedor donde se mostrarán las tarjetas de productos -->
+        <div id="content_products" class="mt-5"></div>
     </div>
 
-    <!-- Contenedor donde se mostrarán las tarjetas de productos -->
-    <div id="content_products" class="mt-5"></div>
-</div>
-
-<!-- Script que genera las cards -->
-<script src="<?= BASE_URL ?>view/function/products.js"></script>
-<script src="<?= BASE_URL ?>view/function/JsBarcode.all.min.js"></script>
-
+    <!-- Script que genera las cards -->
+    <script src="<?= BASE_URL ?>view/function/products.js"></script>
+    <script src="<?= BASE_URL ?>view/function/JsBarcode.all.min.js"></script>

@@ -11,11 +11,9 @@
     <!-- Botón para regresar a productos -->
     <div class="text-end mt-3">
         <a href="<?= BASE_URL ?>producto" class="btn btn-secondary btn-lg rounded-pill shadow-sm px-4">
-            <i class="bi bi-arrow-left-circle"></i> Regresar a Productos
+            <i class="bi bi-arrow-left-circle"></i> Regresar
         </a>
     </div>
-
-
 
 
     <!-- Barra de búsqueda -->
@@ -28,8 +26,8 @@
 
             <input
                 type="text"
-                class="form-control border-0 rounded-end-pill"
-                placeholder="BUSCAR PRODUCTO POR NOMBRE O CÓDIGO"
+                class="form-control border-4 rounded-end-pill"
+                placeholder="BUSCAR..."
                 id="busquedaProducto"
                 onkeyup="view_products_cards()">
 
@@ -37,7 +35,35 @@
     </div>
 
 
+    <!-- Carrusel -->
+    <div id="productosCarrusel" class="carousel slide mt-4" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="<?= BASE_URL ?>view/img/img4.jpg" class="d-block w-100" alt="Producto Destacado 1" style="height: 300px; object-fit: cover;">
+                <div class="carousel-caption d-none d-md-block">
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="<?= BASE_URL ?>view/img/img3.webp" class="d-block w-100" alt="Producto Destacado 2" style="height: 300px; object-fit: cover;">
+                <div class="carousel-caption d-none d-md-block">
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="<?= BASE_URL ?>view/img/img5.webp" class="d-block w-100" alt="Producto Destacado 3" style="height: 300px; object-fit: cover;">
+                <div class="carousel-caption d-none d-md-block">
 
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#productosCarrusel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#productosCarrusel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
 
 
     <!-- Contenido principal -->
@@ -59,10 +85,10 @@
                         <table class="table table-sm table-hover align-middle mb-0">
                             <thead class="table-primary text-center">
                                 <tr>
-                                    <th>Producto</th>
-                                    <th>Cant.</th>
-                                    <th>Precio</th>
-                                    <th>Total</th>
+                                    <th>nombre</th>
+                                    <th>cantidad</th>
+                                    <th>precio</th>
+                                    <th>SubTotal</th>
                                     <th>Acción</th>
                                 </tr>
                             </thead>
@@ -78,13 +104,13 @@
                 </div>
 
                 <div class="card-footer bg-light">
-                    <div class="p-2 border rounded bg-white mb-3">
+                    <div class="p-2 border rounded bg-white mb-2">
                         <div class="d-flex justify-content-between">
                             <span class="fw-semibold">Subtotal:</span>
                             <span id="subtotal" class="fw-semibold text-secondary">S/ 0.00</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span class="fw-semibold">IGV (18%):</span>
+                            <span class="fw-semibold">IGV:</span>
                             <span id="igv" class="fw-semibold text-secondary">S/ 0.00</span>
                         </div>
                         <hr class="my-2">
@@ -106,3 +132,12 @@
 <!-- Script que genera las cards -->
 <script src="<?= BASE_URL ?>view/function/lista.js"></script>
 <script src="<?= BASE_URL ?>view/function/venta.js"></script>
+<script>
+    let input = document.getElementById('busquedaProducto');
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            agregar_producto_temporal(1, 12, 2)
+           
+        }
+    })
+</script>

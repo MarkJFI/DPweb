@@ -26,6 +26,7 @@
                 </tbody>
             </table>
         </div>
+        
         <!-- Formulario agregar categoría -->
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-primary text-white fw-bold">

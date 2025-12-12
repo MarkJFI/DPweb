@@ -9,7 +9,7 @@ class UsuarioModel
         $this->conexion = $this->conexion->connect();
     }
 
-//registrar
+    //registrar
     public function registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password)
     {
         $consulta = "INSERT INTO persona (nro_identidad,razon_social,telefono,correo,departamento,provincia,distrito,cod_postal,direccion,rol,password) VALUES ('$nro_identidad','$razon_social','$telefono','$correo','$departamento','$provincia','$distrito','$cod_postal','$direccion','$rol','$password')";
@@ -22,7 +22,7 @@ class UsuarioModel
         return $sql;
     }
 
-//existe la persona
+    //existe la persona
     public function existePersona($nro_identidad)
     {
         $consulta = "SELECT * FROM persona WHERE nro_identidad='$nro_identidad'"; // consulta en la base de datos
@@ -30,26 +30,26 @@ class UsuarioModel
         return $sql->num_rows;
     }
 
-//buscar persona por identidad
+    //buscar persona por identidad
     public function buscarPersonaPornNroIdentidad($nro_identidad)
     {
         $consulta = "SELECT id,razon_social,password FROM persona WHERE nro_identidad = '$nro_identidad' LIMIT 1"; // base de datos
         $sql = $this->conexion->query($consulta);
         return $sql->fetch_object();
     }
-//ver usuarios
+    //ver usuarios
     public function verUsuarios()
     {
         $arr_usuarios = array();
         $consulta = "SELECT * FROM persona WHERE rol<>'Cliente' AND rol<>'Proveedor'";
         $sql = $this->conexion->query($consulta);
-        while ($objeto = $sql->fetch_object()) {  
+        while ($objeto = $sql->fetch_object()) {
             array_push($arr_usuarios, $objeto);
         }
         return $arr_usuarios;
     }
 
-// Ver usuario
+    // Ver usuario
     public function ver($id)
     {
         $consulta = "SELECT * FROM persona WHERE id='$id'";
@@ -58,7 +58,7 @@ class UsuarioModel
     }
 
 
- //actualizar 
+    //actualizar 
     public function actualizar($id_persona, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol)
     {
         $consulta = "UPDATE persona SET nro_identidad='$nro_identidad',  razon_social='$razon_social', telefono='$telefono', correo='$correo', departamento='$departamento', provincia='$provincia', distrito='$distrito', cod_postal='$cod_postal', direccion='$direccion', rol='$rol' WHERE id='$id_persona'";
@@ -67,7 +67,7 @@ class UsuarioModel
         return $sql;
     }
 
-// eliminar
+    // eliminar
     public function eliminar($id_persona)
     {
         $consulta = "DELETE FROM persona WHERE id='$id_persona'";
@@ -76,7 +76,7 @@ class UsuarioModel
     }
 
 
-// Ver Clientes
+    // Ver Clientes
     public function verClientes()
     {
         $arr_usuarios = array();
@@ -88,7 +88,7 @@ class UsuarioModel
         return $arr_usuarios;
     }
 
-// Ver Proveedores
+    // Ver Proveedores
     public function verProveedores()
     {
         $arr_usuarios = array();
@@ -99,5 +99,4 @@ class UsuarioModel
         }
         return $arr_usuarios;
     }
-    
 }

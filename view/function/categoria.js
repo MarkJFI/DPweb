@@ -29,7 +29,7 @@ function validar_form(tipo) {
     }
 }
 
-let frm_category = document.querySelector('#frm_category'); 
+let frm_category = document.querySelector('#frm_category');
 if (frm_category) {
     frm_category.onsubmit = function (e) {
         e.preventDefault();

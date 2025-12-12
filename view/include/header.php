@@ -19,8 +19,7 @@
     /* ======== CONFIGURACIÓN GLOBAL ======== */
     body {
         background: 
-            linear-gradient(rgba(0, 0, 0, 0.6), rgba(5, 20, 35, 0.8)),
-            url('https://xmple.com/wallpaper/honeycomb-black-blue-hexagon-beehive-2240x1080-c2-000000-00ced1-l2-1-60-a-40-f-5.svg'); /* Fondo moderno celeste */
+        url('https://wallpapers.com/images/hd/black-and-pink-aesthetic-linear-gradient-uyrhekcgzr0wi7qz.jpg'); /* Fondo moderno celeste */
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -34,7 +33,7 @@
 
     /* ======== NAVBAR ======== */
     .navbar {
-        background: rgba(10, 35, 60, 0.8) !important;
+         background: linear-gradient(135deg, rgba(166, 105, 236, 1), rgba(50, 53, 54, 1));
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 25px rgba(0, 180, 255, 0.2);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -70,7 +69,7 @@
 
     /* ======== TÍTULO ======== */
     .titulo-usuarios {
-        background: rgba(25, 60, 90, 0.8);
+        background: linear-gradient(135deg, rgba(122, 193, 243, 0.24), rgba(65, 196, 233, 1));
         border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 
             inset 0 0 8px rgba(255, 255, 255, 0.05),
@@ -101,16 +100,16 @@
 
     /* ======== TABLAS ======== */
     .table {
-        background: rgba(15, 40, 65, 0.8);
+        background: rgba(112, 171, 230, 0.81);
         border-radius: 14px;
         overflow: hidden;
         color: #e0f7ff;
-        box-shadow: 0 4px 20px rgba(0, 180, 255, 0.25);
+        box-shadow: 0 4px 20px rgba(99, 187, 224, 0.25);
         backdrop-filter: blur(10px);
     }
 
     .table th {
-        background: rgba(30, 80, 120, 0.9);
+        background: rgba(91, 158, 212, 0.9);
         color: #ffffff;
         font-weight: 600;
         text-transform: uppercase;
@@ -133,7 +132,7 @@
 
     /* ======== DROPDOWN ======== */
     .dropdown-menu {
-        background: rgba(25, 50, 80, 0.95);
+        background: rgba(119, 214, 63, 0.95);
         border-radius: 10px;
         border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 4px 20px rgba(0, 180, 255, 0.2);
@@ -185,14 +184,14 @@
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand styled-logo" href="#">JB</a> <!-- vuelve al login-->
+            <a class="navbar-brand styled-logo" href="https://images.seeklogo.com/logo-png/36/2/balenciaga-logo-png_seeklogo-366144.png"></a> <!-- vuelve al login-->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" href="<?= BASE_URL ?>new-user">Home</a>
                     </li>
                     <!--<li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>new-user">Registrar</a>
@@ -261,7 +260,7 @@
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>login">Cerrar</a></li>
+                                <li><a class="dropdown-item" href="<?= BASE_URL ?>login"><Label>Login</Label></a></li>
                             </ul>
 
 

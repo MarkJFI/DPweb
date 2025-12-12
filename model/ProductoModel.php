@@ -86,7 +86,7 @@ class ProductoModel
     }
 
 
-// BUSCAR PRODUCTO POR NOMBRE O CÓDIGO
+    // BUSCAR PRODUCTO POR NOMBRE O CÓDIGO
     public function buscarProductoByNombreOrCodigo($dato)
     {
         $arr_productos = array();

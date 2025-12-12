@@ -4,7 +4,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usuario = $_POST["usuario"];
     $clave = $_POST["clave"];
 
-    if ($usuario == "brayan" && $clave == "1234") {
+    if ($usuario == "mark" && $clave == "1234") {
         echo "<div style='text-align:center; margin-top:50px; font-family:sans-serif;'>
                 <h2>Bienvenido, $usuario!</h2>
               </div>";
@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     body {
-        background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/8c9c3684-1124-4459-a82b-f1c63f6abf07/dgjvsoi-2e77c697-2f1a-478b-afc6-54953054d308.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi84YzljMzY4NC0xMTI0LTQ0NTktYTgyYi1mMWM2M2Y2YWJmMDcvZGdqdnNvaS0yZTc3YzY5Ny0yZjFhLTQ3OGItYWZjNi01NDk1MzA1NGQzMDguZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.4j-o3NF7rA4CtT3DLjg7Vgt-O0PP6O0g_zIvWMB8sbs');
+        background-image: url('https://smart-lighting.es/wp-content/uploads/2019/09/0-tienda-balenciaga.jpg');
         background-size: cover;
         background-position: center;
         margin: 0;
@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         text-align: center;
         width: 340px;
         backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.3);
         animation: fadeIn 1s ease-in-out;
     }
 
@@ -165,7 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="login-container">
         <div class="imagen_container">
-            <img src="https://i.pinimg.com/originals/65/a9/ee/65a9ee3d358703d5e43ba8640dae2ace.gif" alt="Logo Animado">
+            <img src="https://unityvox.com/logo/loader.gif" alt="Logo Animado">
         </div>
         <h2>Iniciar sesión</h2>
         <form id="frm_login">
@@ -179,7 +179,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p>¿Nuevo personal? <a href="#">Regístrate</a></p>-->
         </div>
         <div class="footer">
-            <p>Jesus Brayan Nuñez Meza 2025</p>
+            <p>Mark Figueroa 2025</p>
 
         </div>
     </div>
