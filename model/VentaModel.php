@@ -9,21 +9,35 @@ class VentaModel
         $this->conexion = $this->conexion->connect();
     }
 
+
     public function registrar_temporal($id_producto, $precio, $cantidad){
         $sql = "INSERT INTO temporal_venta(id_producto, precio, cantidad) VALUES
         ('$id_producto','$precio','$cantidad')";
         $resultado = $this->conexion->query($sql);
         if ($resultado){
+
+
+    //registral temporal
+    public function registrar_temporal($id_producto,$precio, $cantidad){
+        $consulta = "INSERT INTO temporal_venta (id_producto, precio, cantidad) 
+        VALUES ('$id_producto', '$precio', '$cantidad')";
+        $sql = $this->conexion->query($consulta);
+        if ($sql) {
+
             return $this->conexion->insert_id;
         }
         return 0;
     }
+
+
+    //actualizar
 
     public function actualizarCantidadTemporal($id_producto, $cantidad){
         $consulta = "UPDATE temporal_venta SET cantidad='$cantidad' WHERE id_producto='$id_producto'";
         $sql = $this->conexion->query($consulta);
         return $sql;
     }
+
 
     public function buscarTemporalPorId($id_producto){
         $consulta = "SELECT * FROM temporal_venta WHERE id_producto='$id_producto' LIMIT 1";
@@ -35,6 +49,12 @@ class VentaModel
     }
 
     public function buscarTemporal(){
+
+
+    //buscar temporales
+    public function buscarTemporales()
+    {  
+
         $arr_temporal = array();
         $consulta = "SELECT * FROM temporal_venta";
         $sql = $this->conexion->query($consulta);
@@ -44,19 +64,54 @@ class VentaModel
         return $arr_temporal;
     }
 
+
     public function eliminarTemporal($id){
+
+
+    //buscar temporal
+    public function buscarTemporal($id_producto)
+    {
+        $consulta = "SELECT * FROM temporal_venta WHERE id_producto='$id_producto'";
+        $sql = $this->conexion->query($consulta);
+        return $sql->fetch_object();
+    }
+
+
+    //eliminar temporal
+    public function eliminarTemporal($id)
+    {
+
         $consulta = "DELETE FROM temporal_venta WHERE id='$id'";
         $sql = $this->conexion->query($consulta);
         return $sql;
     }
 
+
     public function eliminarTemporales(){
+
+    
+    //eliminar temporales
+     public function eliminarTemporales()
+    {
+
         $consulta = "DELETE FROM temporal_venta";
         $sql = $this->conexion->query($consulta);
         return $sql;
     }
 
+
     // VENTAS REGISTRADAS (OFICIALES) - métodos a implementar aquí si es necesario
 
 }
 ?>
+
+    
+
+
+
+
+
+
+
+
+

@@ -8,9 +8,17 @@
 
         <div class="text-end mt-3">
             <a href="<?= BASE_URL ?>new-proveedor" class="btn btn-success btn-lg rounded-pill">
+
                 <i class="bi bi-person-plus"></i>+ Nuevo proveedor
             </a>
         </div>
+
+
+                <i class="bi bi-person-plus"></i> Agregar proveedor
+            </a>
+        </div>
+        
+        <div class="text-end mt-3"></div>
 
 
 
@@ -27,7 +35,6 @@
                 </tr>
             </thead>
             <tbody id="content_proveedor">
-
             </tbody>
         </table>
         <!-- Botón para agregar usuario -->

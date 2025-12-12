@@ -1,6 +1,7 @@
 let productos_venta = {}; // carrito temporal en memoria
 let id_contador = 1; // contador para IDs únicos de elementos en el carrito
 
+
 // Función para cargar productos temporales desde BD
 async function cargar_productos_temporales() {
     try {
@@ -14,6 +15,18 @@ async function cargar_productos_temporales() {
         let textoRespuesta = await respuesta.text();
         console.log('Respuesta raw de buscarTemporal:', textoRespuesta);
 
+let producto = {};
+producto.nombre = "Producto A";
+producto.precio = 100;
+producto.cantidad = 2;
+
+let producto2 = {};
+producto2.nombre = "Producto B";
+producto2.precio = 200;
+producto2.cantidad = 1;
+//productos_venta.push(producto);
+
+
         let json;
         try {
             json = JSON.parse(textoRespuesta);
@@ -22,6 +35,7 @@ async function cargar_productos_temporales() {
             console.error('Texto recibido:', textoRespuesta);
             return;
         }
+
 
         console.log('JSON parseado:', json);
 
@@ -61,11 +75,30 @@ async function agregar_producto_temporal(id_producto, precio, cantidad) {
 
     try {
         let respuesta = await fetch(base_url + 'control/VentaController.php?tipo=registrarTemporal', {
+
+//splice remueve elementos, inserta nuevo elemento
+/*productos_venta.splice(id,1);
+console.log(productos_venta);*/
+
+
+//agregar producto
+async function agregar_producto_temporal() {
+    let id = document.getElementById('id_producto_venta').value;
+    let precio = document.getElementById('producto_precio_venta').value;
+    let cantidad = document.getElementById('producto_cantidad_venta').value;
+    const datos = new FormData();
+    datos.append('id_producto', id);
+    datos.append('precio', precio);
+    datos.append('cantidad', cantidad);
+    try {
+        let respuesta = await fetch(base_url + 'control/ventaController.php?tipo=registrar_temporal', {
+
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
             body: datos
         });
+
 
         // Obtener texto de respuesta para validar si es JSON
         let textoRespuesta = await respuesta.text();
@@ -314,4 +347,18 @@ async function listar_temporales() {
     }
 
     
+
+        json = await respuesta.json();
+        if (json.status) {
+            // No mostrar alert nativo. Registrar en consola para depuración.
+            console.log('agregar_producto_temporal:', json.msg);
+        }
+
+    } catch (error) {
+        console.log("error" + error)
+    }
+
+
+
+
 }

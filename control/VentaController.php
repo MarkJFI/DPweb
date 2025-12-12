@@ -5,44 +5,23 @@ require_once("../model/ProductoModel.php");
 $objProducto = new ProductoModel();
 $objVenta = new VentaModel();
 
-$tipo = isset($_GET['tipo']) ? $_GET['tipo'] : '';
+$tipo = $_GET['tipo'];
 
-if ($tipo == "registrarTemporal") {
-    $respuesta = array('status' => false, 'msg' => 'Fallo el controlador');
-    $id_producto = isset($_POST['id_producto']) ? $_POST['id_producto'] : '';
-    $precio = isset($_POST['precio']) ? $_POST['precio'] : 0;
-    $cantidad = isset($_POST['cantidad']) ? $_POST['cantidad'] : 1;
+if ($tipo == "registrar_temporal"){
+    $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
+    $id_producto = $_POST['id_producto'];
+    $precio = $_POST['precio'];
+    $cantidad = $_POST['cantidad'];
 
-    // Buscar si el producto ya existe en temporal
-    $b_producto = $objVenta->buscarTemporalPorId($id_producto);
+    $b_producto = $objVenta->buscarTemporal($id_producto);
+    if ($b_producto){
+        $n_cantidad = $b_producto->cantidad+1;
+        $objVenta->actualizarCantidadTemporal($id_producto, $n_cantidad);
+        $respuesta = array('status' => true, 'msg' => 'actualizado');
 
-    if ($b_producto) {
-        $r_cantidad = $b_producto->cantidad + 1;
-        $objVenta->actualizarCantidadTemporal($id_producto, $r_cantidad);
-        $respuesta = array('status' => true, 'msg' => 'Actualizado con éxito');
-    } else {
-        $objVenta->registrar_temporal($id_producto, $precio, $cantidad);
+    }else{
+        $registro = $objVenta->registrar_temporal($id_producto, $precio, $cantidad);
         $respuesta = array('status' => true, 'msg' => 'registrado');
     }
-
     echo json_encode($respuesta);
-    exit;
 }
-
-if ($tipo == "buscarTemporal") {
-    $respuesta = array('status' => true, 'msg' => 'Sin productos', 'data' => array());
-    $productos = $objVenta->buscarTemporal();
-    if ($productos && count($productos) > 0) {
-        $respuesta = array('status' => true, 'msg' => 'Productos encontrados', 'data' => $productos);
-    }
-    echo json_encode($respuesta);
-    exit;
-}
-?>
-
-
-
-
-
-
-

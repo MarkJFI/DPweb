@@ -175,6 +175,14 @@
     a:hover {
         color: #9de9ff;
     }
+    
+    /* ======== CARDS DE HOME ======== */
+    .card-equal {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
 </style>
 
 
@@ -190,8 +198,18 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+
+                    <!--<li class="nav-item">
+                        <a class="nav-link active" aria-current="home" href="#">Home</a>
+                    </li>-->
+
                     <li class="nav-item">
+
                         <a class="nav-link active" aria-current="page" href="<?= BASE_URL ?>new-user">Home</a>
+
+                        <a class="nav-link" href="<?= BASE_URL ?>home">Home</a>
+
                     </li>
                     <!--<li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>new-user">Registrar</a>

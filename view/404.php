@@ -10,7 +10,11 @@
             font-family: Arial, sans-serif;
             text-align: center;
             padding-top: 50px;
+
             background-color: rgba(142, 116, 233, 1);
+
+            background-color: rgb(240, 150, 150);
+
         }
 
         p {
