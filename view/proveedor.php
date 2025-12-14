@@ -8,7 +8,7 @@
 
         <div class="text-end mt-3">
             <a href="<?= BASE_URL ?>new-proveedor" class="btn btn-success btn-lg rounded-pill">
-                <i class="bi bi-person-plus"></i> Agregar proveedor
+                <i class="bi bi-person-plus"></i>+ Nuevo proveedor
             </a>
         </div>
 

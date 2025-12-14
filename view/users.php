@@ -4,11 +4,11 @@
         <i class="bi bi-people-fill"></i>
         <i class="bi bi-person-check-fill"></i>
         
-        LISTA DE USUARIO
+        LISTA DE USUARIOS
     </h3>
     <div class="text-end mt-3">
             <a href="<?= BASE_URL ?>new-user" class="btn btn-success btn-lg rounded-pill">
-                <i class="bi bi-person-plus"></i> Agregar usuario
+                <i class="bi bi-person-plus"></i> + Nuevo usuario
             </a>
         </div>
     
