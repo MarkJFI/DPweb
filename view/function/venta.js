@@ -192,9 +192,9 @@ function actualizar_totales(subtotal) {
     const igvElement = document.getElementById('igv');
     const totalElement = document.getElementById('totalGeneral');
 
-    if (subtotalElement) subtotalElement.textContent = 'S/ ' + subtotal.toFixed(2);
-    if (igvElement) igvElement.textContent = 'S/ ' + igv.toFixed(2);
-    if (totalElement) totalElement.textContent = 'S/ ' + totalGeneral.toFixed(2);
+    if (subtotalElement) subtotalElement.textContent = 'S/. ' + subtotal.toFixed(2);
+    if (igvElement) igvElement.textContent = 'S/. ' + igv.toFixed(2);
+    if (totalElement) totalElement.textContent = 'S/. ' + totalGeneral.toFixed(2);
 }
 
 // Función para editar cantidad de un item
@@ -315,3 +315,35 @@ async function listar_temporales() {
 
     
 }
+async function registrarVenta() {
+    let id_cliente = document.getElementById('id_cliente_venta').value;
+    let fecha_venta = document.getElementById('fecha_venta').value;
+    if (id_cliente == '' || fecha_venta == '') {
+        
+        
+    }
+    try {
+        const datos = new FormData();
+        datos.append('id_cliente', id_cliente);
+        datos.append('fecha_venta', fecha_venta);
+
+        let respuesta= await fetch(base_url + 'control/VentaController.php?tipo=registrar-venta', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            body: datos
+        });
+        json = await respuesta.json();
+        if (json.status) {
+            alert("venta resgistrada con exito");
+            window.location.reload();
+        }else{
+            alert(json.msg);
+        }
+
+    } catch (error) {
+        console.log("error al registrar venta" + error);
+        
+    }
+}
+    

@@ -6,11 +6,11 @@
     <title>Página no encontrada</title>
     <style>
         body {
-            background-image: url(https://img.freepik.com/free-vector/flat-design-distressed-texture-background_23-2150525332.jpg);
+            background: white;
             font-family: Arial, sans-serif;
             text-align: center;
             padding-top: 50px;
-            background-color: rgba(142, 116, 233, 1);
+           
         }
 
         p {
@@ -26,9 +26,9 @@
 </head>
 
 <body>
-    <img src="https://assets.dochipo.com/editor/animations/404-error/7b0e030f-567e-4417-94bb-bc462d5f630c.gif" alt="">
+    <img src="https://assets-v2.lottiefiles.com/a/f0470cd6-117f-11ee-a4ed-1b2d7fb6aaaf/i83iUdPISg.gif" alt="">
     <p>Lo sentimos, la página que buscas no existe.</p>
-    <p><a href="/">Volver al inicio</a></p>
+    <p><a href="new-user">Volver al inicio</a></p>
 </body>
 
 </html>

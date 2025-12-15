@@ -1,7 +1,7 @@
-<div class="container py-4">
+<div class="container py-10">
     <!-- Título -->
     <div class="d-flex flex-column align-items-center">
-        <h3 class="mt-3 mb-4 text-center text-primary fw-bold py-3 px-4 rounded-pill shadow titulo-usuarios">
+        <h3 class="mt-4 mb-3 text-center text-primary fw-bold py-3 px-4 rounded-pill shadow titulo-usuarios">
             <i class="bi bi-box-seam"></i>
             <i class="bi bi-cart4"></i>
             LISTA DE PRODUCTOS
@@ -10,14 +10,14 @@
 
     <!-- Botón para regresar a productos -->
     <div class="text-end mt-3">
-        <a href="<?= BASE_URL ?>producto" class="btn btn-secondary btn-lg rounded-pill shadow-sm px-4">
+        <a href="<?= BASE_URL ?>producto" class="btn btn-primary btn-lg rounded-pill shadow-sm px-4">
             <i class="bi bi-arrow-left-circle"></i> Regresar
         </a>
     </div>
 
 
     <!-- Barra de búsqueda -->
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="input-group input-group-lg shadow rounded-pill">
 
             <span class="input-group-text bg-primary text-white border-0 rounded-start-pill">
@@ -26,8 +26,8 @@
 
             <input
                 type="text"
-                class="form-control border-4 rounded-end-pill"
-                placeholder="BUSCAR..."
+                class="form-control border-0 rounded-end-pill"
+                placeholder="Buscar productos..."
                 id="busquedaProducto"
                 onkeyup="view_products_cards()">
 
@@ -36,7 +36,7 @@
 
 
     <!-- Carrusel -->
-    <div id="productosCarrusel" class="carousel slide mt-4" data-bs-ride="carousel">
+    <div id="productosCarrusel" class="carousel slide mt-5" data-bs-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <img src="<?= BASE_URL ?>view/img/img4.jpg" class="d-block w-100" alt="Producto Destacado 1" style="height: 300px; object-fit: cover;">
@@ -69,12 +69,12 @@
     <!-- Contenido principal -->
     <div class="row">
         <!-- Lista de productos -->
-        <div class="col-lg-8 mb-3">
-            <div id="content_products" class="row gy-4"></div>
+        <div class="col-lg-9 mb-3">
+            <div id="content_products" class="row gy-5"></div>
         </div>
 
         <!-- Carrito lateral -->
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-header bg-dark text-white text-center fw-bold">
                     <i class="bi bi-bag-check-fill"></i> LISTA DE VENTAS
@@ -120,9 +120,66 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-success w-100 fw-bold py-2">
-                        <i class="bi bi-cash-stack"></i> Realizar Venta
+                   <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Realizar venta
+</button>
+<!-- Modal -->
+<div class="modal fade modal-lg" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Registro de Venta</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="form_venta">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="cliente_dni" class="form-label">DNI del Cliente</label>
+                    <input type="text" class="form-control" id="cliente_dni" name="cliente_dni" required>
+                </div>
+                <div class="col-md-6">
+                    <button type="button" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#modalCliente">
+                        Buscar Cliente
                     </button>
+                </div>
+                <div class="col-md-6">
+                    <label for="cliente_nombre" class="form-label">Nombre del cliente</label>
+                    <input type="text" class="form-control" id="cliente_nombre" name="cliente_nombre" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="fecha_venta">Fecha de Venta</label>
+                    <input type="date" class="form-control" id="fecha_venta" name="fecha_venta" value="<?= date('Y-m-d') ?>" required>
+                </div>
+            </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary">Registrar venta</button>
+      </div>
+    </div>
+  </div>
+</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Buscar Cliente -->
+    <div class="modal fade" id="modalCliente" tabindex="-1" aria-labelledby="modalClienteLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalClienteLabel">Buscar Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="mensajeCliente">Buscando cliente...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -140,4 +197,40 @@
            
         }
     })
+
+    // Agregar funcionalidad para buscar cliente por DNI
+    document.querySelector('button[data-bs-target="#modalCliente"]').addEventListener('click', function() {
+        const dni = document.getElementById('cliente_dni').value.trim();
+        const nombreInput = document.getElementById('cliente_nombre');
+        const mensaje = document.getElementById('mensajeCliente');
+        
+        if (!dni) {
+            mensaje.textContent = 'Por favor, ingrese un DNI válido.';
+            return;
+        }
+        
+        mensaje.textContent = 'Buscando cliente...';
+        
+        fetch('/DPweb/control/VentaController.php?tipo=buscarCliente', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'dni=' + encodeURIComponent(dni)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status) {
+                nombreInput.value = data.nombre;
+                mensaje.textContent = 'Cliente encontrado: ' + data.nombre;
+            } else {
+                nombreInput.value = '';
+                mensaje.textContent = data.msg;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            mensaje.textContent = 'Error al buscar el cliente.';
+        });
+    });
 </script>
+</body>
+</html>
