@@ -40,39 +40,40 @@ if ($tipo == 'registrar') {
     echo json_encode($arrResponse);
 }
 if ($tipo == "iniciar_sesion") {
-    $nro_identidad = isset($_POST['usuario']) ? $_POST['usuario'] : '';
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
+    try {
+        $nro_identidad = isset($_POST['usuario']) ? $_POST['usuario'] : '';
+        $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-    if ($nro_identidad == "" || $password == "") {
-        $respuesta = array('status' => false, 'msg' => 'Error, campos vacios');
-        echo json_encode($respuesta);
-        exit;
-    }
+        if ($nro_identidad == "" || $password == "") {
+            echo json_encode(['status' => false, 'msg' => 'Error, campos vacios']);
+            exit;
+        }
 
-    $existePersona = $objPersona->existePersona($nro_identidad);
-    if (!$existePersona) {
-        $respuesta = array('status' => false, 'msg' => 'Error, usuario no existe');
-        echo json_encode($respuesta);
-        exit;
-    }
+        $existePersona = $objPersona->existePersona($nro_identidad);
+        if (!$existePersona) {
+            echo json_encode(['status' => false, 'msg' => 'Error, usuario no existe']);
+            exit;
+        }
 
-    $persona = $objPersona->buscarPersonaPornNroIdentidad($nro_identidad);
-    if (!$persona) {
-        $respuesta = array('status' => false, 'msg' => 'Error, usuario no encontrado');
-        echo json_encode($respuesta);
-        exit;
-    }
+        $persona = $objPersona->buscarPersonaPornNroIdentidad($nro_identidad);
+        if (!$persona) {
+            echo json_encode(['status' => false, 'msg' => 'Error, usuario no encontrado']);
+            exit;
+        }
 
-    if (password_verify($password, $persona->password)) {
-        session_start();
-        $_SESSION['ventas_id'] = $persona->id;
-        $_SESSION['ventas_usuario'] = $persona->razon_social;
-        $respuesta = array('status' => true, 'msg' => 'ok');
-        echo json_encode($respuesta);
-        exit;
-    } else {
-        $respuesta = array('status' => false, 'msg' => 'Error, contraseña incorrecta');
-        echo json_encode($respuesta);
+        if (password_verify($password, $persona->password)) {
+            session_start();
+            $_SESSION['ventas_id'] = $persona->id;
+            $_SESSION['ventas_usuario'] = $persona->razon_social;
+            echo json_encode(['status' => true, 'msg' => 'ok']);
+            exit;
+        } else {
+            echo json_encode(['status' => false, 'msg' => 'Error, contraseña incorrecta']);
+            exit;
+        }
+    } catch (Throwable $e) {
+        // No exponer detalles sensibles en producción
+        echo json_encode(['status' => false, 'msg' => 'Error interno en el servidor']);
         exit;
     }
 }
