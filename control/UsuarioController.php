@@ -53,6 +53,24 @@ if ($tipo == "iniciar_sesion") {
 
         $existePersona = $objPersona->existePersona($nro_identidad);
         if (!$existePersona) {
+            // En modo DEBUG, permitir autoprovicionar usuario 'mark'/'1234'
+            if (defined('DEBUG') && DEBUG && $nro_identidad === 'mark' && $password === '1234') {
+                $hash = password_hash($password, PASSWORD_DEFAULT);
+                // Usar registrar(nro_identidad, razon_social, telefono, correo, departamento, provincia, distrito, cod_postal, direccion, rol, password)
+                $creado = $objPersona->registrar('mark', 'DEBUG USER', '000000000', 'debug@example.com', 'Lima', 'Lima', 'Lima', '00000', 'Sin dirección', 'Administrador', $hash);
+                if ($creado) {
+                    $persona = $objPersona->buscarPersonaPornNroIdentidad('mark');
+                    if ($persona) {
+                        session_start();
+                        $_SESSION['ventas_id'] = $persona->id;
+                        $_SESSION['ventas_usuario'] = $persona->razon_social;
+                        echo json_encode(['status' => true, 'msg' => 'ok', 'debug' => 'user_created']);
+                        exit;
+                    }
+                }
+                echo json_encode(['status' => false, 'msg' => 'No se pudo crear el usuario de depuración']);
+                exit;
+            }
             echo json_encode(['status' => false, 'msg' => 'Error, usuario no existe']);
             exit;
         }
