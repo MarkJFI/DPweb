@@ -92,31 +92,45 @@ async function registrarUsuario() {
 
 // INICIAR SESION
 async function iniciar_sesion() {
-    let usuario = document.getElementById("usuario").value;
-    let password = document.getElementById("password").value;
-    if (usuario == "" || password == "") {
-        alert("Error, campos vacios!");
+    const usuario = document.getElementById('usuario')?.value || '';
+    const password = document.getElementById('password')?.value || '';
+    if (usuario === '' || password === '') {
+        alert('Error, campos vacios!');
         return;
-
     }
     try {
         const datos = new FormData(frm_login);
-        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=iniciar_sesion', {
+        const respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=iniciar_sesion', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
             body: datos
         });
-        let json = await respuesta.json();
+
+        const texto = await respuesta.text();
+        if (!respuesta.ok) {
+            console.error('Error HTTP:', respuesta.status, texto);
+            alert('Error del servidor durante el inicio de sesión. Intente nuevamente.');
+            return;
+        }
+
+        let json;
+        try {
+            json = JSON.parse(texto);
+        } catch (e) {
+            console.error('Respuesta no es JSON válido:', e, texto);
+            alert('Respuesta inválida del servidor.');
+            return;
+        }
 
         if (json.status) {
             location.replace(base_url + 'new-user');
         } else {
-            alert(json.msg);
+            alert(json.msg || 'Credenciales incorrectas');
         }
-
     } catch (error) {
-        console.log(error);
+        console.error('Error en iniciar_sesion:', error);
+        alert('No se pudo conectar con el servidor.');
     }
 }
 
