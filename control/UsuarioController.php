@@ -1,6 +1,5 @@
 <?php
 require_once("../model/UsuarioModel.php");
-$objPersona = new UsuarioModel();
 $tipo = $_GET['tipo'];
 
 
@@ -41,6 +40,7 @@ if ($tipo == 'registrar') {
 }
 if ($tipo == "iniciar_sesion") {
     try {
+        $objPersona = new UsuarioModel();
         $nro_identidad = isset($_POST['usuario']) ? $_POST['usuario'] : '';
         $password = isset($_POST['password']) ? $_POST['password'] : '';
 
@@ -81,8 +81,13 @@ if ($tipo == "iniciar_sesion") {
 
 //ver usuarios
 if ($tipo == "ver_usuarios") {
-    $usuarios = $objPersona->verUsuarios();
-    echo json_encode($usuarios);
+    try {
+        $objPersona = new UsuarioModel();
+        $usuarios = $objPersona->verUsuarios();
+        echo json_encode($usuarios);
+    } catch (Throwable $e) {
+        echo json_encode(['status' => false, 'msg' => 'Error interno en el servidor']);
+    }
 }
 
 
