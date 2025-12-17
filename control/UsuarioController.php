@@ -1,9 +1,11 @@
 <?php
 require_once("../model/UsuarioModel.php");
+require_once("../config/config.php");
 $tipo = $_GET['tipo'];
 
 
 if ($tipo == 'registrar') {
+    $objPersona = new UsuarioModel();
 
     //print_r($_POST);
     $nro_identidad = $_POST['nro_identidad'];
@@ -61,7 +63,12 @@ if ($tipo == "iniciar_sesion") {
             exit;
         }
 
-        if (password_verify($password, $persona->password)) {
+        // Verificación con hash o en texto plano (fallback)
+        $verificado = false;
+        if (!empty($persona->password)) {
+            $verificado = password_verify($password, $persona->password) || $password === $persona->password;
+        }
+        if ($verificado) {
             session_start();
             $_SESSION['ventas_id'] = $persona->id;
             $_SESSION['ventas_usuario'] = $persona->razon_social;
@@ -72,8 +79,11 @@ if ($tipo == "iniciar_sesion") {
             exit;
         }
     } catch (Throwable $e) {
-        // No exponer detalles sensibles en producción
-        echo json_encode(['status' => false, 'msg' => 'Error interno en el servidor']);
+        if (defined('DEBUG') && DEBUG) {
+            echo json_encode(['status' => false, 'msg' => 'Error interno en el servidor', 'error' => $e->getMessage()]);
+        } else {
+            echo json_encode(['status' => false, 'msg' => 'Error interno en el servidor']);
+        }
         exit;
     }
 }
@@ -86,7 +96,7 @@ if ($tipo == "ver_usuarios") {
         $usuarios = $objPersona->verUsuarios();
         echo json_encode($usuarios);
     } catch (Throwable $e) {
-        echo json_encode(['status' => false, 'msg' => 'Error interno en el servidor']);
+        echo json_encode(['status' => false, 'msg' => 'Error interno en el servidor', 'error' => (defined('DEBUG') && DEBUG) ? $e->getMessage() : null]);
     }
 }
 
@@ -96,6 +106,7 @@ if ($tipo == "ver") {
     //print_r($_POST);
     $respuesta = array('status' => false, 'msg' => 'Error');
     $id_persona = $_POST['id_persona'];
+    $objPersona = new UsuarioModel();
     $usuario = $objPersona->ver($id_persona);
     if ($usuario) {
         $respuesta['status'] = true;
@@ -111,6 +122,7 @@ if ($tipo == "ver") {
 if ($tipo == "actualizar") {
     //print_r($_POST);
     $id_persona = $_POST['id_persona'];
+    $objPersona = new UsuarioModel();
     $nro_identidad = $_POST['nro_identidad'];
     $razon_social = $_POST['razon_social'];
     $telefono = $_POST['telefono'];
@@ -150,6 +162,7 @@ if ($tipo == "actualizar") {
 if ($tipo == "eliminar") {
 
     $id_persona = isset($_POST['id']) ? $_POST['id'] : '';
+    $objPersona = new UsuarioModel();
 
     if ($id_persona == "") {
         $arrResponse = array('status' => false, 'msg' => 'Error, ID vacío');
@@ -173,6 +186,7 @@ if ($tipo == "eliminar") {
 // Ver clientes
 if ($tipo == "ver_clients") {
     $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
+    $objPersona = new UsuarioModel();
     $usuarios = $objPersona->verClientes();
     if (count($usuarios)) {
         $respuesta = array('status' => true, 'msg' => '', 'data' => $usuarios);
@@ -183,6 +197,7 @@ if ($tipo == "ver_clients") {
 // Ver proveedores
 if ($tipo == "ver_proveedores") {
     $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
+    $objPersona = new UsuarioModel();
     $usuarios = $objPersona->verProveedores();
     if (count($usuarios)) {
         $respuesta = array('status' => true, 'msg' => '', 'data' => $usuarios);
