@@ -65,6 +65,7 @@ class VentaModel
     }
 
 
+
     public function eliminarTemporal($id){
 
 
@@ -82,6 +83,10 @@ class VentaModel
     {
 
         $consulta = "DELETE FROM temporal_venta WHERE id='$id'";
+
+    public function eliminarTemporal($id_producto){
+        $consulta = "DELETE FROM temporal_venta WHERE id_producto='$id_producto'";
+
         $sql = $this->conexion->query($consulta);
         return $sql;
     }
@@ -102,10 +107,34 @@ class VentaModel
 
     // VENTAS REGISTRADAS (OFICIALES) - métodos a implementar aquí si es necesario
 
+
+    public function buscar_ultima_venta(){
+        $consulta = "SELECT codigo FROM ventas ORDER BY id DESC LIMIT 1";
+        $sql = $this->conexion->query($consulta);
+            return $sql->fetch_object();
+    }
+    public function registrar_venta($correlativo, $id_cliente, $id_vendedor, $fecha_hora){
+        $sql = "INSERT INTO ventas(codigo, fecha_hora, id_cliente, id_vendedor) VALUES
+        ('$correlativo','$fecha_hora','$id_cliente','$id_vendedor')";
+        $resultado = $this->conexion->query($sql);
+        if ($resultado){
+            return $this->conexion->insert_id;
+        }
+        return 0;
+    }
+
+    public function registrar_detalle_venta($correlativo, $id_producto, $precio, $cantidad){
+        $consulta = "INSERT INTO detalle_ventas (id_venta, id_producto, precio, cantidad) VALUES
+        ('$correlativo','$id_producto','$precio','$cantidad')";
+        $resultado = $this->conexion->query($consulta);
+        return $resultado;
+    }
 }
+
 ?>
 
     
+
 
 
 

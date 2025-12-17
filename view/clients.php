@@ -9,6 +9,7 @@
      <div class="text-end mt-3">
             <a href="<?= BASE_URL ?>new-client" class="btn btn-success btn-lg rounded-pill">
                 <i class="bi bi-person-plus"></i> + Nuevo cliente
+
             </a>
         </div>
 
@@ -17,6 +18,7 @@
         <div class="text-end mt-3">
             <a href="<?= BASE_URL ?>new-client" class="btn btn-success btn-lg rounded-pill">
                 <i class="bi bi-person-plus"></i> Agregar clientes
+
             </a>
         </div>
         

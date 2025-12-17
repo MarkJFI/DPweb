@@ -33,7 +33,7 @@
 
     /* ======== NAVBAR ======== */
     .navbar {
-         background: linear-gradient(135deg, rgba(166, 105, 236, 1), rgba(50, 53, 54, 1));
+         background: linear-gradient(135deg, rgba(155, 89, 230, 1), rgba(90, 92, 94, 1));
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 25px rgba(0, 180, 255, 0.2);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
