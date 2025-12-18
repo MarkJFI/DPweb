@@ -23,7 +23,7 @@ if ($tipo === "iniciar_sesion") {
         exit;
     }
 
-    $persona = $objPersona->buscarPersonaPornNroIdentidad($usuario);
+    $persona = $objPersona->buscarPersonaPorNroIdentidad($usuario);
 
     if (!$persona) {
         echo json_encode(['status' => false, 'msg' => 'Usuario no existe']);
