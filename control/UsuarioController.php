@@ -91,6 +91,22 @@ if ($tipo === "ver_usuarios") {
     exit;
 }
 
+// ELIMINAR PERSONA (USUARIO, CLIENTE, PROVEEDOR)
+if ($tipo === "eliminar") {
+    $id_persona = $_POST['id_persona'] ?? '';
+    if (empty($id_persona)) {
+        echo json_encode(['status' => false, 'msg' => 'ID no proporcionado']);
+        exit;
+    }
+
+    if ($objPersona->eliminar($id_persona)) {
+        echo json_encode(['status' => true, 'msg' => 'Registro eliminado correctamente']);
+    } else {
+        echo json_encode(['status' => false, 'msg' => 'Error al eliminar el registro']);
+    }
+    exit;
+}
+
 // VER CLIENTES
 if ($tipo === "ver_clientes") {
     // Asumiendo que UsuarioModel tiene un método verClientes()

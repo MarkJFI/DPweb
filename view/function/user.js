@@ -1,278 +1,138 @@
-
-// VALIDAR FORMULARIO USUARIO
-function validar_form(tipo) {
-    let nro_documento = document.getElementById("nro_identidad").value;
-    let razon_social = document.getElementById("razon_social").value;
-    let telefono = document.getElementById("telefono").value;
-    let correo = document.getElementById("correo").value;
-    let departamento = document.getElementById("departamento").value;
-    let provincia = document.getElementById("provincia").value;
-    let distrito = document.getElementById("distrito").value;
-    let cod_postal = document.getElementById("cod_postal").value;
-    let direccion = document.getElementById("direccion").value;
-    let rol = document.getElementById("rol").value;
-
-    if (nro_identidad == "" || razon_social == "" || telefono == "" || correo == "" || departamento == "" || provincia == "" || distrito == "" || cod_postal == "" || direccion == "" || rol == "") {
-        alert("ERROR: Campos vacios");
-        return;
-    }
-/*
-    Swal.fire({
-        title: '¡Procedemos a Registrar Tus datos!',
-        text: 'Espere Por Favor.',
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-        background: '#1e1e2f',
-        color: '#ffffff',
-        confirmButtonColor: '#ff6f61',
-        iconColor: '#00ffcc',
-        customClass: {
-            popup: 'rounded-pill shadow border border-light'
-        }
-    });
-*/
-    if (tipo == "nuevo") {
-        registrarUsuario();
-    }
-    if (tipo == "actualizar") {
-        actualizarUsuario();
-    }
-
-
-}
-
-
-
-/*alert(nro_documento);*/
-/*alert(".js successfull conexion");*/
-
-if (document.querySelector('#frm_user')) {
-    // evita que se envie el formulario
-    let frm_user = document.querySelector('#frm_user');
-    frm_user.onsubmit = function (e) {
-        e.preventDefault();
-        validar_form("nuevo");
-    }
-}
-
-
-
-
-
-/*----------------------------------------------------------------------*/
-
-// REGISTRAR USUARIO
-async function registrarUsuario() {
-    try {
-        //capturar campos de formulario (HTML)
-        const datos = new FormData(frm_user);
-        //enviar datos a controlador
-        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=registrar', {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            body: datos
-        });
-
-        let json = await respuesta.json();
-        // validamos que json.status de igual true
-        if (json.status) { //true
-            alert(json.msg);
-            document.getElementById('frm_user').reset();
-        } else {
-            alert(json.msg);
-        }
-
-
-    } catch (error) {
-        console.log("Error al registrar Usuario:" + error);
-    }
-}
-
-
-// INICIAR SESION
-async function iniciar_sesion() {
-    const usuario = document.getElementById('usuario')?.value || '';
-    const password = document.getElementById('password')?.value || '';
-    if (usuario === '' || password === '') {
-        alert('Error, campos vacios!');
-        return;
-    }
-    try {
-        const datos = new FormData(frm_login);
-        const respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=iniciar_sesion', {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            body: datos
-        });
-
-        const texto = await respuesta.text();
-        if (!respuesta.ok) {
-            console.error('Error HTTP:', respuesta.status, texto);
-            alert('Error del servidor durante el inicio de sesión. Intente nuevamente.');
-            return;
-        }
-
-        let json;
-        try {
-            json = JSON.parse(texto);
-        } catch (e) {
-            console.error('Respuesta no es JSON válido:', e, texto);
-            alert('Respuesta inválida del servidor.');
-            return;
-        }
-
-        if (json.status) {
-            location.replace(base_url + 'new-user');
-        } else {
-            alert(json.msg || 'Credenciales incorrectas');
-        }
-    } catch (error) {
-        console.error('Error en iniciar_sesion:', error);
-        alert('No se pudo conectar con el servidor.');
-    }
-}
-
-
-// VER LISTA DE USUARIOS
 async function view_users() {
     try {
         let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_usuarios', {
             method: 'POST',
             mode: 'cors',
-            cache: 'no-cache',
+            cache: 'no-cache'
         });
 
-        let json = await respuesta.json();
-        let content_users = document.getElementById('content_users');
-        content_users.innerHTML = '';
+        const textoRespuesta = await respuesta.text();
+        let json;
+        try {
+            json = JSON.parse(textoRespuesta);
+        } catch (parseError) {
+            console.error('Error al parsear JSON en view_users:', parseError);
+            console.error('Respuesta recibida:', textoRespuesta);
+            const contenido = document.getElementById('content_users');
+            if (contenido) {
+                contenido.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error al leer la respuesta del servidor.</td></tr>`;
+            }
+            return;
+        }
 
+        const contenido = document.getElementById('content_users');
+        if (!contenido) {
+            console.error("No se encontró el contenedor #content_users");
+            return;
+        }
 
-//LISTA DE USUARIOS
-        json.forEach((user, index) => {
-            let estadoHtml = user.estado == 1 // Verifica si el estado es activo
-                ? '<span style="display:inline-block;width:16px;height:16px;background:#198754;border-radius:50%;"></span>'
-                : '<span style="display:inline-block;width:16px;height:16px;background:#dc3545;border-radius:50%;"></span>';
-            let fila = document.createElement('tr');
-            fila.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${user.nro_identidad}</td>
-        <td>${user.razon_social}</td>
-        <td>${user.correo}</td>
-        <td>${user.rol}</td>
-        <td class="text-center">
-            ${estadoHtml}
-        </td>
-        <td>
-            <a href="${base_url}edit-user/${user.id}" class="btn btn-primary btn-sm rounded-pill">
-                <i class="bi bi-pencil-square"></i> Editar
-            </a>
-            <button data-id="${user.id}" class="btn btn-eliminar btn-danger btn-sm rounded-pill" style="background:#dc3545;">
-    Eliminar
-</button>
-        </td>
-    `;
-            content_users.appendChild(fila);
-        });
+        contenido.innerHTML = '';
 
-// ELIMINAR USUARIO
-        document.querySelectorAll('.btn-eliminar').forEach(btn => {
-            btn.addEventListener('click', async function () {
-                if (confirm('¿Está seguro de eliminar este usuario?')) {
-                    const datos = new FormData();
-                    datos.append('id', this.getAttribute('data-id'));
-                    let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=eliminar', {
-                        method: 'POST',
-                        mode: 'cors',
-                        cache: 'no-cache',
-                        body: datos
-                    });
-                    let json = await respuesta.json();
-                    alert(json.msg);
-                    if (json.status) {
-                        view_users();
-                    }
-                }
+        if (json.status && Array.isArray(json.data)) {
+            let cont = 1;
+            json.data.forEach(user => {
+                let fila = document.createElement('tr');
+                fila.id = `fila_user_${user.id}`;
+                fila.innerHTML = `
+                    <td>${cont++}</td>
+                    <td>${user.nro_identidad}</td>
+                    <td>${user.razon_social}</td>
+                    <td>${user.correo}</td>
+                    <td>${user.rol}</td>
+                    <td><span class="badge bg-success">Activo</span></td>
+                    <td>
+                        <a href="${base_url}edit-user/${user.id}" class="btn btn-sm btn-primary">Editar</a>
+                        <button class="btn btn-sm btn-danger" onclick="eliminarUsuario(${user.id})">Eliminar</button>
+                    </td>
+                `;
+                contenido.appendChild(fila);
             });
-        });
-
-
-
+        } else {
+            contenido.innerHTML = `<tr><td colspan="7" class="text-center">No hay usuarios disponibles.</td></tr>`;
+        }
     } catch (error) {
-        console.log(error)
+        console.error("Error al mostrar usuarios:", error);
+        const contenido = document.getElementById('content_users');
+        if (contenido) {
+            contenido.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error al cargar los usuarios.</td></tr>`;
+        }
+    }
+}
+
+async function iniciar_sesion() {
+    const datos = new FormData(document.getElementById('frm_login'));
+    try {
+        const respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=iniciar_sesion', {
+            method: 'POST',
+            body: datos
+        });
+        const json = await respuesta.json();
+        if (json.status) {
+            window.location.href = base_url + 'home';
+        } else {
+            alert(json.msg);
+        }
+    } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+        alert('Error de conexión al intentar iniciar sesión.');
+    }
+}
+
+async function registrarUsuario() {
+    const datos = new FormData(document.getElementById('frm_user'));
+    try {
+        const respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=registrar', {
+            method: 'POST',
+            body: datos
+        });
+        const json = await respuesta.json();
+        if (json.status) {
+            alert(json.msg);
+            document.getElementById('frm_user').reset();
+        } else {
+            alert(json.msg);
+        }
+    } catch (error) {
+        console.error('Error al registrar usuario:', error);
+        alert('Error de conexión al registrar.');
+    }
+}
+
+async function eliminarUsuario(id) {
+    if (!confirm('¿Está seguro de que desea eliminar este usuario?')) {
+        return;
+    }
+    const datos = new FormData();
+    datos.append('id_persona', id);
+    try {
+        const respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=eliminar', {
+            method: 'POST',
+            body: datos
+        });
+        const json = await respuesta.json();
+        if (json.status) {
+            alert(json.msg);
+            document.getElementById(`fila_user_${id}`).remove();
+        } else {
+            alert(json.msg);
+        }
+    } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        alert('Error de conexión al eliminar.');
     }
 }
 
 
+// Ejecutar la función para ver usuarios si el contenedor existe
 if (document.getElementById('content_users')) {
     view_users();
 }
 
-// FUNCION PARA EDITAR USUARIO
-async function edit_user() {
-    try {
-        let id_persona = document.getElementById('id_persona').value;
-        const datos = new FormData();
-        datos.append('id_persona', id_persona);
-
-        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver', {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            body: datos
-        });
-
-        json = await respuesta.json();
-        if (!json.status) {
-            alert(json.msg);
-            return;
-        }
-        document.getElementById('nro_identidad').value = json.data.nro_identidad;
-        document.getElementById('razon_social').value = json.data.razon_social;
-        document.getElementById('telefono').value = json.data.telefono;
-        document.getElementById('correo').value = json.data.correo;
-        document.getElementById('departamento').value = json.data.departamento;
-        document.getElementById('provincia').value = json.data.provincia;
-        document.getElementById('distrito').value = json.data.distrito;
-        document.getElementById('cod_postal').value = json.data.cod_postal;
-        document.getElementById('direccion').value = json.data.direccion;
-        document.getElementById('rol').value = json.data.rol;
-
-
-
-    } catch (error) {
-        console.log('oops ocurrió un error' + error);
-    }
-
-}
-
-// ACTUALIZAR USUARIO
-if (document.querySelector('#frm_edit_user')) {
-    //evita que se envie el formulario
-    let frm_user = document.querySelector('#frm_edit_user');
-    frm_user.onsubmit = function (e) {
+// Manejar el envío del formulario de registro de usuario
+const frmUser = document.getElementById('frm_user');
+if (frmUser) {
+    frmUser.addEventListener('submit', (e) => {
         e.preventDefault();
-        validar_form("actualizar");
-    }
-}
-async function actualizarUsuario() {
-    const datos = new FormData(frm_edit_user);
-    let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=actualizar', {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        body: datos
+        registrarUsuario();
     });
-    json = await respuesta.json();
-    if (!json.status) {
-        alert("Ops, ocurrio un error al actualizar, contacte con el administrador");
-        console.log(json.msg);
-        return;
-    } else {
-        alert(json.msg);
-    }
 }
-
-
-
