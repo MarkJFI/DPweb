@@ -92,7 +92,9 @@ async function agregar_producto_temporal(id_producto, precio, cantidad) {
         // No necesitamos procesar la respuesta si todo va bien,
         // pero sí manejar el fallo.
         if (!respuesta.ok) {
-            throw new Error(`El servidor respondió con estado ${respuesta.status}`);
+            // Intentar leer el cuerpo de la respuesta para obtener más detalles del error
+            const errorText = await respuesta.text();
+            throw new Error(`El servidor respondió con estado ${respuesta.status}. Respuesta: ${errorText}`);
         }
 
         // Opcional: recargar desde el servidor para asegurar consistencia total.
@@ -110,9 +112,11 @@ async function agregar_producto_temporal(id_producto, precio, cantidad) {
         }
         actualizar_tabla_ventas(); // Refrescar la UI al estado anterior
         Swal.fire({
-            title: 'Error',
-            text: 'No se pudo agregar el producto',
-            icon: 'error'
+            title: 'Error de Comunicación',
+            html: `<p>No se pudo sincronizar el producto con el servidor.</p>
+                   <p class="small text-muted">Revise la consola del navegador (F12) para ver los detalles del error del servidor.</p>`,
+            icon: 'error',
+            confirmButtonText: 'Entendido'
         });
     }
 }
