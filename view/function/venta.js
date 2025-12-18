@@ -114,7 +114,7 @@ async function agregar_producto_temporal(id_producto, precio, cantidad) {
         Swal.fire({
             title: 'Error de Comunicación',
             html: `<p>No se pudo sincronizar el producto con el servidor.</p>
-                   <p class="small text-muted">Revise la consola del navegador (F12) para ver los detalles del error del servidor.</p><p>${error.message}</p>`,
+                   <p class="small text-muted">Revise la consola del navegador (F12) para ver los detalles del error del servidor.</p><p>${error.message}</p>`, // Incluir el mensaje de error en el diálogo
             icon: 'error',
             confirmButtonText: 'Entendido'
         });
