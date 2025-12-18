@@ -6,7 +6,24 @@ async function view_proveedores() {
             cache: 'no-cache'
         });
 
-        let json = await respuesta.json();
+        // Leer la respuesta como texto primero para diagnosticar errores de JSON
+        const textoRespuesta = await respuesta.text();
+        console.log("Respuesta del servidor (raw):", textoRespuesta);
+
+        let json;
+        try {
+            json = JSON.parse(textoRespuesta);
+        } catch (parseError) {
+            console.error('Error al parsear JSON en view_proveedores:', parseError);
+            console.error('Respuesta recibida:', textoRespuesta);
+            let contenido = document.getElementById('content_proveedor');
+            if (contenido) {
+                contenido.innerHTML = `
+                    <tr><td colspan="7" class="text-center text-danger">Error: El servidor no devolvió una respuesta JSON válida.</td></tr>
+                `;
+            }
+            return; // Detener la ejecución si el JSON es inválido
+        }
         console.log("Datos recibidos:", json);
 
         let contenido = document.getElementById('content_proveedor');
