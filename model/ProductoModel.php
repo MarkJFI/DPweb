@@ -90,7 +90,19 @@ class ProductoModel
     public function buscarProductoByNombreOrCodigo($dato)
     {
         $arr_productos = array();
-        $consulta = "SELECT * FROM producto WHERE codigo LIKE '$dato%' OR nombre LIKE '%$dato%' OR detalle LIKE '%$dato%'";
+        // Se sanitiza el dato para prevenir inyección SQL simple
+        $dato_saneado = $this->conexion->real_escape_string($dato);
+
+        // Consulta mejorada con LEFT JOIN para obtener el nombre del proveedor
+        $consulta = "SELECT 
+                        p.*, 
+                        prov.razon_social as proveedor 
+                     FROM producto p
+                     LEFT JOIN persona prov ON p.id_proveedor = prov.id
+                     WHERE p.codigo LIKE '$dato_saneado%' 
+                        OR p.nombre LIKE '%$dato_saneado%' 
+                        OR p.detalle LIKE '%$dato_saneado%'";
+
         $sql = $this->conexion->query($consulta);
         while ($objeto = $sql->fetch_object()) {
             array_push($arr_productos, $objeto);

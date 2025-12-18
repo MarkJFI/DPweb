@@ -16,9 +16,9 @@ if ($tipo == "registrar_temporal"){
     $cantidad = $_POST['cantidad'];
 
     $b_producto = $objVenta->buscarTemporal($id_producto);
-    if ($b_producto){
-        $n_cantidad = $b_producto->cantidad+1;
-        $objVenta->actualizarCantidadTemporal($id_producto, $n_cantidad);
+    if ($b_producto) {
+        // Se actualiza a la cantidad total enviada desde el frontend, no solo se suma 1
+        $objVenta->actualizarCantidadTemporal($id_producto, $cantidad);
         $respuesta = array('status' => true, 'msg' => 'actualizado');
 
     }else{
@@ -103,10 +103,3 @@ if ($tipo == "registrar_venta") {
 
 
 ?>
-
-
-
-
-
-
-
