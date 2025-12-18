@@ -52,6 +52,29 @@ async function cargar_productos_temporales() {
 }
 
 // Función para agregar producto al carrito temporal
+function addToCart(producto, cantidad) {
+    const id = producto.id;
+    if (!id) return;
+
+    const qty = parseInt(cantidad) || 1;
+    const key = `prod_${id}`; // Usar una clave predecible
+
+    if (productos_venta[key]) {
+        productos_venta[key].cantidad += qty;
+    } else {
+        productos_venta[key] = {
+            id_producto: id,
+            nombre: producto.nombre,
+            precio: parseFloat(producto.precio) || 0,
+            cantidad: qty
+        };
+    }
+
+    // Actualiza la UI y sincroniza con el servidor
+    actualizar_tabla_ventas();
+    agregar_producto_temporal(id, productos_venta[key].precio, productos_venta[key].cantidad, key);
+}
+
 async function agregar_producto_temporal(id_producto, precio, cantidad) {
     const datos = new FormData();
     datos.append('id_producto', id_producto);
@@ -66,51 +89,26 @@ async function agregar_producto_temporal(id_producto, precio, cantidad) {
             body: datos
         });
 
-        const textoRespuesta = await respuesta.text();
-        console.log('Respuesta del servidor (raw):', textoRespuesta);
-
-        let json;
-        try {
-            json = JSON.parse(textoRespuesta);
-        } catch (parseError) {
-            console.error('Error al parsear JSON:', parseError);
-            console.error('Respuesta recibida:', textoRespuesta);
-
-            if (textoRespuesta.includes('Parse error') || textoRespuesta.includes('Fatal error')) {
-                Swal.fire({
-                    title: 'Error en el servidor',
-                    html: `<p>Hay un error PHP en el servidor:</p><pre style="text-align:left; background:#f5f5f5; padding:10px; border-radius:5px; font-size:12px; max-height:300px; overflow-y:auto;">${textoRespuesta}</pre>`,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            } else {
-                Swal.fire({
-                    title: 'Error del servidor',
-                    text: 'El servidor retornó una respuesta inválida. Verifique los logs del servidor.',
-                    icon: 'error'
-                });
-            }
-            return;
+        // No necesitamos procesar la respuesta si todo va bien,
+        // pero sí manejar el fallo.
+        if (!respuesta.ok) {
+            throw new Error(`El servidor respondió con estado ${respuesta.status}`);
         }
 
-        if (json && json.status) {
-            await cargar_productos_temporales();
+        // Opcional: recargar desde el servidor para asegurar consistencia total.
+        // await cargar_productos_temporales();
 
-            Swal.fire({
-                title: 'Éxito',
-                text: json.msg === 'registrado' ? 'Producto agregado al carrito' : 'Cantidad actualizada',
-                icon: 'success',
-                timer: 1500
-            });
-        } else {
-            Swal.fire({
-                title: 'Error',
-                text: json ? json.msg : 'Error desconocido',
-                icon: 'error'
-            });
-        }
     } catch (error) {
         console.error('Error al agregar producto temporal: ' + error);
+        // Revertir el cambio local si el servidor falla
+        const key = `prod_${id_producto}`;
+        if (productos_venta[key]) {
+            productos_venta[key].cantidad -= cantidad; // Asumimos que la cantidad es el incremento
+            if (productos_venta[key].cantidad <= 0) {
+                delete productos_venta[key];
+            }
+        }
+        actualizar_tabla_ventas(); // Refrescar la UI al estado anterior
         Swal.fire({
             title: 'Error',
             text: 'No se pudo agregar el producto',
@@ -121,7 +119,7 @@ async function agregar_producto_temporal(id_producto, precio, cantidad) {
 
 // Función para actualizar la tabla visual del carrito
 function actualizar_tabla_ventas() {
-    const tabla = document.getElementById('tablaCarrito');
+    const tabla = document.getElementById('tablaCarrito')?.querySelector('tbody') || document.getElementById('tablaCarrito');
     console.log('Buscando tabla con id "tablaCarrito":', tabla);
 
     if (!tabla) {
@@ -152,16 +150,17 @@ function actualizar_tabla_ventas() {
         fila.id = 'fila_' + key;
         fila.className = 'text-center';
         const nombreConId = `${p.id_producto}`;
+        const nombreProducto = p.nombre || `Producto ${p.id_producto}`;
         fila.innerHTML = `
-            <td>${nombreConId}</td>
+            <td>${nombreProducto}</td>
             <td>
-                <input type="number" class="form-control form-control-sm" value="${p.cantidad}" 
+                <input type="number" class="form-control form-control-sm mx-auto" style="width: 70px;" value="${p.cantidad}" 
                     onchange="editar_cantidad_carrito('${key}', this.value)">
             </td>
             <td>S/ ${parseFloat(p.precio).toFixed(2)}</td>
             <td>S/ ${subtotalProducto.toFixed(2)}</td>
             <td>
-                <button class="btn btn-sm btn-danger" onclick="eliminar_item_carrito('${key}')">
+                <button class="btn btn-sm btn-outline-danger" onclick="eliminar_item_carrito('${key}')" title="Eliminar">
                     <i class="bi bi-trash"></i>
                 </button>
             </td>
@@ -200,12 +199,29 @@ function editar_cantidad_carrito(key, nuevaCantidad) {
 }
 
 // Función para eliminar un item del carrito (solo visual)
-function eliminar_item_carrito(key) {
-    if (window.confirm('¿Eliminar este producto del carrito?')) {
-        delete productos_venta[key];
-        const fila = document.getElementById('fila_' + key);
-        if (fila) fila.remove();
+async function eliminar_item_carrito(key) {
+    const producto = productos_venta[key];
+    if (!producto) return;
+
+    // Eliminar localmente primero para una UI rápida
+    delete productos_venta[key];
+    actualizar_tabla_ventas();
+
+    try {
+        const datos = new FormData();
+        datos.append('id_producto', producto.id_producto);
+        await fetch(base_url + 'control/VentaController.php?tipo=eliminar_temporal', {
+            method: 'POST',
+            body: datos
+        });
+        // Opcional: mostrar toast de éxito
+        // showToast('Producto eliminado', 'error');
+    } catch (error) {
+        console.error('Error al eliminar en servidor:', error);
+        // Si falla, revertir (volver a agregar el producto al carrito local)
+        productos_venta[key] = producto;
         actualizar_tabla_ventas();
+        Swal.fire('Error', 'No se pudo eliminar el producto del servidor.', 'error');
     }
 }
 
@@ -335,4 +351,3 @@ async function registrarVenta() {
     }
 }
     
-

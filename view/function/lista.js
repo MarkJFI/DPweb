@@ -180,9 +180,6 @@ if (document.getElementById('content_products')) {
     view_products_cards();
 }
 
-// -- Carrito (cliente) --
-const carrito = {}; // { id: {id,nombre,precio,cantidad,total}}
-
 function formatCurrency(value){
     return 'S/ ' + parseFloat(value).toFixed(2);
 }
@@ -197,7 +194,13 @@ function addToCartFromButton(btn){
     const nombre = btn.getAttribute('data-nombre');
     const precio = parseFloat(btn.getAttribute('data-precio')) || 0;
     const stock = parseInt(btn.getAttribute('data-stock')) || 0;
-    addToCart({id, nombre, precio, stock}, 1);
+
+    if (typeof addToCart === 'function') {
+        addToCart({id, nombre, precio, stock}, 1);
+        showToast(`${nombre} agregado al carrito.`, 'success');
+    } else {
+        console.error('La función global addToCart (de venta.js) no está disponible.');
+    }
 }
 
 function showProductDetailsFromButton(btn){
@@ -239,7 +242,12 @@ function showProductDetailsFromButton(btn){
         agregarBtn.parentNode.replaceChild(newBtn, agregarBtn);
         newBtn.addEventListener('click', () => {
             const qty = parseInt(document.getElementById('modalCantidad').value) || 1;
-            addToCart({id, nombre, precio: parseFloat(precio)||0, stock: parseInt(stock)||0}, qty);
+            if (typeof addToCart === 'function') {
+                addToCart({id, nombre, precio: parseFloat(precio)||0, stock: parseInt(stock)||0}, qty);
+                showToast(`${nombre} x${qty} agregado(s) al carrito.`, 'success');
+            } else {
+                console.error('La función global addToCart (de venta.js) no está disponible.');
+            }
             // hide modal
             const modalEl = document.getElementById('productModal');
             const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
@@ -251,97 +259,6 @@ function showProductDetailsFromButton(btn){
     const modalEl = document.getElementById('productModal');
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
-}
-
-function addToCart(producto, cantidad){
-    const id = producto.id;
-    if (!id) return;
-    const qty = parseInt(cantidad) || 1;
-    if (carrito[id]){
-        carrito[id].cantidad += qty;
-    } else {
-        carrito[id] = {
-            id: id,
-            nombre: producto.nombre,
-            precio: parseFloat(producto.precio) || 0,
-            cantidad: qty
-        };
-    }
-    renderCart();
-    // Mostrar notificación visual agradable
-    try {
-        showToast(`${ producto.nombre } agregado al carrito(${ carrito[id].cantidad })`, 'success');
-    } catch (e) {
-        console.warn('showToast falló:', e);
-    }
-
-    // También persistir temporalmente en servidor (si existe la función agregar_producto_temporal)
-    try {
-        // Pasar los argumentos directamente a la función, que es lo que probablemente espera.
-        if (typeof agregar_producto_temporal === 'function') {
-            agregar_producto_temporal(producto.id, producto.precio, carrito[id].cantidad);
-        }
-    } catch (e) {
-        console.warn('No se pudo persistir temporalmente:', e);
-    }
-}
-// Renderizar carrito en tabla
-function renderCart(){
-    const tabla = document.getElementById('tablaCarrito');
-    if (!tabla) return;
-    tabla.innerHTML = '';
-    const keys = Object.keys(carrito);
-    if (keys.length === 0){
-        tabla.innerHTML = `< tr > <td colspan="5" class="text-center text-muted py-3">No hay productos en la lista.</td></tr > `;
-        updateTotals();
-        return;
-    }
-    let subtotal = 0;
-    keys.forEach(k => {
-        const it = carrito[k];
-        const total = it.precio * it.cantidad;
-        subtotal += total;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-                    < td > ${ escapeHtml(it.nombre) }</td >
-            <td class="text-center">${it.cantidad}</td>
-            <td>${formatCurrency(it.precio)}</td>
-            <td>${formatCurrency(total)}</td>
-            
-            <td class="text-center">
-                <button class="btn btn-sm btn-outline-danger btn-remove" data-id="${it.id}" title="Eliminar" aria-label="Eliminar producto">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </td>
-                `;
-        tabla.appendChild(tr);
-    });
-    // en la tabla agregar event listeners a botones eliminar
-    tabla.querySelectorAll('.btn-remove').forEach(b => b.addEventListener('click', (e)=>{
-        const id = b.getAttribute('data-id');
-        removeFromCart(id);
-        showToast('Producto eliminado', 'error', 1500);
-    }));
-    updateTotals(subtotal);
-}
-
-function removeFromCart(id){
-    if (!carrito[id]) return;
-    delete carrito[id];
-    renderCart();
-}
-
-function updateTotals(subtotal = 0){
-    const sub = subtotal || Object.values(carrito).reduce((s,it)=> s + (it.precio*it.cantidad), 0);
-    const igv = sub * 0.18;
-    const total = sub + igv;
-    const fmt = (v)=> 'S/ ' + v.toFixed(2);
-    const subtotalEl = document.getElementById('subtotal');
-    const igvEl = document.getElementById('igv');
-    const totalEl = document.getElementById('totalGeneral');
-    if (subtotalEl) subtotalEl.textContent = fmt(sub);
-    if (igvEl) igvEl.textContent = fmt(igv);
-    if (totalEl) totalEl.textContent = fmt(total);
 }
 
 // Toast helper (Bootstrap 5)
