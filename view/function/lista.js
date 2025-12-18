@@ -47,11 +47,9 @@ async function view_products_cards() {
 
                 col.innerHTML = `
                     <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
-
                        <img src="${rutaImagen}" 
                         class="card-img-top img-fluid" 
                         alt="${producto.nombre}" 
-
                         style="height: 300px; width: 100%; object-fit: contain; transition: transform 0.3s ease;">
         
                         <div class="card-body text-center bg-light rounded-4 shadow-sm py-4">
@@ -82,62 +80,6 @@ async function view_products_cards() {
                                 </p>
                             </div>
                         </div>
-
-                        <div class="card-footer bg-light border-0 d-flex justify-content-center gap-2 pb-3">
-                            <button class="btn btn-outline-primary btn-sm rounded-pill px-3 btn-ver-detalles"
-                                data-producto-id="${producto.id}"
-                                data-producto-nombre="${producto.nombre}">
-                                <i class="bi bi-eye"></i> Ver Detalles
-                            </button>
-            
-                            <button class="btn btn-outline-success btn-sm rounded-pill px-3 btn-agregar-carrito"
-                                data-producto-id="${producto.id}"
-                                data-producto-nombre="${producto.nombre}"
-                                data-producto-precio="${producto.precio}"
-                                data-producto-stock="${producto.stock}">
-                                <i class="bi bi-cart-plus"></i> Agregar al Carrito
-                            </button>
-                        </div>
-                    </div>
-                `;
-                style = "height: 300px; width: 900px; object-fit: cover; transition: transform 0.3s ease;" >
-        
-                    <div class="card-body text-center bg-light rounded-4 shadow-sm py-4">
-                        <h5 class="card-title fw-bold mb-3 text-dark">
-                            ${producto.nombre}
-                        </h5>
-
-                        <p class="card-text small text-secondary mb-3">
-                            ${producto.detalle}
-                        </p>
-
-                        <p class="fw-semibold fs-5 text-dark mb-3">
-                        S/ ${parseFloat(producto.precio).toFixed(2)}
-                        </p>
-
-                        <span class="badge bg-dark text-white mb-3 px-4 py-2 rounded-pill">
-                            Stock: ${producto.stock}
-                        </span>
-
-                        <div class="border-top pt-3">
-                        <p class="text-dark small mb-2">
-                            <i class="bi bi-tags me-1 text-secondary"></i>
-                            <strong>Categoría:</strong> ${producto.categoria ?? '—'}
-                        </p>
-
-                        <p class="text-dark small mb-2">
-                            <i class="bi bi-truck me-1 text-secondary"></i>
-                            <strong>Proveedor:</strong> ${producto.proveedor ?? '—'}
-                        </p>
-
-                        <p class="text-dark small mb-0">
-                            <i class="bi bi-calendar-event me-1 text-secondary"></i>
-                            <strong>Fecha:</strong> ${producto.fecha_vencimiento ?? '—'}
-                        </p>
-                    </div>
-                    </div>
-
-
                         <div class="card-footer bg-light border-0 d-flex justify-content-center gap-2 pb-3">
                             <button class="btn btn-outline-primary btn-sm rounded-pill px-3 btn-ver-detalle" 
                                 data-id="${producto.id}" 
@@ -178,15 +120,12 @@ async function view_products_cards() {
             });
 
             contenido.appendChild(fila);
-
-            // Agregar event listeners a los botones después de insertarlos en el DOM
-            _inicializar_botones_tarjetas();
         } else {
             contenido.innerHTML = `
-                    < div class="text-center py-5" >
+                    <div class="text-center py-5">
                     <i class="bi bi-box-seam display-4 text-muted"></i>
                     <h5 class="mt-3 text-muted">No hay productos disponibles</h5>
-                </div >
+                </div>
                     `;
         }
     } catch (error) {
@@ -194,9 +133,9 @@ async function view_products_cards() {
         let contenido = document.getElementById('content_products');
         if (contenido) {
             contenido.innerHTML = `
-                    < div class="alert alert-danger text-center" role = "alert" >
+                    <div class="alert alert-danger text-center" role="alert">
                         Error al cargar los productos.Intente nuevamente más tarde.
-                </div >
+                </div>
                     `;
         }
     }
@@ -434,12 +373,12 @@ function showToast(message, type = 'success', delay = 2000) {
     toast.style.minWidth = '220px';
 
     toast.innerHTML = `
-                    < div class="d-flex" >
+                    <div class="d-flex">
             <div class="toast-body small">
                 ${escapeHtml(message)}
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div >
+        </div>
                     `;
 
     container.appendChild(toast);
