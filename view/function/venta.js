@@ -262,14 +262,18 @@ function inicializar_botones_carrito() {
 // Ejecutar cuando el DOM esté listo
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
-        console.log('DOM listo, inicializando carrito...');
-        inicializar_botones_carrito();
-        cargar_productos_temporales();
+        if (document.getElementById('tablaCarrito')) { // Solo inicializar el carrito si la tabla existe
+            console.log('DOM listo, inicializando carrito...');
+            inicializar_botones_carrito();
+            cargar_productos_temporales();
+        }
     });
 } else {
-    console.log('DOM ya cargado, inicializando carrito...');
-    inicializar_botones_carrito();
-    cargar_productos_temporales();
+    if (document.getElementById('tablaCarrito')) { // Solo inicializar el carrito si la tabla existe
+        console.log('DOM ya cargado, inicializando carrito...');
+        inicializar_botones_carrito();
+        cargar_productos_temporales();
+    }
 }
 
 // Re-inicializar después de que se carguen nuevos productos dinámicamente
