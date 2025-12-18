@@ -319,12 +319,27 @@ async function view_products() {
     try {
         console.log('Iniciando carga de productos...');
         let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=ver_productos', {
-            method: 'POST', // Asegurando consistencia con otros scripts
+            method: 'POST',
             mode: 'cors',
             cache: 'no-cache'
         });
-        console.log('Respuesta recibida:', respuesta);
-        json = await respuesta.json();
+
+        const textoRespuesta = await respuesta.text();
+        console.log('Respuesta raw de ver_productos:', textoRespuesta);
+
+        let json;
+        try {
+            json = JSON.parse(textoRespuesta);
+        } catch (parseError) {
+            console.error('Error al parsear JSON en view_products:', parseError);
+            console.error('Texto recibido:', textoRespuesta);
+            const contenidot = document.getElementById('content_products_table');
+            if (contenidot) {
+                contenidot.innerHTML = `<tr><td colspan="10" class="text-center text-danger">Error al leer la respuesta del servidor.</td></tr>`;
+            }
+            return;
+        }
+
         console.log('Datos recibidos:', json);
         contenidot = document.getElementById('content_products_table');
         if (json.status) {
