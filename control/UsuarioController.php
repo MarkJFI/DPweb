@@ -98,14 +98,14 @@ if ($tipo === "eliminar") {
         echo json_encode(['status' => false, 'msg' => 'ID no proporcionado']);
         exit;
     }
-
+ 
     if ($objPersona->eliminar($id_persona)) {
         echo json_encode(['status' => true, 'msg' => 'Registro eliminado correctamente']);
     } else {
         echo json_encode(['status' => false, 'msg' => 'Error al eliminar el registro']);
     }
     exit;
-}
+} 
 
 // VER CLIENTES
 if ($tipo === "ver_clientes") {
