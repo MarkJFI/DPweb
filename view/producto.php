@@ -12,12 +12,6 @@
 
 
                 <i class="bi bi-plus-circle"></i>+ Nuevo producto</a>
-
-                <i class="bi bi-plus-circle"></i>Agregar producto</a>
-
-
-                <i class="bi bi-plus-circle"></i>+ Nuevo producto</a>
-
         </div>
 
         <div class="text-end mt-3">

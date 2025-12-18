@@ -208,8 +208,6 @@
 
                         <a class="nav-link active" aria-current="page" href="<?= BASE_URL ?>new-user">Home</a>
 
-                        <a class="nav-link" href="<?= BASE_URL ?>home">Home</a>
-
                     </li>
                     <!--<li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>new-user">Registrar</a>

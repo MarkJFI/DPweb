@@ -4,8 +4,7 @@
         <h3 class="mt-4 mb-3 text-center text-primary fw-bold py-3 px-4 rounded-pill shadow titulo-usuarios">
             <i class="bi bi-box-seam"></i>
             <i class="bi bi-cart4"></i>
-            LISTA DE PRODUCTOS CON IMAGEN
-        </h3>
+            LISTA DE PRODUCTOS
     </div>
 
     <!-- Botón para regresar a productos -->
