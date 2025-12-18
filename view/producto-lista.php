@@ -1,5 +1,4 @@
 <script>
-    const base_url = '<?= BASE_URL; ?>';
 </script>
 <div class="container py-10">
     <!-- Título -->

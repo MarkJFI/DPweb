@@ -1,8 +1,4 @@
 <script>
-    const base_url = '<?= BASE_URL; ?>';
-    // Línea de depuración: Muestra la BASE_URL en la consola del navegador.
-    // Revisa la consola (F12) para asegurarte de que esta URL es la correcta para tu hosting.
-    console.log("La BASE_URL configurada es:", base_url);
 </script>
 <div class="d-flex flex-column align-items-center">
     <h3 class="mt-3 mb-4 text-center text-primary fw-bold py-3 px-4 rounded-pill shadow titulo-usuarios">
