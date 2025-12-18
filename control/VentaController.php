@@ -41,18 +41,9 @@ if ($tipo == "eliminarTemporal") {
 }
 
 if ($tipo == "buscarTemporal") {
-    $respuesta = array('status' => true, 'msg' => 'Sin productos', 'data' => array());
-    $productos = $objVenta->buscarTemporal();
-    if ($productos && count($productos) > 0) {
-        $total = 0;
-        foreach ($productos as $producto) {
-            $total += $producto->precio * $producto->cantidad;
-        }
-        $total = round($total, 2);
-        $igv = round($total * 0.18, 2);
-        $total_con_igv = $total + $igv;
-        $respuesta = array('status' => true, 'msg' => 'Productos encontrados', 'data' => $productos, 'subtotal' => $total, 'igv' => $igv, 'total_con_igv' => $total_con_igv);
-    }
+    // Lógica corregida para devolver siempre una respuesta JSON válida
+    $productos = $objVenta->buscarTemporales(); // Usando el método que devuelve todos los temporales
+    $respuesta = array('status' => true, 'data' => $productos);
     echo json_encode($respuesta);
     exit;
 }

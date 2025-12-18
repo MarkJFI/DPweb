@@ -39,6 +39,21 @@ class VentaModel
         return null;
     }
 
+    /**
+     * Busca todos los productos en la tabla temporal, incluyendo el nombre del producto.
+     * @return array
+     */
+    public function buscarTemporales()
+    {
+        $arr_temporal = array();
+        $consulta = "SELECT t.*, p.nombre FROM temporal_venta t JOIN producto p ON t.id_producto = p.id";
+        $sql = $this->conexion->query($consulta);
+        while ($objeto = $sql->fetch_object()) {
+            array_push($arr_temporal, $objeto);
+        }
+        return $arr_temporal;
+    }
+
     //eliminar temporal
     public function eliminarTemporal($id)
     {

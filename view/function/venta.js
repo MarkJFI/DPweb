@@ -29,7 +29,7 @@ async function cargar_productos_temporales() {
             console.log('Cargando', json.data.length, 'productos...');
 
             json.data.forEach((producto, index) => {
-                const key = producto.id_producto + '_' + index;
+                const key = `prod_${producto.id_producto}`; // Usar la misma clave que al agregar
                 productos_venta[key] = {
                     id_producto: producto.id_producto,
                     precio: producto.precio,
