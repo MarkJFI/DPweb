@@ -113,6 +113,7 @@ async function view_products_cards() {
                     addBtn.addEventListener('click', () => addToCartFromButton(addBtn));
                 }
             });
+            inicializar_botones_carrito(); // Inicializar botones del carrito después de renderizar
         } else {
             contenido.innerHTML = `
                     <div class="text-center py-5">

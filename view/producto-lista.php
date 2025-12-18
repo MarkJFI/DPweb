@@ -1,3 +1,6 @@
+<script>
+    const base_url = '<?= BASE_URL; ?>';
+</script>
 <div class="container py-10">
     <!-- Título -->
     <div class="d-flex flex-column align-items-center">
@@ -193,7 +196,6 @@
 
 <!-- Script que genera las cards -->
 <script src="<?= BASE_URL ?>view/function/lista.js"></script>
-<script src="<?= BASE_URL ?>view/function/venta.js"></script>
 <script>
     // Agregar funcionalidad para buscar cliente por DNI
     document.querySelector('button[data-bs-target="#modalCliente"]').addEventListener('click', function() {
@@ -317,6 +319,7 @@
         </div>
     </div>
 </div>
+<script src="<?= BASE_URL ?>view/function/venta.js"></script>
 
 
 </body>

@@ -1,3 +1,6 @@
+<script>
+    const base_url = '<?= BASE_URL; ?>';
+</script>
 <div class="d-flex flex-column align-items-center">
     <h3 class="mt-3 mb-4 text-center text-primary fw-bold py-3 px-4 rounded-pill shadow titulo-usuarios">
         <i class="bi bi-box-seam"></i>
@@ -52,3 +55,4 @@
     </div>
 
     <script src="<?= BASE_URL ?>view/function/JsBarcode.all.min.js"></script>
+    <script src="<?= BASE_URL ?>view/function/venta.js"></script>

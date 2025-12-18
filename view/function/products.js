@@ -383,6 +383,7 @@ async function view_products() {
                     height: 40,
                 });
                 //JsBarcode("#barcode" + producto.id, producto.codigo, {format: "CODE128", width: 2, height: 40});
+                inicializar_botones_carrito(); // Inicializar botones del carrito después de renderizar
             });
         }
     } catch (e) {
