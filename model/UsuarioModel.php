@@ -1,102 +1,112 @@
 <?php
-require_once("../library/conexion.php");
+require_once __DIR__ . "/../library/conexion.php";
+
 class UsuarioModel
 {
     private $conexion;
-    function __construct()
+
+    public function __construct()
     {
         $this->conexion = new Conexion();
         $this->conexion = $this->conexion->connect();
     }
 
-    //registrar
+    // REGISTRAR
     public function registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password)
     {
-        $consulta = "INSERT INTO persona (nro_identidad,razon_social,telefono,correo,departamento,provincia,distrito,cod_postal,direccion,rol,password) VALUES ('$nro_identidad','$razon_social','$telefono','$correo','$departamento','$provincia','$distrito','$cod_postal','$direccion','$rol','$password')";
+        $consulta = "INSERT INTO persona 
+        (nro_identidad,razon_social,telefono,correo,departamento,provincia,distrito,cod_postal,direccion,rol,password)
+        VALUES ('$nro_identidad','$razon_social','$telefono','$correo','$departamento','$provincia','$distrito','$cod_postal','$direccion','$rol','$password')";
+
         $sql = $this->conexion->query($consulta);
-        if ($sql) {
-            $sql = $this->conexion->insert_id;
-        } else {
-            $sql = 0;
-        }
-        return $sql;
+        return $sql ? $this->conexion->insert_id : 0;
     }
 
-    //existe la persona
+    // EXISTE PERSONA
     public function existePersona($nro_identidad)
     {
-        $consulta = "SELECT * FROM persona WHERE nro_identidad='$nro_identidad'"; // consulta en la base de datos
+        $consulta = "SELECT id FROM persona WHERE nro_identidad='$nro_identidad' LIMIT 1";
         $sql = $this->conexion->query($consulta);
+
+        if (!$sql) return 0;
         return $sql->num_rows;
     }
 
-    //buscar persona por identidad
+    // BUSCAR PERSONA POR DNI
     public function buscarPersonaPornNroIdentidad($nro_identidad)
     {
-        $consulta = "SELECT id,razon_social,password FROM persona WHERE nro_identidad = '$nro_identidad' LIMIT 1"; // base de datos
+        $consulta = "SELECT id, razon_social, password FROM persona 
+                     WHERE nro_identidad='$nro_identidad' LIMIT 1";
         $sql = $this->conexion->query($consulta);
+
+        if (!$sql || $sql->num_rows == 0) {
+            return null;
+        }
         return $sql->fetch_object();
     }
-    //ver usuarios
+
+    // VER USUARIOS
     public function verUsuarios()
     {
-        $arr_usuarios = array();
-        $consulta = "SELECT * FROM persona WHERE rol<>'Cliente' AND rol<>'Proveedor'";
-        $sql = $this->conexion->query($consulta);
-        while ($objeto = $sql->fetch_object()) {
-            array_push($arr_usuarios, $objeto);
+        $data = [];
+        $sql = $this->conexion->query("SELECT * FROM persona WHERE rol<>'Cliente' AND rol<>'Proveedor'");
+        while ($row = $sql->fetch_object()) {
+            $data[] = $row;
         }
-        return $arr_usuarios;
+        return $data;
     }
 
-    // Ver usuario
+    // VER UNO
     public function ver($id)
     {
-        $consulta = "SELECT * FROM persona WHERE id='$id'";
-        $sql = $this->conexion->query($consulta);
-        return $sql->fetch_object();
+        $sql = $this->conexion->query("SELECT * FROM persona WHERE id='$id' LIMIT 1");
+        return $sql ? $sql->fetch_object() : null;
     }
 
-
-    //actualizar 
-    public function actualizar($id_persona, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol)
+    // ACTUALIZAR
+    public function actualizar($id, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol)
     {
-        $consulta = "UPDATE persona SET nro_identidad='$nro_identidad',  razon_social='$razon_social', telefono='$telefono', correo='$correo', departamento='$departamento', provincia='$provincia', distrito='$distrito', cod_postal='$cod_postal', direccion='$direccion', rol='$rol' WHERE id='$id_persona'";
-
-        $sql = $this->conexion->query($consulta);
-        return $sql;
+        return $this->conexion->query(
+            "UPDATE persona SET 
+            nro_identidad='$nro_identidad',
+            razon_social='$razon_social',
+            telefono='$telefono',
+            correo='$correo',
+            departamento='$departamento',
+            provincia='$provincia',
+            distrito='$distrito',
+            cod_postal='$cod_postal',
+            direccion='$direccion',
+            rol='$rol'
+            WHERE id='$id'"
+        );
     }
 
-    // eliminar
-    public function eliminar($id_persona)
+    // ELIMINAR
+    public function eliminar($id)
     {
-        $consulta = "DELETE FROM persona WHERE id='$id_persona'";
-        $sql = $this->conexion->query($consulta);
-        return $sql;
+        return $this->conexion->query("DELETE FROM persona WHERE id='$id'");
     }
 
-
-    // Ver Clientes
+    // CLIENTES
     public function verClientes()
     {
-        $arr_usuarios = array();
-        $consulta = "SELECT * FROM persona WHERE rol='Cliente'";
-        $sql = $this->conexion->query($consulta);
-        while ($objeto = $sql->fetch_object()) {
-            array_push($arr_usuarios, $objeto);
+        $data = [];
+        $sql = $this->conexion->query("SELECT * FROM persona WHERE rol='Cliente'");
+        while ($row = $sql->fetch_object()) {
+            $data[] = $row;
         }
-        return $arr_usuarios;
+        return $data;
     }
 
-    // Ver Proveedores
+    // PROVEEDORES
     public function verProveedores()
     {
-        $arr_usuarios = array();
-        $consulta = "SELECT * FROM persona WHERE rol='Proveedor'";
-        $sql = $this->conexion->query($consulta);
-        while ($objeto = $sql->fetch_object()) {
-            array_push($arr_usuarios, $objeto);
+        $data = [];
+        $sql = $this->conexion->query("SELECT * FROM persona WHERE rol='Proveedor'");
+        while ($row = $sql->fetch_object()) {
+            $data[] = $row;
         }
-        return $arr_usuarios;
+        return $data;
     }
-}
+}   
