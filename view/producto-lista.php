@@ -34,8 +34,6 @@
                 <input type="hidden" id="id_producto_venta">
                 <input type="hidden" id="producto_precio_venta">
                 <input type="hidden" id="producto_cantidad_venta">
-            
-
         </div>
     </div>
 
