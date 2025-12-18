@@ -11,13 +11,19 @@ class ProductoModel
 
     public function verProductos()
     {
-        $arr_categorias = array();
-        $consulta = "SELECT * FROM producto";
+        $arr_productos = array();
+        // Consulta optimizada para incluir el nombre de la categoría
+        $consulta = "SELECT 
+                        p.*,
+                        c.nombre as categoria 
+                     FROM producto p
+                     LEFT JOIN categoria c ON p.id_categoria = c.id
+                     ORDER BY p.nombre ASC";
         $sql = $this->conexion->query($consulta);
         while ($objeto = $sql->fetch_object()) {
-            array_push($arr_categorias, $objeto);
+            array_push($arr_productos, $objeto);
         }
-        return $arr_categorias;
+        return $arr_productos;
     }
 
 
