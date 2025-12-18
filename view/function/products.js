@@ -326,7 +326,7 @@ async function view_products() {
         console.log('Respuesta recibida:', respuesta);
         json = await respuesta.json();
         console.log('Datos recibidos:', json);
-        contenidot = document.getElementById('content_products');
+        contenidot = document.getElementById('content_products_table');
         if (json.status) {
             let cont = 1;
             json.data.forEach(producto => {
@@ -369,6 +369,6 @@ async function view_products() {
     }
 }
 //llama a la funcion para ver productos si existe el contenedor
-if (document.getElementById('content_products')) {
+if (document.getElementById('content_products_table')) {
     view_products();
 }

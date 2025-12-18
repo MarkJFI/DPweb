@@ -215,40 +215,37 @@ if ($tipo === "eliminar") {
         echo json_encode(['status' => false, 'msg' => 'Error al eliminar el producto']);
     }
     exit;
+}
 
 
+// Mostrar mis productos (corregido, estaba en un bloque if anidado)
+if ($tipo == "mostrarMisProductos") {
+    $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
+    // Asumiendo que mostrarMisProductos() existe en el modelo, si no, usar verProductos()
+    $productos = method_exists($objProducto, 'mostrarMisProductos') ? $objProducto->mostrarMisProductos() : $objProducto->verProductos();
+    $arrProduct = array();
 
-    // Mostrar mis productos
+    if (count($productos)) {
+        foreach ($productos as $producto) {
+            // Solo obtenemos la categoría que necesitamos
+            $categoria = $objCategoria->ver($producto->id_categoria);
+            $nombreCategoria = $categoria->nombre ?? "Sin categoría";
 
-    if ($tipo == "mostrarMisProductos") {
-        $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
-        $productos = $objProducto->mostrarMisProductos();
-        $arrProduct = array();
+            // Creamos un objeto simplificado con solo los campos necesarios
+            $productoSimple = new stdClass();
+            $productoSimple->imagen = $producto->imagen;
+            $productoSimple->nombre = $producto->nombre;
+            $productoSimple->precio = $producto->precio;
+            $productoSimple->categoria = $nombreCategoria;
 
-        if (count($productos)) {
-            foreach ($productos as $producto) {
-                // Solo obtenemos la categoría que necesitamos
-                $categoria = $objCategoria->ver($producto->id_categoria);
-                $nombreCategoria = ($categoria && property_exists($categoria, 'nombre'))
-                    ? $categoria->nombre
-                    : "Sin categoría";
-
-                // Creamos un objeto simplificado con solo los campos necesarios
-                $productoSimple = new stdClass();
-                $productoSimple->imagen = $producto->imagen;
-                $productoSimple->nombre = $producto->nombre;
-                $productoSimple->precio = $producto->precio;
-                $productoSimple->categoria = $nombreCategoria;
-
-                array_push($arrProduct, $productoSimple);
-            }
-            $respuesta = array('status' => true, 'msg' => '', 'data' => $arrProduct);
+            array_push($arrProduct, $productoSimple);
         }
-
-        header('Content-Type: application/json');
-        echo json_encode($respuesta);
-        exit;
+        $respuesta = array('status' => true, 'msg' => '', 'data' => $arrProduct);
     }
+
+    header('Content-Type: application/json');
+    echo json_encode($respuesta);
+    exit;
 }
 
 

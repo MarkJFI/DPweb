@@ -75,8 +75,8 @@
     <!-- Contenido principal -->
     <div class="row">
         <!-- Lista de productos -->
-        <div class="col-lg-9 mb-3">
-            <div id="content_products" class="row gy-5"></div>
+        <div class="col-lg-9 mb-4">
+            <div id="content_products_cards" class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-4"></div>
         </div>
 
         <!-- Carrito lateral -->
@@ -196,15 +196,6 @@
 <script src="<?= BASE_URL ?>view/function/lista.js"></script>
 <script src="<?= BASE_URL ?>view/function/venta.js"></script>
 <script>
-
-    let input = document.getElementById('busquedaProducto');
-    input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            agregar_producto_temporal(1, 12, 2)
-           
-        }
-    })
-
     // Agregar funcionalidad para buscar cliente por DNI
     document.querySelector('button[data-bs-target="#modalCliente"]').addEventListener('click', function() {
         const dni = document.getElementById('cliente_dni').value.trim();
@@ -238,15 +229,6 @@
             mensaje.textContent = 'Error al buscar el cliente.';
         });
     });
-</script>
-
-<script>
-    let input = document.getElementById("busquedaProducto");
-    input.addEventListener('keydown',(event)=>{
-        if (event.key =='Enter'){
-            agregar_producto_temporal();
-        }
-    })
 </script>
 <!-- Modal para ver detalles del producto -->
 <style>
@@ -309,4 +291,3 @@
 
 </body>
 </html>
-
