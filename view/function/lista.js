@@ -277,16 +277,9 @@ function addToCart(producto, cantidad){
 
     // También persistir temporalmente en servidor (si existe la función agregar_producto_temporal)
     try {
-        const idInput = document.getElementById('id_producto_venta');
-        const precioInput = document.getElementById('producto_precio_venta');
-        const cantidadInput = document.getElementById('producto_cantidad_venta');
-        if (idInput && precioInput && cantidadInput) {
-            idInput.value = producto.id;
-            precioInput.value = producto.precio;
-            cantidadInput.value = carrito[id].cantidad;
-            if (typeof agregar_producto_temporal === 'function') {
-                agregar_producto_temporal();
-            }
+        // Pasar los argumentos directamente a la función, que es lo que probablemente espera.
+        if (typeof agregar_producto_temporal === 'function') {
+            agregar_producto_temporal(producto.id, producto.precio, carrito[id].cantidad);
         }
     } catch (e) {
         console.warn('No se pudo persistir temporalmente:', e);
