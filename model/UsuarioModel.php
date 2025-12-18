@@ -33,7 +33,7 @@ class UsuarioModel
     }
 
     // BUSCAR PERSONA POR DNI
-    public function buscarPersonaPornNroIdentidad($nro_identidad)
+    public function buscarPersonaPorNroIdentidad($nro_identidad)
     {
         $consulta = "SELECT id, razon_social, password FROM persona 
                      WHERE nro_identidad='$nro_identidad' LIMIT 1";
