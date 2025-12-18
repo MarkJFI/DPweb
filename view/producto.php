@@ -41,17 +41,15 @@
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="content_products">
+                <tbody id="content_products_table">
                     <!-- JS carga aquí los productos -->
                 </tbody>
             </table>
 
         </div>
 
-        <!-- Contenedor donde se mostrarán las tarjetas de productos -->
-        <div id="content_products" class="mt-5"></div>
+        <!-- Contenedor donde se mostrarán las tarjetas de productos (corregido) -->
+        <div id="content_products_cards" class="mt-5"></div>
     </div>
 
-    <!-- Script que genera las cards -->
-    <script src="<?= BASE_URL ?>view/function/products.js"></script>
     <script src="<?= BASE_URL ?>view/function/JsBarcode.all.min.js"></script>

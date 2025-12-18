@@ -14,12 +14,12 @@ async function view_products_cards() {
         let json = await respuesta.json();
         console.log("Datos recibidos:", json);
 
-        let contenido = document.getElementById('content_products');
+        let contenido = document.getElementById('content_products_cards');
         if (!contenido) {
 
-            console.error("No se encontró el contenedor #content_products");
+            console.error("No se encontró el contenedor #content_products_cards");
 
-            console.error(" No se encontró el contenedor #content_products");
+            console.error(" No se encontró el contenedor #content_products_cards");
 
             return;
         }
@@ -176,7 +176,7 @@ function _inicializar_botones_tarjetas() {
     });
 }
 
-if (document.getElementById('content_products')) {
+if (document.getElementById('content_products_cards')) {
     view_products_cards();
 }
 
