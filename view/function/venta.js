@@ -231,54 +231,31 @@ async function eliminar_item_carrito(key) {
 
 // Inicializa los botones de "Agregar al carrito"
 function inicializar_botones_carrito() {
-    const botones = document.querySelectorAll('table tbody tr td:last-child a[href*="edit-producto"], table tbody tr td:last-child button');
+    const botones = document.querySelectorAll('.btn-add-cart-table');
 
     botones.forEach(btn => {
         if (btn.dataset.carritoListenerAdded) return;
 
-        if (btn.textContent.toLowerCase().includes('eliminar') || btn.href || btn.classList.contains('btn-primary')) {
-            return;
-        }
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-        if (
-            btn.textContent.toLowerCase().includes('agregar') ||
-            btn.textContent.toLowerCase().includes('carrito') ||
-            btn.classList.contains('btn-success') ||
-            btn.classList.contains('btn-info')
-        ) {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
+            const id = this.getAttribute('data-id');
+            const nombre = this.getAttribute('data-nombre');
+            const precio = this.getAttribute('data-precio');
+            const stock = 999; // Asumimos stock disponible desde la tabla principal
 
-                const fila = this.closest('tr');
-                if (!fila) {
-                    console.warn('No se encontró fila para el botón');
-                    return;
-                }
+            if (!id || !nombre || !precio) {
+                console.error('Datos de producto incompletos en el botón.');
+                return;
+            }
 
-                const celdas = fila.querySelectorAll('td');
+            // Llama a la función global addToCart (de este mismo archivo)
+            addToCart({ id, nombre, precio, stock }, 1);
+            showToast(`${nombre} agregado al carrito.`, 'success');
+        });
 
-                const id_producto = fila.id ? fila.id.replace('fila', '') : celdas[1]?.textContent;
-                const nombre = celdas[2]?.textContent?.trim() || 'Producto';
-                const precio = celdas[4]?.textContent?.replace(/[^\d.]/g, '') || '0';
-                const cantidad = 1;
-
-                if (!id_producto || id_producto === '' || precio === '0') {
-                    console.warn('Datos incompletos:', { id_producto, nombre, precio });
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'No se pueden obtener los datos del producto',
-                        icon: 'error'
-                    });
-                    return;
-                }
-
-                console.log('Agregando al carrito:', { id_producto, nombre, precio, cantidad });
-                agregar_producto_temporal(id_producto, precio, cantidad);
-            });
-
-            btn.dataset.carritoListenerAdded = 'true';
-        }
+        btn.dataset.carritoListenerAdded = 'true';
     });
 }
 

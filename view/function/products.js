@@ -319,7 +319,7 @@ async function view_products() {
     try {
         console.log('Iniciando carga de productos...');
         let respuesta = await fetch(base_url + 'control/ProductoController.php?tipo=ver_productos', {
-            method: 'POST',
+            method: 'POST', // Asegurando consistencia con otros scripts
             mode: 'cors',
             cache: 'no-cache'
         });
@@ -352,6 +352,12 @@ async function view_products() {
                                  onclick="fn_eliminar(` + producto.id + `);" 
                                 style="background:#dc3545;">
                                  <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                                <button class="btn btn-success btn-sm rounded-pill ms-1 btn-add-cart-table"
+                                    data-id="${producto.id}"
+                                    data-nombre="${producto.nombre}"
+                                    data-precio="${producto.precio}">
+                                    <i class="bi bi-cart-plus"></i> Agregar
                                 </button>
                             </td>
                             `;
