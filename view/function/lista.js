@@ -40,6 +40,9 @@ async function view_products_cards() {
                 } else {
                     rutaImagen = base_url + 'assets/img/no-image.png';
                 }
+                
+                // Añadido para depuración: verifica la ruta de la imagen
+                console.log(`Producto: ${producto.nombre}, Imagen recibida: ${producto.imagen}, Ruta final de imagen: ${rutaImagen}`);
 
                 let col = document.createElement('div');
                 col.className = 'col';
