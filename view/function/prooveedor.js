@@ -1,7 +1,7 @@
 async function view_proveedores() {
     try {
-        let respuesta = await fetch(base_url + 'control/ProveedorController.php?tipo=listar', {
-            method: 'GET',
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_proveedores', {
+            method: 'POST',
             mode: 'cors',
             cache: 'no-cache'
         });
@@ -20,15 +20,16 @@ async function view_proveedores() {
         if (json.status && Array.isArray(json.data)) {
             json.data.forEach(proveedor => {
                 let fila = document.createElement('tr');
+                // Ajustado para usar 'razon_social' y 'nro_identidad' del modelo Persona
                 fila.innerHTML = `
                     <td>${proveedor.id}</td>
-                    <td>${proveedor.dni}</td>
-                    <td>${proveedor.nombres} ${proveedor.apellidos}</td>
+                    <td>${proveedor.nro_identidad}</td>
+                    <td>${proveedor.razon_social}</td>
                     <td>${proveedor.correo}</td>
                     <td>${proveedor.rol}</td>
-                    <td>${proveedor.estado}</td>
+                    <td><span class="badge bg-success">Activo</span></td>
                     <td>
-                        <a href="${base_url}edit-proveedor?id=${proveedor.id}" class="btn btn-sm btn-primary">Editar</a>
+                        <a href="${base_url}edit-proveedor/${proveedor.id}" class="btn btn-sm btn-primary">Editar</a>
                         <button class="btn btn-sm btn-danger" onclick="eliminarProveedor(${proveedor.id})">Eliminar</button>
                     </td>
                 `;

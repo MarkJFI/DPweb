@@ -89,4 +89,11 @@ if ($tipo === "ver_usuarios") {
     $data = $objPersona->verUsuarios();
     echo json_encode(['status' => true, 'data' => $data]);
     exit;
-}   
+}
+
+// VER PROVEEDORES
+if ($tipo === "ver_proveedores") {
+    $data = $objPersona->verProveedores();
+    echo json_encode(['status' => true, 'data' => $data]);
+    exit;
+}
