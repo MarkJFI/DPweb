@@ -10,7 +10,6 @@
         <div class="text-end mt-3">
             <a href="<?= BASE_URL ?>new-producto" class="btn btn-primary btn-lg rounded-pill">
 
-
                 <i class="bi bi-plus-circle"></i>+ Nuevo producto</a>
         </div>
 
