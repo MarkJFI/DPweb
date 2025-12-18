@@ -1,112 +1,108 @@
 <?php
-require_once __DIR__ . "/../library/conexion.php";
+require_once(__DIR__ . "/../library/conexion.php"); // Ajusta la ruta si es necesario
 
 class UsuarioModel
 {
     private $conexion;
 
-    public function __construct()
+    function __construct()
     {
         $this->conexion = new Conexion();
         $this->conexion = $this->conexion->connect();
     }
 
-    // REGISTRAR
-    public function registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password)
-    {
-        $consulta = "INSERT INTO persona 
-        (nro_identidad,razon_social,telefono,correo,departamento,provincia,distrito,cod_postal,direccion,rol,password)
-        VALUES ('$nro_identidad','$razon_social','$telefono','$correo','$departamento','$provincia','$distrito','$cod_postal','$direccion','$rol','$password')";
-
-        $sql = $this->conexion->query($consulta);
-        return $sql ? $this->conexion->insert_id : 0;
-    }
-
-    // EXISTE PERSONA
-    public function existePersona($nro_identidad)
-    {
-        $consulta = "SELECT id FROM persona WHERE nro_identidad='$nro_identidad' LIMIT 1";
-        $sql = $this->conexion->query($consulta);
-
-        if (!$sql) return 0;
-        return $sql->num_rows;
-    }
-
-    // BUSCAR PERSONA POR DNI
     public function buscarPersonaPorNroIdentidad($nro_identidad)
     {
-        $consulta = "SELECT id, razon_social, password FROM persona 
-                     WHERE nro_identidad='$nro_identidad' LIMIT 1";
+        $nro_identidad = $this->conexion->real_escape_string($nro_identidad);
+        $consulta = "SELECT * FROM persona WHERE nro_identidad = '$nro_identidad' LIMIT 1";
         $sql = $this->conexion->query($consulta);
-
-        if (!$sql || $sql->num_rows == 0) {
-            return null;
+        if ($sql) {
+            return $sql->fetch_object();
         }
-        return $sql->fetch_object();
+        return null;
     }
 
-    // VER USUARIOS
+    public function registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password)
+    {
+        $nro_identidad = $this->conexion->real_escape_string($nro_identidad);
+        $razon_social = $this->conexion->real_escape_string($razon_social);
+        $telefono = $this->conexion->real_escape_string($telefono);
+        $correo = $this->conexion->real_escape_string($correo);
+        $departamento = $this->conexion->real_escape_string($departamento);
+        $provincia = $this->conexion->real_escape_string($provincia);
+        $distrito = $this->conexion->real_escape_string($distrito);
+        $cod_postal = $this->conexion->real_escape_string($cod_postal);
+        $direccion = $this->conexion->real_escape_string($direccion);
+        $rol = $this->conexion->real_escape_string($rol);
+        $password = $this->conexion->real_escape_string($password); // Hashed password
+
+        $consulta = "INSERT INTO persona (nro_identidad, razon_social, telefono, correo, departamento, provincia, distrito, cod_postal, direccion, rol, password) VALUES ('$nro_identidad', '$razon_social', '$telefono', '$correo', '$departamento', '$provincia', '$distrito', '$cod_postal', '$direccion', '$rol', '$password')";
+        $sql = $this->conexion->query($consulta);
+        if ($sql) {
+            return $this->conexion->insert_id;
+        }
+        return 0;
+    }
+
+    public function existePersona($nro_identidad)
+    {
+        $nro_identidad = $this->conexion->real_escape_string($nro_identidad);
+        $consulta = "SELECT id FROM persona WHERE nro_identidad = '$nro_identidad' LIMIT 1";
+        $sql = $this->conexion->query($consulta);
+        return $sql->num_rows > 0;
+    }
+
+    public function eliminar($id_persona)
+    {
+        $id_persona = intval($id_persona);
+        $consulta = "DELETE FROM persona WHERE id = $id_persona";
+        $sql = $this->conexion->query($consulta);
+        return $sql;
+    }
+
+    /**
+     * Obtiene todos los usuarios (personas con rol 'usuario').
+     * @return array Un array de objetos de usuario.
+     */
     public function verUsuarios()
     {
-        $data = [];
-        $sql = $this->conexion->query("SELECT * FROM persona WHERE rol<>'Cliente' AND rol<>'Proveedor'");
-        while ($row = $sql->fetch_object()) {
-            $data[] = $row;
+        $arr_usuarios = array();
+        $consulta = "SELECT * FROM persona WHERE rol='usuario' ORDER BY razon_social ASC"; // Asumiendo 'usuario' es el rol para usuarios
+        $sql = $this->conexion->query($consulta);
+        while ($objeto = $sql->fetch_object()) {
+            array_push($arr_usuarios, $objeto);
         }
-        return $data;
+        return $arr_usuarios;
     }
 
-    // VER UNO
-    public function ver($id)
-    {
-        $sql = $this->conexion->query("SELECT * FROM persona WHERE id='$id' LIMIT 1");
-        return $sql ? $sql->fetch_object() : null;
-    }
-
-    // ACTUALIZAR
-    public function actualizar($id, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol)
-    {
-        return $this->conexion->query(
-            "UPDATE persona SET 
-            nro_identidad='$nro_identidad',
-            razon_social='$razon_social',
-            telefono='$telefono',
-            correo='$correo',
-            departamento='$departamento',
-            provincia='$provincia',
-            distrito='$distrito',
-            cod_postal='$cod_postal',
-            direccion='$direccion',
-            rol='$rol'
-            WHERE id='$id'"
-        );
-    }
-
-    // ELIMINAR
-    public function eliminar($id)
-    {
-        return $this->conexion->query("DELETE FROM persona WHERE id='$id'");
-    }
-
-    // CLIENTES
+    /**
+     * Obtiene todos los clientes (personas con rol 'cliente').
+     * @return array Un array de objetos de cliente.
+     */
     public function verClientes()
     {
-        $data = [];
-        $sql = $this->conexion->query("SELECT * FROM persona WHERE rol='Cliente'");
-        while ($row = $sql->fetch_object()) {
-            $data[] = $row;
+        $arr_clientes = array();
+        $consulta = "SELECT * FROM persona WHERE rol='cliente' ORDER BY razon_social ASC"; // Asumiendo 'cliente' es el rol para clientes
+        $sql = $this->conexion->query($consulta);
+        while ($objeto = $sql->fetch_object()) {
+            array_push($arr_clientes, $objeto);
         }
-        return $data;
+        return $arr_clientes;
     }
 
-    // PROVEEDORES
+    /**
+     * Obtiene todos los proveedores (personas con rol 'proveedor').
+     * @return array Un array de objetos de proveedor.
+     */
     public function verProveedores()
     {
-        $data = [];
-        $sql = $this->conexion->query("SELECT * FROM persona WHERE rol='Proveedor'");
-        while ($row = $sql->fetch_object()) {
-            $data[] = $row;
+        $arr_proveedores = array();
+        $consulta = "SELECT * FROM persona WHERE rol='proveedor' ORDER BY razon_social ASC"; // Asumiendo 'proveedor' es el rol para proveedores
+        $sql = $this->conexion->query($consulta);
+        while ($objeto = $sql->fetch_object()) {
+            array_push($arr_proveedores, $objeto);
         }
-        return $data;
+        return $arr_proveedores;
     }
-}   
+}
+?>
