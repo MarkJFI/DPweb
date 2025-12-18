@@ -91,6 +91,14 @@ if ($tipo === "ver_usuarios") {
     exit;
 }
 
+// VER CLIENTES
+if ($tipo === "ver_clientes") {
+    // Asumiendo que UsuarioModel tiene un método verClientes()
+    $data = $objPersona->verClientes(); 
+    echo json_encode(['status' => true, 'data' => $data]);
+    exit;
+}
+
 // VER PROVEEDORES
 if ($tipo === "ver_proveedores") {
     $data = $objPersona->verProveedores();
