@@ -27,8 +27,7 @@
                 type="text"
                 class="form-control border-0 rounded-end-pill"
                 placeholder="Buscar productos..."
-                id="busquedaProducto"
-                onkeyup="view_products_cards()">
+                id="busquedaProducto">
 
                 <input type="hidden" id="id_producto_venta">
                 <input type="hidden" id="producto_precio_venta">
@@ -76,7 +75,7 @@
     <div class="row">
         <!-- Lista de productos -->
         <div class="col-lg-9 mb-4">
-            <div id="content_products_cards" class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-4"></div>
+            <div id="content_products_cards" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4"></div>
         </div>
 
         <!-- Carrito lateral -->
@@ -230,6 +229,37 @@
         });
     });
 </script>
+
+<!-- Estilos para las nuevas tarjetas de producto -->
+<style>
+    .product-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    .product-card-img-container {
+        height: 250px;
+        overflow: hidden;
+    }
+    .product-card-img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+    .product-card:hover .product-card-img-container img {
+        transform: scale(1.05);
+    }
+    .product-card-title { font-weight: 600; font-size: 1.1rem; color: #343a40; }
+    .product-card-price { font-size: 1.5rem; font-weight: 700; color: #0d6efd; text-align: right; }
+    .product-card-badge { font-size: 0.75rem; }
+    .bg-primary-soft { background-color: rgba(13, 110, 253, 0.1); }
+    .bg-dark-soft { background-color: rgba(33, 37, 41, 0.1); }
+    .product-card-footer { background-color: #f8f9fa; }
+</style>
+
 <!-- Modal para ver detalles del producto -->
 <style>
     /* Estilos para modal de producto */

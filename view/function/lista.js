@@ -1,3 +1,5 @@
+let searchTimeout; // Variable para controlar el temporizador de búsqueda
+
 async function view_products_cards() {
     try {
         let dato = document.getElementById('busquedaProducto').value;
@@ -28,8 +30,7 @@ async function view_products_cards() {
 
         if (json.status && json.data.length > 0) {
             // Cambiar a 3 columnas en lg para tarjetas más anchas
-            let fila = document.createElement('div');
-            fila.className = 'row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-4';
+            // La clase del 'row' ya está en el HTML, solo añadimos las tarjetas
 
             json.data.forEach(producto => {
                 let rutaImagen;
@@ -49,41 +50,32 @@ async function view_products_cards() {
                 col.setAttribute('data-producto-id', producto.id);
 
                 col.innerHTML = `
-                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
-                       <img src="${rutaImagen}" 
-                        class="card-img-top img-fluid" 
-                        alt="${producto.nombre}" 
-                        style="height: 300px; width: 100%; object-fit: contain; transition: transform 0.3s ease;">
-        
-                        <div class="card-body text-center bg-light rounded-4 shadow-sm py-4">
-                            <h5 class="card-title fw-bold mb-3 text-dark fs-4">
+                    <div class="card h-100 product-card shadow-sm border-0 rounded-3 overflow-hidden">
+                        <div class="product-card-img-container">
+                           <img src="${rutaImagen}" 
+                            class="card-img-top" 
+                            alt="${producto.nombre}">
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title product-card-title flex-grow-1">
                                 ${producto.nombre}
                             </h5>
-                            <p class="card-text small text-secondary mb-3">
-                                ${producto.detalle}
-                            </p>
-                            <p class="fw-semibold fs-5 text-dark mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-primary-soft text-primary product-card-badge">
+                                    ${producto.categoria ?? 'Sin Categoría'}
+                                </span>
+                                <span class="badge bg-dark-soft text-dark product-card-badge">
+                                    Stock: ${producto.stock}
+                                </span>
+                            </div>
+                            <p class="product-card-provider text-muted small">
+                                <i class="bi bi-truck me-1"></i> ${producto.proveedor ?? 'Proveedor no especificado'}
+                            </p>    
+                            <p class="product-card-price">
                                 S/ ${parseFloat(producto.precio).toFixed(2)}
                             </p>
-                            <span class="badge bg-dark text-white mb-3 px-4 py-2 rounded-pill">
-                                Stock: ${producto.stock}
-                            </span>
-                            <div class="border-top pt-3">
-                                <p class="text-dark small mb-2">
-                                    <i class="bi bi-tags me-1 text-secondary"></i>
-                                    <strong>Categoría:</strong> ${producto.categoria ?? '—'}
-                                </p>
-                                <p class="text-dark small mb-2">
-                                    <i class="bi bi-truck me-1 text-secondary"></i>
-                                    <strong>Proveedor:</strong> ${producto.proveedor ?? '—'}
-                                </p>
-                                <p class="text-dark small mb-0">
-                                    <i class="bi bi-calendar-event me-1 text-secondary"></i>
-                                    <strong>Fecha:</strong> ${producto.fecha_vencimiento ?? '—'}
-                                </p>
-                            </div>
                         </div>
-                        <div class="card-footer bg-light border-0 d-flex justify-content-center gap-2 pb-3">
+                        <div class="card-footer product-card-footer border-0 p-2">
                             <button class="btn btn-outline-primary btn-sm rounded-pill px-3 btn-ver-detalle" 
                                 data-id="${producto.id}" 
                                 data-nombre="${escapeHtml(producto.nombre)}" 
@@ -92,7 +84,8 @@ async function view_products_cards() {
                                 data-stock="${producto.stock}"
                                 data-imagen="${rutaImagen}"
                                 data-categoria="${escapeHtml(producto.categoria ?? '')}"
-                                data-proveedor="${escapeHtml(producto.proveedor ?? '')}">
+                                data-proveedor="${escapeHtml(producto.proveedor ?? '')}"
+                                data-fecha="${escapeHtml(producto.fecha_vencimiento ?? '')}">
                                 <i class="bi bi-eye"></i> Ver Detalles
                             </button>
 
@@ -105,11 +98,10 @@ async function view_products_cards() {
                             </button>
 
                         </div>
-                    </div >
+                    </div>
                     `;
 
-
-                fila.appendChild(col);
+                contenido.appendChild(col);
 
                 // Adjuntar handlers en los botones recién creados
                 const verBtn = col.querySelector('.btn-ver-detalle');
@@ -121,8 +113,6 @@ async function view_products_cards() {
                     addBtn.addEventListener('click', () => addToCartFromButton(addBtn));
                 }
             });
-
-            contenido.appendChild(fila);
         } else {
             contenido.innerHTML = `
                     <div class="text-center py-5">
@@ -180,7 +170,19 @@ function _inicializar_botones_tarjetas() {
 }
 
 if (document.getElementById('content_products_cards')) {
+    // Carga inicial
     view_products_cards();
+
+    // Listener para la búsqueda con debounce
+    const searchInput = document.getElementById('busquedaProducto');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                view_products_cards();
+            }, 300); // Espera 300ms después de que el usuario deja de escribir
+        });
+    }
 }
 
 function formatCurrency(value){
@@ -215,6 +217,7 @@ function showProductDetailsFromButton(btn){
     const imagen = btn.getAttribute('data-imagen');
     const categoria = btn.getAttribute('data-categoria');
     const proveedor = btn.getAttribute('data-proveedor');
+    const fecha = btn.getAttribute('data-fecha');
 
     // rellenar modal
     const img = document.getElementById('modalProductoImagen');
@@ -235,7 +238,7 @@ function showProductDetailsFromButton(btn){
     if (stockEl) stockEl.textContent = stock || '0';
     if (categoriaEl) categoriaEl.textContent = categoria || '—';
     if (proveedorEl) proveedorEl.textContent = proveedor || '—';
-    if (fechaEl) fechaEl.textContent = '—';
+    if (fechaEl) fechaEl.textContent = fecha || '—';
     if (cantidadInput) cantidadInput.value = 1;
 
     // attach handler to modal add button

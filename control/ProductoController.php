@@ -254,16 +254,8 @@ if ($tipo == "mostrarMisProductos") {
 if ($tipo == "buscar_producto_venta") {
     $dato = $_POST['dato'];
     $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
-    // La información del proveedor ya viene del modelo gracias al JOIN.
+    // La información del proveedor y la categoría ya vienen del modelo gracias a los JOINs.
     $productos = $objProducto->buscarProductoByNombreOrCodigo($dato);
-    $arrProduct = array();
-    if (count($productos)) {
-        foreach ($productos as $producto) {
-            $categoria = $objCategoria->ver($producto->id_categoria);
-            $producto->categoria = $categoria->nombre ?? 'Sin categoría'; // Asignación segura
-            array_push($arrProduct, $producto);
-        }
-        $respuesta = array('status' => true, 'msg' => '', 'data' => $arrProduct);
-    }
+    $respuesta = array('status' => true, 'msg' => '', 'data' => $productos);
     echo json_encode($respuesta);
 }

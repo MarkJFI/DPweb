@@ -92,16 +92,19 @@ class ProductoModel
         $arr_productos = array();
         // Se sanitiza el dato para prevenir inyección SQL simple
         $dato_saneado = $this->conexion->real_escape_string($dato);
-
-        // Consulta mejorada con LEFT JOIN para obtener el nombre del proveedor
+ 
+        // Consulta mejorada con LEFT JOIN para obtener el nombre del proveedor y la categoría
         $consulta = "SELECT 
                         p.*, 
-                        prov.razon_social as proveedor 
+                        prov.razon_social as proveedor,
+                        cat.nombre as categoria
                      FROM producto p
                      LEFT JOIN persona prov ON p.id_proveedor = prov.id
+                     LEFT JOIN categoria cat ON p.id_categoria = cat.id
                      WHERE p.codigo LIKE '$dato_saneado%' 
                         OR p.nombre LIKE '%$dato_saneado%' 
-                        OR p.detalle LIKE '%$dato_saneado%'";
+                        OR p.detalle LIKE '%$dato_saneado%'
+                     ORDER BY p.nombre ASC";
 
         $sql = $this->conexion->query($consulta);
         while ($objeto = $sql->fetch_object()) {
